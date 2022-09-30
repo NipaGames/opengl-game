@@ -120,7 +120,7 @@ bool GameWindow::Create() {
         objects.push_back(object);
     }
     Model model;
-    model.LoadModel("C:\\Users\\niilo\\Documents\\cpp\\opengl\\bin\\teapot.obj");
+    model.LoadModel("teapot.obj");
 
     glfwSwapInterval(1);
     glfwMakeContextCurrent(nullptr);
