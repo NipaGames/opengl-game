@@ -20,6 +20,7 @@ std::atomic_bool CURSOR_MODE_CHANGE_PENDING(false);
 std::atomic_bool MOUSE_MOVE_PENDING(false);
 std::atomic_bool FIRST_MOUSE(true);
 std::atomic_bool IS_MOUSE_LOCKED(false);
+bool UPDATE_FULLSCREEN = false;
 
 void KeyDown(int key){
     std::lock_guard<std::mutex> lock(keysMutex_);
@@ -90,7 +91,6 @@ bool GameWindow::Create() {
     }
 
     glfwMakeContextCurrent(window_);
-    glfwSetInputMode(window_, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
@@ -251,6 +251,8 @@ void MouseCallback(GLFWwindow* window, double xPos, double yPos) {
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS) {
         Input::KeyDown(key);
+        if (key == GLFW_KEY_F11 || (key == GLFW_KEY_ENTER && glfwGetKey(window, GLFW_KEY_LEFT_ALT)))
+            Input::UPDATE_FULLSCREEN = true;
     }
     else if (action == GLFW_RELEASE) {
         Input::KeyUp(key);
@@ -283,6 +285,29 @@ void GameWindow::Run() {
     glfwSetCursorPosCallback(window_, MouseCallback);
     while (running_) {
         glfwWaitEvents();
+        if (updateViewport_) {
+            glm::tvec2<int> framebufferSize;
+            glfwGetFramebufferSize(window_, &framebufferSize.x, &framebufferSize.y);
+            glViewport(0, 0, framebufferSize.x, framebufferSize.y);
+            updateViewport_ = false;
+        }
+        if (Input::UPDATE_FULLSCREEN) {
+            isFullscreen_ = !isFullscreen_;
+            if ((glfwGetWindowMonitor(window_) != nullptr) != isFullscreen_) {
+                if (isFullscreen_) {
+                    glfwGetWindowPos(window_, &prevWndPos_.x, &prevWndPos_.y);
+                    glfwGetWindowSize(window_, &prevWndSize_.x, &prevWndSize_.y);
+                    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+                    glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+                    glfwSwapInterval(1);
+                }
+                else {
+                    glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
+                }
+                updateViewport_ = true;
+            }
+            Input::UPDATE_FULLSCREEN = false;
+        }
         if (Input::CURSOR_MODE_CHANGE_PENDING) {
             glfwSetInputMode(window_, GLFW_CURSOR, Input::IS_MOUSE_LOCKED ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
             if (Input::IS_MOUSE_LOCKED) {

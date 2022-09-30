@@ -17,11 +17,15 @@ private:
     std::string title_;
     int baseWidth_, baseHeight_;
     bool running_ = false;
+    bool isFullscreen_ = false;
     double lastTime_;
     int frames_;
     double deltaTime_;
     double lastFrame_;
     double lastMouseX_, lastMouseY_;
+    glm::tvec2<int> prevWndPos_;
+    glm::tvec2<int> prevWndSize_;
+    bool updateViewport_ = false;
 public:
     GameWindow() { }
     GameWindow(const std::string&, int, int);

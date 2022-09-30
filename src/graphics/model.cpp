@@ -6,6 +6,8 @@ Mesh Model::ProcessMesh(const aiMesh* mesh, const aiScene* scene) {
     for (int i = 0; i < mesh->mNumVertices; i++) {
         
     }
+    Mesh m;
+    return m;
 }
 
 void Model::ProcessNodes(const aiNode* node, const aiScene* scene) {
