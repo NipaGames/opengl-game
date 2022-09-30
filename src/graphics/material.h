@@ -1,0 +1,54 @@
+#pragma once
+
+#include <opengl.h>
+#include <unordered_map>
+
+#include "graphics/shader.h"
+
+class Material {
+private:
+    std::unordered_map<std::string, int> intUniforms_;
+    std::unordered_map<std::string, float> floatUniforms_;
+
+    std::unordered_map<std::string, glm::mat2> mat2Uniforms_;
+    std::unordered_map<std::string, glm::mat3> mat3Uniforms_;
+    std::unordered_map<std::string, glm::mat4> mat4Uniforms_;
+
+    Shader shader_;
+public:
+    Material() { }
+    Material(int shaderId) : shader_(shaderId) { }
+    void Use();
+    const Shader& GetShader() { return shader_; }
+
+    #if __cplusplus >= 201703L || defined __INTELLISENSE__
+    template<typename T>
+    void SetShaderUniform(const std::string& name, const T& value) {
+        if constexpr(std::is_same_v<T, int>)
+            intUniforms_[name] = value;
+        if constexpr(std::is_same_v<T, float>)
+            floatUniforms_[name] = value;
+        if constexpr(std::is_same_v<T, glm::mat2>)
+            mat2Uniforms_[name] = value;
+        if constexpr(std::is_same_v<T, glm::mat3>)
+            mat3Uniforms_[name] = value;
+        if constexpr(std::is_same_v<T, glm::mat4>)
+            mat4Uniforms_[name] = value;
+    }
+    template<typename T>
+    T GetShaderUniform(const std::string& name) {
+        if constexpr(std::is_same_v<T, int>)
+            return intUniforms_[name];
+        else if constexpr(std::is_same_v<T, float>)
+            return floatUniforms_[name];
+        else if constexpr(std::is_same_v<T, glm::mat2>)
+            return mat2Uniforms_[name];
+        else if constexpr(std::is_same_v<T, glm::mat3>)
+            return mat3Uniforms_[name];
+        else if constexpr(std::is_same_v<T, glm::mat4>)
+            return mat4Uniforms_[name];
+        else
+            return T();
+    }
+    #endif
+};
