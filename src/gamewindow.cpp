@@ -113,11 +113,13 @@ bool GameWindow::Create() {
     float range = 5.0f;
     meshes.insert(std::make_pair(Meshes::CUBE.id, Meshes::CreateMeshInstance(Meshes::CUBE)));
     for (int i = 0; i < 50; i++) {
-        auto object = std::make_shared<Object>(meshes.at(Meshes::CUBE.id));
-        object->shader = SHADER_EXAMPLE;
-        object->position = glm::vec3((rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2);
-        object->rotation = glm::quat(glm::vec3(rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f)));
-        objects.push_back(object);
+        auto cube = std::make_shared<Entity>();
+        cube->Create<Renderer>();
+        /*auto cube = std::make_shared<Entity>(meshes.at(Meshes::CUBE.id));
+        cube->shader = SHADER_EXAMPLE;
+        cube->transform->position = glm::vec3((rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2);
+        cube->transform->rotation = glm::quat(glm::vec3(rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f)));*/
+        entities_.push_back(cube);
     }
     Model model;
     model.LoadModel("teapot.obj");

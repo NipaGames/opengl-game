@@ -25,7 +25,6 @@ public:
     // it will do well enough for now
     // nevermind, these 'if constexpr' statements are really cool although they look very cursed
     
-    //#if __cplusplus >= 201703L || defined __INTELLISENSE__ // you're basically fucked if you're using c++11 or earlier
     template<typename T>
     void SetUniform(const std::string& name, const T& value) const {
         if constexpr(std::is_same_v<T, int>)
@@ -39,5 +38,4 @@ public:
         if constexpr(std::is_same_v<T, glm::mat4>)
             glUniformMatrix4fv(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), 1, GL_FALSE, &value[0][0]);
     }
-    //#endif
 };

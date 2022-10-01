@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "object.h"
+#include "entity/entity.h"
 #include "graphics/renderer.h"
 
 class GameWindow {
@@ -26,13 +26,14 @@ private:
     glm::tvec2<int> prevWndPos_;
     glm::tvec2<int> prevWndSize_;
     bool updateViewport_ = false;
+    std::vector<std::shared_ptr<Entity>> entities_;
 public:
     GameWindow() { }
     GameWindow(const std::string&, int, int);
 
     Renderer renderer;
-    std::vector<std::shared_ptr<Object>> objects;
     std::unordered_map<std::string, const std::shared_ptr<Mesh>> meshes;
+    
     bool Create();
     void Run();
     void Update();

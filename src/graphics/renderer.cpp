@@ -66,9 +66,9 @@ bool Renderer::Init() {
 }
 
 void Renderer::GenerateModelVAOS() {
-    for (auto object : game.objects) {
+    /*for (auto object : game.entities_) {
         object->mesh->GenerateVAO();
-    }
+    }*/
 }
 
 void Renderer::Render() {
@@ -77,7 +77,7 @@ void Renderer::Render() {
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
 
     exampleMaterial_.Use();    
-    for (auto object : game.objects) {
+    /*for (auto object : game.objects) {
         glBindVertexArray(object->mesh->vao);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->mesh->ebo);
@@ -95,7 +95,7 @@ void Renderer::Render() {
         
         glm::mat4 mvpMatrix = camera_.projectionMatrix * viewMatrix * transform;
         exampleMaterial_.GetShader().SetUniform<glm::mat4>("transform", mvpMatrix);
-    }
+    }*/
 
     glBindVertexArray(0);
     glfwSwapBuffers(window_);

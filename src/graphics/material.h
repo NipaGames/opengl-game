@@ -21,7 +21,6 @@ public:
     void Use();
     const Shader& GetShader() { return shader_; }
 
-    #if __cplusplus >= 201703L || defined __INTELLISENSE__
     template<typename T>
     void SetShaderUniform(const std::string& name, const T& value) {
         if constexpr(std::is_same_v<T, int>)
@@ -50,5 +49,4 @@ public:
         else
             return T();
     }
-    #endif
 };
