@@ -1,6 +1,7 @@
 # opengl-game
 ### Repository status
-<img src="status.png" width="250" height="50" />
+<img src="status1.png" width="250" height="50"/>
+
 - Working: you can clone and build the repo and expect working results
 - In progress: probably some debug build testing something
 
