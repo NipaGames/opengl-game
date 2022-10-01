@@ -287,12 +287,6 @@ void GameWindow::Run() {
     glfwSetCursorPosCallback(window_, MouseCallback);
     while (running_) {
         glfwWaitEvents();
-        if (updateViewport_) {
-            glm::tvec2<int> framebufferSize;
-            glfwGetFramebufferSize(window_, &framebufferSize.x, &framebufferSize.y);
-            glViewport(0, 0, framebufferSize.x, framebufferSize.y);
-            updateViewport_ = false;
-        }
         if (Input::UPDATE_FULLSCREEN) {
             isFullscreen_ = !isFullscreen_;
             if ((glfwGetWindowMonitor(window_) != nullptr) != isFullscreen_) {
@@ -306,7 +300,9 @@ void GameWindow::Run() {
                 else {
                     glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
                 }
-                updateViewport_ = true;
+                glm::tvec2<int> framebufferSize;
+                glfwGetFramebufferSize(window_, &framebufferSize.x, &framebufferSize.y);
+                glViewport(0, 0, framebufferSize.x, framebufferSize.y);
             }
             Input::UPDATE_FULLSCREEN = false;
         }
