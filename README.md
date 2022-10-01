@@ -1,4 +1,8 @@
 # opengl-game
+### Repository status
+![Build status](/status.png)
+- Working: you can clone and build the repo and expect working results
+- In progress: probably some debug build testing something
 ### About
 At the moment this is just a rendering test with WASD-controls and first-person camera.
 ![Image showing the game](/screenshot.png)
