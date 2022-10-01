@@ -1,4 +1,5 @@
 /.vscode
 /build
 /bin/Debug/OpenGLProject.exe
+/bin/Release/OpenGLProject.exe
 /bin/Debug/OpenGLProject.pdb

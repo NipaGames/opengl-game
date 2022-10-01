@@ -25,7 +25,6 @@ private:
     double lastMouseX_, lastMouseY_;
     glm::tvec2<int> prevWndPos_;
     glm::tvec2<int> prevWndSize_;
-    bool updateViewport_ = false;
 public:
     GameWindow() { }
     GameWindow(const std::string&, int, int);
