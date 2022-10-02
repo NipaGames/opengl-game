@@ -3,6 +3,10 @@
 #include "gamewindow.h"
 #include "graphics/renderer.h"
 
+Entity::Entity() {
+    transform = AddComponent<Transform>();
+}
+
 Entity::~Entity() {
     for (auto component : components_) {
         delete component;

@@ -10,17 +10,18 @@ class Entity {
 private:
     std::vector<Component*> components_;
 public:
-    Entity() { }
+    Entity();
     virtual ~Entity();
 
-    Transform transform;
+    Transform* transform;
 
     void Start();
     void Update();
     template<typename C>
     C* const GetComponent() {
-        for (auto c : components_) {
-            if constexpr(std::is_same_v<T, typeid(c)>)
+        for (int i = 0; i < components_.size(); i++) {
+            C* c = dynamic_cast<C*>(components_[i]);
+            if (c != nullptr)
                 return c;
         }
         return nullptr;
@@ -28,20 +29,29 @@ public:
     template<typename C>
     std::vector<C* const> GetComponents() {
         std::vector<C* const> components;
-        for (auto c : components_) {
-            if constexpr(std::is_same_v<T, typeid(c)>)
-                components.insert(c);
+        for (int i = 0; i < components_.size(); i++) {
+            C* c = dynamic_cast<C*>(components_[i]);
+            if (c != nullptr)
+                components.push_back((C*) c);
         }
         return components;
     }
 
+    template<typename C>
+    C* AddComponent() {
+        if constexpr(!std::is_base_of_v<Component, C>) {
+            spdlog::error("{} doesn't derive from Component-class!", typeid(C).name());
+            throw;
+        }
+        C* component = new C();
+        components_.push_back((Component*) component);
+        return component;
+    }
+
     template<typename... C>
-    void Create() {
+    void AddComponents() {
         ([&] { // i have no fucking idea how this and c++ lambdas in general work
-            if constexpr(!std::is_base_of<Component, C>::value) {
-                spdlog::error("{} doesn't derive from Component-class!", typeid(C).name());
-                throw;
-            }
+            AddComponent<C>();
         } (), ...);
     }
 };

@@ -114,11 +114,12 @@ bool GameWindow::Create() {
     meshes.insert(std::make_pair(Meshes::CUBE.id, Meshes::CreateMeshInstance(Meshes::CUBE)));
     for (int i = 0; i < 50; i++) {
         auto cube = std::make_shared<Entity>();
-        cube->Create<Renderer>();
+        //cube->AddComponents<Renderer>();
         /*auto cube = std::make_shared<Entity>(meshes.at(Meshes::CUBE.id));
-        cube->shader = SHADER_EXAMPLE;
+        cube->shader = SHADER_EXAMPLE;*/
+        
         cube->transform->position = glm::vec3((rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2);
-        cube->transform->rotation = glm::quat(glm::vec3(rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f)));*/
+        cube->transform->rotation = glm::quat(glm::vec3(rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f)));
         entities_.push_back(cube);
     }
     Model model;
