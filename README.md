@@ -16,7 +16,8 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 *(unchecked features are yet to be implemented)*
 ## Building
-Builds only on Windows for now. ``build.bat`` should build everything. The executable can be found from ``bin/Debug``.
+Builds only on Windows for now. ``build.bat`` should build everything. The executable can be found from ``bin/Release`` or ``bin/Debug`` depending on the build type. Build type can be changed in ``build.bat``.
 ## Requirements
-- Visual Studio
+- MSVC build tools
+- C++17 or higher
 - CMake
