@@ -19,7 +19,7 @@ void Mesh::GenerateVAO() {
     glBindVertexArray(0);
 }
 
-void Mesh::Render() {
+void Mesh::Render() const {
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 

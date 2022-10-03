@@ -1,3 +1,5 @@
+#pragma once
+
 #include "entity/component.h"
 
 #include <opengl.h>

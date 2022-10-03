@@ -2,6 +2,8 @@
 
 #include <opengl.h>
 
+class Component;
+
 #include "graphics/mesh.h"
 #include "entity/component.h"
 #include "entity/component/transform.h"
@@ -44,6 +46,7 @@ public:
             throw;
         }
         C* component = new C();
+        ((Component*) component)->parent = this;
         components_.push_back((Component*) component);
         return component;
     }

@@ -25,12 +25,12 @@ private:
     double lastMouseX_, lastMouseY_;
     glm::tvec2<int> prevWndPos_;
     glm::tvec2<int> prevWndSize_;
-    std::vector<std::shared_ptr<Entity>> entities_;
 public:
     GameWindow() { }
     GameWindow(const std::string&, int, int);
 
     Renderer renderer;
+    std::vector<std::shared_ptr<Entity>> entities;
     std::unordered_map<std::string, const std::shared_ptr<Mesh>> meshes;
     
     bool Create();

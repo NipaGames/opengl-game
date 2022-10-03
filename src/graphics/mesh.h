@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "graphics/material.h"
 #include "graphics/shader.h"
 
 class Mesh {
@@ -19,8 +20,9 @@ public:
     ~Mesh();
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
+    Material material;
     void GenerateVAO();
-    void Render();
+    void Render() const;
     std::string id;
 };
 

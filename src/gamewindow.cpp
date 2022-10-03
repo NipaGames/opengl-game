@@ -1,5 +1,8 @@
 #include "gamewindow.h"
 
+#include "entity/component/meshrenderer.h"
+#include "entity/component/rotatecube.h"
+
 #include "graphics/model.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
@@ -110,17 +113,19 @@ bool GameWindow::Create() {
 
     Shaders::LoadShaders(SHADER_EXAMPLE, "example.vert", "example.frag");
 
-    float range = 5.0f;
+    float range = 10.0f;
     meshes.insert(std::make_pair(Meshes::CUBE.id, Meshes::CreateMeshInstance(Meshes::CUBE)));
     for (int i = 0; i < 50; i++) {
         auto cube = std::make_shared<Entity>();
-        //cube->AddComponents<Renderer>();
-        /*auto cube = std::make_shared<Entity>(meshes.at(Meshes::CUBE.id));
-        cube->shader = SHADER_EXAMPLE;*/
+        auto meshRenderer = cube->AddComponent<MeshRenderer>();
+        Mesh mesh = *meshes.at(Meshes::CUBE.id);
+        mesh.material = Material(SHADER_EXAMPLE);
+        meshRenderer->meshes.push_back(Meshes::CreateMeshInstance(Meshes::CUBE));
+        cube->AddComponent<RotateCube>();
         
         cube->transform->position = glm::vec3((rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2);
         cube->transform->rotation = glm::quat(glm::vec3(rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f)));
-        entities_.push_back(cube);
+        entities.push_back(cube);
     }
     Model model;
     model.LoadModel("teapot.obj");
@@ -233,6 +238,10 @@ void GameWindow::Update() {
         }
     }
 
+    for (auto entity : entities) {
+        entity->Update();
+    }
+
     renderer.Render();
     Input::ClearKeysPressedDown();
 }
@@ -264,6 +273,9 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void GameWindow::GameThread() {
     glfwMakeContextCurrent(window_);
+    for (auto entity : entities) {
+        entity->Start();
+    }
     while (running_) {
         Update();
     }
