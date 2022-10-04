@@ -5,10 +5,12 @@
 #include <iostream>
 #include <cstdint>
 #include <memory>
+#include <map>
 #include <unordered_map>
 #include <vector>
 
 #include "entity/entity.h"
+#include "event.h"
 #include "graphics/renderer.h"
 
 class GameWindow {
@@ -22,9 +24,11 @@ private:
     int frames_;
     double deltaTime_;
     double lastFrame_;
-    double lastMouseX_, lastMouseY_;
     glm::tvec2<int> prevWndPos_;
     glm::tvec2<int> prevWndSize_;
+    std::multimap<EventType, std::function<void()>> events_;
+
+    void DispatchEvent(EventType);
 public:
     GameWindow() { }
     GameWindow(const std::string&, int, int);
@@ -38,8 +42,9 @@ public:
     void Update();
     void GameThread();
     void ResetCursorPos();
-    void OnMouseMove();
+    void OnEvent(EventType, std::function<void()>);
     const double& GetDeltaTime() { return deltaTime_; }
+    GLFWwindow* const GetWindow() { return window_; }
 };
 
 extern GameWindow game;

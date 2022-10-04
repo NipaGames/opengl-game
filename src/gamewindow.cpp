@@ -1,11 +1,12 @@
 #include "gamewindow.h"
 
 #include "entity/component/meshrenderer.h"
+#include "entity/component/playercontroller.h"
 #include "entity/component/rotatecube.h"
-
 #include "graphics/model.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
+#include "input.h"
 
 #include <atomic>
 #include <glm/glm.hpp>
@@ -13,18 +14,6 @@
 #include <unordered_map>
 
 namespace Input {
-std::mutex keysMutex_;
-std::unordered_map<int, bool> keys_;
-std::unordered_map<int, bool> keysPressedBeforePoll_;
-std::unordered_map<int, bool> keysPressed_;
-
-std::atomic_bool WINDOW_SIZE_CHANGE_PENDING(false);
-std::atomic_bool CURSOR_MODE_CHANGE_PENDING(false);
-std::atomic_bool MOUSE_MOVE_PENDING(false);
-std::atomic_bool FIRST_MOUSE(true);
-std::atomic_bool IS_MOUSE_LOCKED(false);
-bool UPDATE_FULLSCREEN = false;
-
 void KeyDown(int key){
     std::lock_guard<std::mutex> lock(keysMutex_);
     keys_[key] = true;
@@ -113,6 +102,10 @@ bool GameWindow::Create() {
 
     Shaders::LoadShaders(SHADER_EXAMPLE, "example.vert", "example.frag");
 
+    auto player = std::make_shared<Entity>(); 
+    player->AddComponent<PlayerController>();
+    entities.push_back(player);
+
     float range = 10.0f;
     meshes.insert(std::make_pair(Meshes::CUBE.id, Meshes::CreateMeshInstance(Meshes::CUBE)));
     for (int i = 0; i < 50; i++) {
@@ -133,44 +126,6 @@ bool GameWindow::Create() {
     glfwSwapInterval(1);
     glfwMakeContextCurrent(nullptr);
     return true;
-}
-
-void GameWindow::OnMouseMove() {
-    if (!Input::IS_MOUSE_LOCKED)
-        return;
-
-    double xPos, yPos;
-    glfwGetCursorPos(window_, &xPos, &yPos);
-
-    if (Input::FIRST_MOUSE) {
-        lastMouseX_ = xPos;
-        lastMouseY_ = yPos;
-        Input::FIRST_MOUSE = false;
-    }
-
-    float offsetX = xPos - lastMouseX_;
-    float offsetY = lastMouseY_ - yPos; 
-
-    lastMouseX_ = xPos;
-    lastMouseY_ = yPos;
-
-    float sensitivity = 0.1f;
-    offsetX *= sensitivity;
-    offsetY *= sensitivity;
-
-    renderer.GetCamera().yaw   += offsetX;
-    renderer.GetCamera().pitch += offsetY;
-
-    if(renderer.GetCamera().pitch > 89.0f)
-        renderer.GetCamera().pitch = 89.0f;
-    if(renderer.GetCamera().pitch < -89.0f)
-        renderer.GetCamera().pitch = -89.0f;
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(renderer.GetCamera().yaw)) * cos(glm::radians(renderer.GetCamera().pitch));
-    direction.y = sin(glm::radians(renderer.GetCamera().pitch));
-    direction.z = sin(glm::radians(renderer.GetCamera().yaw)) * cos(glm::radians(renderer.GetCamera().pitch));
-    renderer.GetCamera().front = glm::normalize(direction);
 }
 
 void GameWindow::Update() {
@@ -198,7 +153,7 @@ void GameWindow::Update() {
 
     if(Input::MOUSE_MOVE_PENDING) {
         Input::MOUSE_MOVE_PENDING = false;
-        OnMouseMove();
+        DispatchEvent(EventType::MOUSE_MOVE);
     }
 
     const float cameraSpeed = 15 * game.GetDeltaTime();
@@ -250,6 +205,17 @@ void GameWindow::ResetCursorPos() {
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
     glfwSetCursorPos(window_, width / 2, height / 2);
+}
+
+void GameWindow::DispatchEvent(EventType eventType) {
+    for (auto event : events_) {
+        if (event.first == eventType)
+            event.second();
+    }
+}
+
+void GameWindow::OnEvent(EventType eventType, std::function<void()> event) {
+    events_.insert({ eventType, event });
 }
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
