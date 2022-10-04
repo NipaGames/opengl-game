@@ -12,7 +12,7 @@ Renderer::Renderer(GLFWwindow* window) {
 bool Renderer::Init() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+    glCullFace(GL_BACK);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     float aspectRatio = (float) 16 / (float) 9;

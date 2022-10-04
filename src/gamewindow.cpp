@@ -107,12 +107,12 @@ bool GameWindow::Create() {
     entities.push_back(player);
 
     float range = 50.0f;
+    auto cubeMesh = Meshes::CreateMeshInstance(Meshes::CUBE);
+    cubeMesh->material = Material(SHADER_EXAMPLE);
     for (int i = 0; i < 50; i++) {
         auto cube = std::make_shared<Entity>();
         auto meshRenderer = cube->AddComponent<MeshRenderer>();
-        auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-        mesh->material = Material(SHADER_EXAMPLE);
-        meshRenderer->meshes.push_back(mesh);
+        meshRenderer->meshes.push_back(cubeMesh);
         cube->AddComponent<RotateCube>();
         
         cube->transform->position = glm::vec3((rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2);
@@ -122,13 +122,14 @@ bool GameWindow::Create() {
     }
     Model model;
     model.LoadModel("teapot.obj");
-    auto teapot = std::make_shared<Entity>();
-    auto meshRenderer = teapot->AddComponent<MeshRenderer>();
     for (auto mesh : model.meshes) {
         mesh->GenerateVAO();
         mesh->material = Material(SHADER_EXAMPLE);
-        meshRenderer->meshes.push_back(mesh);
     }
+    auto teapot = std::make_shared<Entity>();
+    auto meshRenderer = teapot->AddComponent<MeshRenderer>();
+    meshRenderer->meshes = model.meshes;
+
     teapot->transform->position = glm::vec3(0.0f);
     entities.push_back(teapot);
 
