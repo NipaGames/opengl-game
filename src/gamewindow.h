@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <memory>
 #include <map>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <unordered_map>
 #include <vector>
 

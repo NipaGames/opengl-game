@@ -13,5 +13,7 @@ public:
         transform = glm::translate(transform, parent->transform->position);
         transform *= glm::toMat4(parent->transform->rotation);
         parent->transform->position = glm::vec3(transform[3]);
+        glm::vec3 eulers = glm::vec3(glm::radians(-90.0f), glm::atan2(parent->transform->position.x, parent->transform->position.z) - M_PI, 0);
+        parent->transform->rotation = glm::quat(eulers);
     }
 };

@@ -106,29 +106,34 @@ bool GameWindow::Create() {
     player->AddComponent<PlayerController>();
     entities.push_back(player);
 
-    float range = 50.0f;
-    auto cubeMesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-    cubeMesh->material = Material(SHADER_EXAMPLE);
-    for (int i = 0; i < 50; i++) {
-        auto cube = std::make_shared<Entity>();
-        auto meshRenderer = cube->AddComponent<MeshRenderer>();
-        meshRenderer->meshes.push_back(cubeMesh);
-        cube->AddComponent<RotateCube>();
-        
-        cube->transform->position = glm::vec3((rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2);
-        cube->transform->rotation = glm::quat(glm::vec3(rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f)));
-        cube->transform->size = glm::vec3(i / 50.0f + .25f);
-        entities.push_back(cube);
+    float range = 10.0f;
+    Model monkeyModel;
+    monkeyModel.LoadModel("monke.obj");
+    for (auto mesh : monkeyModel.meshes) {
+        mesh->GenerateVAO();
+        mesh->material = Material(SHADER_EXAMPLE);
     }
-    Model model;
-    model.LoadModel("teapot.obj");
-    for (auto mesh : model.meshes) {
+    for (int i = 0; i < 10; i++) {
+        auto monkey = std::make_shared<Entity>();
+        auto meshRenderer = monkey->AddComponent<MeshRenderer>();
+        meshRenderer->meshes = monkeyModel.meshes;
+        monkey->AddComponent<RotateCube>();
+        
+        float rad = ((2 * M_PI) / 10) * i;
+        monkey->transform->position = glm::vec3(cos(rad) * range, 1.0, sin(rad) * range);
+        
+        monkey->transform->size = glm::vec3(.1f);
+        entities.push_back(monkey);
+    }
+    Model teapotModel;
+    teapotModel.LoadModel("teapot.obj");
+    for (auto mesh : teapotModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = Material(SHADER_EXAMPLE);
     }
     auto teapot = std::make_shared<Entity>();
     auto meshRenderer = teapot->AddComponent<MeshRenderer>();
-    meshRenderer->meshes = model.meshes;
+    meshRenderer->meshes = teapotModel.meshes;
 
     teapot->transform->position = glm::vec3(0.0f);
     entities.push_back(teapot);
