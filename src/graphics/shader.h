@@ -37,5 +37,7 @@ public:
             glUniformMatrix3fv(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), 1, GL_FALSE, &value[0][0]);
         if constexpr(std::is_same_v<T, glm::mat4>)
             glUniformMatrix4fv(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), 1, GL_FALSE, &value[0][0]);
+        if constexpr(std::is_same_v<T, glm::vec3>)
+            glUniform3f(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), ((glm::vec3) value).x, ((glm::vec3) value).y, ((glm::vec3) value).z);
     }
 };

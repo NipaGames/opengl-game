@@ -2,18 +2,25 @@
 
 #include <spdlog/spdlog.h>
 
-Mesh Model::ProcessMesh(const aiMesh* mesh, const aiScene* scene) {
-    for (int i = 0; i < mesh->mNumVertices; i++) {
-        
+std::shared_ptr<Mesh> Model::ProcessMesh(const aiMesh* mesh, const aiScene* scene) {
+    auto processedMesh = std::make_shared<Mesh>();
+    for(int i = 0; i < mesh->mNumVertices; i++) {
+        processedMesh->vertices.push_back(mesh->mVertices[i].x);
+        processedMesh->vertices.push_back(mesh->mVertices[i].y);
+        processedMesh->vertices.push_back(mesh->mVertices[i].z);
     }
-    Mesh m;
-    return m;
+    for(int i = 0; i < mesh->mNumFaces; i++) {
+        aiFace face = mesh->mFaces[i];
+        for(unsigned int j = 0; j < face.mNumIndices; j++)
+            processedMesh->indices.push_back(face.mIndices[j]);
+    }  
+    return processedMesh;
 }
 
 void Model::ProcessNodes(const aiNode* node, const aiScene* scene) {
     for(int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
-        meshes_.push_back(ProcessMesh(mesh, scene));	
+        meshes.push_back(ProcessMesh(mesh, scene));	
     }
     for(int i = 0; i < node->mNumChildren; i++) {
         ProcessNodes(node->mChildren[i], scene);

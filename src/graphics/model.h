@@ -10,10 +10,10 @@
 
 class Model {
 private:
-    std::vector<Mesh> meshes_;
     std::string dir_;
     void ProcessNodes(const aiNode*, const aiScene*);
-    Mesh ProcessMesh(const aiMesh*, const aiScene*);
+    std::shared_ptr<Mesh> ProcessMesh(const aiMesh*, const aiScene*);
 public:
+    std::vector<std::shared_ptr<Mesh>> meshes;
     void LoadModel(const std::string&);
 };

@@ -7,10 +7,11 @@
 ## About
 At the moment this is just a rendering test with WASD-controls and first-person camera.
 ![Image showing the game](/screenshot.png)
+![Image also showing the game](/screenshot2.png)
 ### Features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)
-- [ ] Model loading
+- [x] Model loading
 - [ ] UI/HUD
 - [ ] Lighting
 
