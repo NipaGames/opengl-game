@@ -62,7 +62,8 @@ void MeshRenderer::Render(const glm::mat4& camMatrix) {
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, parent->transform->position);
         transform *= glm::toMat4(parent->transform->rotation);
-        
+        transform = glm::scale(transform, parent->transform->size);
+ 
         glm::mat4 mvpMatrix = camMatrix * transform;
         mesh->material.GetShader().SetUniform<glm::mat4>("transform", mvpMatrix);
     }

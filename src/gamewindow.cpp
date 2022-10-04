@@ -118,6 +118,7 @@ bool GameWindow::Create() {
         
         cube->transform->position = glm::vec3((rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2, (rand() / (RAND_MAX / range)) - range / 2);
         cube->transform->rotation = glm::quat(glm::vec3(rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f), rand() / (RAND_MAX / 360.0f)));
+        cube->transform->size = glm::vec3(i / 50.0f + .25f);
         entities.push_back(cube);
     }
     Model model;
@@ -156,46 +157,26 @@ void GameWindow::Update() {
         DispatchEvent(EventType::MOUSE_MOVE);
     }
 
-    const float cameraSpeed = 15 * game.GetDeltaTime();
-    auto& cam = renderer.GetCamera();
-    glm::vec3 front = cam.front;
-    front.y = 0.0f;
-    front = glm::normalize(front);
-
     if (Input::IsKeyPressedDown(GLFW_KEY_ESCAPE)) {
         Input::IS_MOUSE_LOCKED = !Input::IS_MOUSE_LOCKED;
         Input::CURSOR_MODE_CHANGE_PENDING = true;
     }
 
-    if (Input::IS_MOUSE_LOCKED) {
-        glm::vec3 horizontalVelocity(0.0f);
-        if (Input::IsKeyDown(GLFW_KEY_W))
-            horizontalVelocity += front;
-        if (Input::IsKeyDown(GLFW_KEY_S))
-            horizontalVelocity -= front;
-        if (Input::IsKeyDown(GLFW_KEY_A))
-            horizontalVelocity -= glm::normalize(glm::cross(front, cam.up));
-        if (Input::IsKeyDown(GLFW_KEY_D))
-            horizontalVelocity += glm::normalize(glm::cross(front, cam.up));
-            
-        if (horizontalVelocity != glm::vec3(0.0f))
-            horizontalVelocity = glm::normalize(horizontalVelocity);
-
-        cam.pos += horizontalVelocity * cameraSpeed;
-        if (Input::IsKeyDown(GLFW_KEY_SPACE))
-            cam.pos += cameraSpeed * cam.up;
-        if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
-            cam.pos -= cameraSpeed * cam.up;
-    } else {
-        if (glfwGetMouseButton(window_, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            Input::IS_MOUSE_LOCKED = true;
-            Input::CURSOR_MODE_CHANGE_PENDING = true;
-        }
+    if (glfwGetMouseButton(window_, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !Input::IS_MOUSE_LOCKED) {
+        Input::IS_MOUSE_LOCKED = true;
+        Input::CURSOR_MODE_CHANGE_PENDING = true;
     }
 
     for (auto entity : entities) {
         entity->Update();
     }
+
+    Camera& cam = renderer.GetCamera();
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));
+    direction.y = sin(glm::radians(cam.pitch));
+    direction.z = sin(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));
+    cam.front = glm::normalize(direction);
 
     renderer.Render();
     Input::ClearKeysPressedDown();
