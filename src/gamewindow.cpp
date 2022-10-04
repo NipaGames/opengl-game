@@ -3,6 +3,7 @@
 #include "entity/component/meshrenderer.h"
 #include "entity/component/playercontroller.h"
 #include "entity/component/rotatecube.h"
+#include "entity/component/teapot.h"
 #include "graphics/model.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
@@ -106,23 +107,24 @@ bool GameWindow::Create() {
     player->AddComponent<PlayerController>();
     entities.push_back(player);
 
-    float range = 10.0f;
+    float range = 7.5f;
+    int monkeyCount = 6;
     Model monkeyModel;
-    monkeyModel.LoadModel("monke.obj");
+    monkeyModel.LoadModel("chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = Material(SHADER_EXAMPLE);
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < monkeyCount; i++) {
         auto monkey = std::make_shared<Entity>();
         auto meshRenderer = monkey->AddComponent<MeshRenderer>();
         meshRenderer->meshes = monkeyModel.meshes;
         monkey->AddComponent<RotateCube>();
         
-        float rad = ((2 * M_PI) / 10) * i;
+        float rad = ((2 * M_PI) / monkeyCount) * i;
         monkey->transform->position = glm::vec3(cos(rad) * range, 1.0, sin(rad) * range);
         
-        monkey->transform->size = glm::vec3(.1f);
+        monkey->transform->size = glm::vec3(2.0f);
         entities.push_back(monkey);
     }
     Model teapotModel;
@@ -134,6 +136,7 @@ bool GameWindow::Create() {
     auto teapot = std::make_shared<Entity>();
     auto meshRenderer = teapot->AddComponent<MeshRenderer>();
     meshRenderer->meshes = teapotModel.meshes;
+    teapot->AddComponent<Teapot>();
 
     teapot->transform->position = glm::vec3(0.0f);
     entities.push_back(teapot);
