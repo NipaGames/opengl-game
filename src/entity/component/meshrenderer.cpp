@@ -23,9 +23,6 @@ void MeshRenderer::Render(const glm::mat4& camMatrix) {
  
         glm::mat4 mvpMatrix = camMatrix * transform;
         mesh->material.GetShader().SetUniform<glm::mat4>("transform", mvpMatrix);
-        glm::vec3 color = glm::vec3(sin(glfwGetTime()) / 2 + 1, sin(glfwGetTime() + 500) / 2 + 1, sin(glfwGetTime() + 1000) / 2 + 1);
-        mesh->material.GetShader().SetUniform<glm::vec3>("vertexColor", color);
-
         mesh->Render();
     }
 }

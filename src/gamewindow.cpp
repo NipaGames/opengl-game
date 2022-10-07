@@ -106,7 +106,7 @@ bool GameWindow::Create() {
     auto player = std::make_shared<Entity>(); 
     player->AddComponent<PlayerController>();
     entities.push_back(player);
-
+    
     float range = 7.5f;
     int monkeyCount = 6;
     Model monkeyModel;
@@ -114,6 +114,9 @@ bool GameWindow::Create() {
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = Material(SHADER_EXAMPLE);
+        glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
+        mesh->material.SetShaderUniform<glm::vec3>("vertexColor", color);
+
     }
     for (int i = 0; i < monkeyCount; i++) {
         auto monkey = std::make_shared<Entity>();
@@ -132,6 +135,8 @@ bool GameWindow::Create() {
     for (auto mesh : teapotModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = Material(SHADER_EXAMPLE);
+        glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
+        mesh->material.SetShaderUniform<glm::vec3>("vertexColor", color);
     }
     auto teapot = std::make_shared<Entity>();
     auto meshRenderer = teapot->AddComponent<MeshRenderer>();

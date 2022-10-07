@@ -14,6 +14,9 @@ private:
     std::unordered_map<std::string, glm::mat3> mat3Uniforms_;
     std::unordered_map<std::string, glm::mat4> mat4Uniforms_;
 
+    std::unordered_map<std::string, glm::vec2> vec2Uniforms_;
+    std::unordered_map<std::string, glm::vec3> vec3Uniforms_;
+
     Shader shader_;
 public:
     Material() { }
@@ -33,6 +36,10 @@ public:
             mat3Uniforms_[name] = value;
         if constexpr(std::is_same_v<T, glm::mat4>)
             mat4Uniforms_[name] = value;
+        if constexpr(std::is_same_v<T, glm::vec2>)
+            vec2Uniforms_[name] = value;
+        if constexpr(std::is_same_v<T, glm::vec3>)
+            vec3Uniforms_[name] = value;
     }
     template<typename T>
     T GetShaderUniform(const std::string& name) {
@@ -46,6 +53,10 @@ public:
             return mat3Uniforms_[name];
         else if constexpr(std::is_same_v<T, glm::mat4>)
             return mat4Uniforms_[name];
+        else if constexpr(std::is_same_v<T, glm::vec2>)
+            return vec2Uniforms_[name];
+        else if constexpr(std::is_same_v<T, glm::vec3>)
+            return vec3Uniforms_[name];
         else
             return T();
     }

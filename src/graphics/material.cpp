@@ -12,4 +12,8 @@ void Material::Use() {
         shader_.SetUniform(mat3.first, mat3.second);
     for (auto mat4 : mat4Uniforms_)
         shader_.SetUniform(mat4.first, mat4.second);
+    for (auto vec2 : vec2Uniforms_)
+        shader_.SetUniform(vec2.first, vec2.second);
+    for (auto vec3 : vec3Uniforms_)
+        shader_.SetUniform(vec3.first, vec3.second);
 }
