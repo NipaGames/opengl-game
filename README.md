@@ -6,11 +6,16 @@
 
 ## About
 At the moment this is just a rendering test with WASD-controls and first-person camera.
+## Progress
 ![Image showing the game](/screenshot.png)
+*Cube rendering test* 30.9.2022 (DD-MM-YYYY)
 ![Image also showing the game](/screenshot2.png)
+*Model loading* 4.10.2022
 ![Image also showing the game](/screenshot3.png)
+*Happy monkey circle* 5.10.2022
 ![Image showing the lighting](/screenshot4.png)
-### Features:
+*Dark monkey cult and dramatic lighting* 8.10.2022
+### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)
 - [x] Model loading
