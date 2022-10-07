@@ -1,6 +1,7 @@
 #pragma once
 
 #include <opengl.h>
+#include <iostream>
 #include <unordered_map>
 
 #include "graphics/shader.h"

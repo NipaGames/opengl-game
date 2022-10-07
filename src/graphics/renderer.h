@@ -16,7 +16,6 @@ private:
     GLFWwindow* window_;
     std::vector<MeshRenderer*> meshes_;
     Camera camera_;
-    Material exampleMaterial_ = Material(SHADER_EXAMPLE);
 public:
     Renderer() { }
     virtual ~Renderer() { }

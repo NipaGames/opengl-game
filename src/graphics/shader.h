@@ -9,6 +9,7 @@
 
 namespace Shaders {
 GLuint LoadShaders(int, const std::string&, const std::string&);
+void LoadAllShaders();
 GLuint GetShaderProgram(int);
 };
 
@@ -16,7 +17,7 @@ class Shader {
 private:
     int id_;
 public:
-    Shader() : id_(SHADER_EXAMPLE) { }
+    Shader() : id_(SHADER_LIT) { }
     Shader(int id) : id_(id) { }
     void Use() const;
     int GetId() const { return id_; }

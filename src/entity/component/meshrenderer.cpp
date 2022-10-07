@@ -7,7 +7,7 @@ void MeshRenderer::Start() {
 
 void MeshRenderer::Render(const glm::mat4& camMatrix) {
     for (auto mesh : meshes) {
-        mesh->material.Use();
+        mesh->material->Use();
         glBindVertexArray(mesh->vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, colorBuffer_);
@@ -22,7 +22,7 @@ void MeshRenderer::Render(const glm::mat4& camMatrix) {
         transform = glm::scale(transform, parent->transform->size);
  
         glm::mat4 mvpMatrix = camMatrix * transform;
-        mesh->material.GetShader().SetUniform<glm::mat4>("transform", mvpMatrix);
+        mesh->material->GetShader().SetUniform<glm::mat4>("transform", mvpMatrix);
         mesh->Render();
     }
 }

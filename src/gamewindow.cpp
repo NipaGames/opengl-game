@@ -3,7 +3,6 @@
 #include "entity/component/meshrenderer.h"
 #include "entity/component/playercontroller.h"
 #include "entity/component/rotatecube.h"
-#include "entity/component/teapot.h"
 #include "graphics/model.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
@@ -101,22 +100,32 @@ bool GameWindow::Create() {
     if(!renderer.Init())
         return false;
 
-    Shaders::LoadShaders(SHADER_EXAMPLE, "example.vert", "example.frag");
+    Shaders::LoadAllShaders();
 
     auto player = std::make_shared<Entity>(); 
     player->AddComponent<PlayerController>();
     entities.push_back(player);
+
+    std::shared_ptr<Material> lightMaterial = std::make_shared<Material>(SHADER_UNLIT);
+    lightMaterial->SetShaderUniform<glm::vec3>("lightColor", glm::vec3(1.0, 1.0, 1.0));
+    lightMaterial->SetShaderUniform<glm::vec3>("vertexColor", glm::vec3(1.0, 1.0, 1.0));
+
+    auto light = std::make_shared<Entity>();
+    auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
+    mesh->material = lightMaterial;
+    light->AddComponent<MeshRenderer>()->meshes.push_back(mesh);
+    light->transform->position = glm::vec3(0.0, 5.0, 0.0);
+    entities.push_back(light);
     
     float range = 7.5f;
     int monkeyCount = 6;
     Model monkeyModel;
-    monkeyModel.LoadModel("chimp.fbx");
+    monkeyModel.LoadModel("../res/chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = Material(SHADER_EXAMPLE);
+        mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
-        mesh->material.SetShaderUniform<glm::vec3>("vertexColor", color);
-
+        mesh->material->SetShaderUniform<glm::vec3>("vertexColor", color);
     }
     for (int i = 0; i < monkeyCount; i++) {
         auto monkey = std::make_shared<Entity>();
@@ -131,18 +140,16 @@ bool GameWindow::Create() {
         entities.push_back(monkey);
     }
     Model teapotModel;
-    teapotModel.LoadModel("teapot.obj");
+    teapotModel.LoadModel("../res/teapot.obj");
     for (auto mesh : teapotModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = Material(SHADER_EXAMPLE);
+        mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
-        mesh->material.SetShaderUniform<glm::vec3>("vertexColor", color);
+        mesh->material->SetShaderUniform<glm::vec3>("vertexColor", color);
     }
     auto teapot = std::make_shared<Entity>();
     auto meshRenderer = teapot->AddComponent<MeshRenderer>();
     meshRenderer->meshes = teapotModel.meshes;
-    teapot->AddComponent<Teapot>();
-
     teapot->transform->position = glm::vec3(0.0f);
     entities.push_back(teapot);
 

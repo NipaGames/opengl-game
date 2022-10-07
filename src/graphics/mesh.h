@@ -20,7 +20,7 @@ public:
     ~Mesh();
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
-    Material material;
+    std::shared_ptr<Material> material;
     void GenerateVAO();
     void Render() const;
     std::string id;
