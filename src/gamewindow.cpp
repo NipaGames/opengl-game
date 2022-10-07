@@ -107,14 +107,13 @@ bool GameWindow::Create() {
     entities.push_back(player);
 
     std::shared_ptr<Material> lightMaterial = std::make_shared<Material>(SHADER_UNLIT);
-    lightMaterial->SetShaderUniform<glm::vec3>("lightColor", glm::vec3(1.0, 1.0, 1.0));
-    lightMaterial->SetShaderUniform<glm::vec3>("vertexColor", glm::vec3(1.0, 1.0, 1.0));
+    lightMaterial->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(1.0, 1.0, 1.0));
 
     auto light = std::make_shared<Entity>();
     auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
     mesh->material = lightMaterial;
     light->AddComponent<MeshRenderer>()->meshes.push_back(mesh);
-    light->transform->position = glm::vec3(0.0, 5.0, 0.0);
+    light->transform->position = glm::vec3(0.0, 10.0, 0.0);
     entities.push_back(light);
     
     float range = 7.5f;
@@ -125,7 +124,8 @@ bool GameWindow::Create() {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
-        mesh->material->SetShaderUniform<glm::vec3>("vertexColor", color);
+        mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
+        mesh->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
     }
     for (int i = 0; i < monkeyCount; i++) {
         auto monkey = std::make_shared<Entity>();
@@ -145,7 +145,8 @@ bool GameWindow::Create() {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
-        mesh->material->SetShaderUniform<glm::vec3>("vertexColor", color);
+        mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
+        mesh->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
     }
     auto teapot = std::make_shared<Entity>();
     auto meshRenderer = teapot->AddComponent<MeshRenderer>();
@@ -162,6 +163,10 @@ void GameWindow::Update() {
     if (glfwWindowShouldClose(window_)) {
         running_ = false;
         return;
+    }
+    if (Input::VSYNC_POLL_RATE_PENDING) {
+        glfwSwapInterval(1);
+        Input::VSYNC_POLL_RATE_PENDING = false;
     }
     Input::PollKeysPressedDown();
     double currentTime = glfwGetTime();
@@ -284,7 +289,7 @@ void GameWindow::Run() {
                     glfwGetWindowSize(window_, &prevWndSize_.x, &prevWndSize_.y);
                     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
                     glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
-                    glfwSwapInterval(1);
+                    Input::VSYNC_POLL_RATE_PENDING = true;
                 }
                 else {
                     glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);

@@ -1,8 +1,8 @@
 #version 330 core
 
-in vec3 fragmentColor;
+uniform vec3 objectColor;
 out vec3 color;
 
 void main() {
-  color = fragmentColor;
+  color = objectColor;
 }

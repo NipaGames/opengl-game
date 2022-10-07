@@ -9,8 +9,6 @@
 #include <memory.h>
 
 class MeshRenderer : public Component {
-private:
-    GLuint colorBuffer_;
 public:
     virtual ~MeshRenderer() { }
 

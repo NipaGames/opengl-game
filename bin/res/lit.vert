@@ -1,13 +1,16 @@
 #version 330 core
 
-layout(location = 0) in vec3 pos;
+out vec3 fragmentNormal;
+out vec3 fragmentPos;
 
-uniform mat4 transform;
-uniform vec3 vertexColor;
-uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
-out vec3 fragmentColor;
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec3 normal;
+
+uniform mat4 viewProjection;
+uniform mat4 model;
 
 void main() {
-  gl_Position =  transform * vec4(pos, 1);
-  fragmentColor = lightColor * vertexColor;
+  gl_Position = viewProjection * model * vec4(pos, 1);
+  fragmentPos = vec3(model * vec4(pos, 1));
+  fragmentNormal = mat3(transpose(inverse(model))) * normal;
 }
