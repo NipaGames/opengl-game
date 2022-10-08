@@ -27,6 +27,10 @@ void Mesh::GenerateVAO() {
 }
 
 void Mesh::Render() const {
+    if (cullFaces)
+        glEnable(GL_CULL_FACE);
+    else
+        glDisable(GL_CULL_FACE);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 

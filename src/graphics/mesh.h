@@ -21,9 +21,10 @@ public:
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
     std::shared_ptr<Material> material;
+    std::string id;
+    bool cullFaces = true;
     void GenerateVAO();
     void Render() const;
-    std::string id;
 };
 
 namespace Meshes {

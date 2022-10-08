@@ -126,7 +126,7 @@ bool GameWindow::Create() {
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
         mesh->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
-        mesh->material->SetShaderUniform<float>("lightRange", 5.0);
+        mesh->material->SetShaderUniform<float>("lightRange", 10.0);
         mesh->material->SetShaderUniform<float>("specularStrength", 0.0);
     }
     for (int i = 0; i < monkeyCount; i++) {
@@ -149,9 +149,10 @@ bool GameWindow::Create() {
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
         mesh->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
-        mesh->material->SetShaderUniform<float>("lightRange", 5.0);
+        mesh->material->SetShaderUniform<float>("lightRange", 10.0);
         mesh->material->SetShaderUniform<int>("specularHighlight", 128);
         mesh->material->SetShaderUniform<float>("specularStrength", 2.0);
+        mesh->cullFaces = false;
     }
     auto teapot = std::make_shared<Entity>();
     auto meshRenderer = teapot->AddComponent<MeshRenderer>();
