@@ -19,6 +19,7 @@ void MeshRenderer::Render(const glm::mat4& camMatrix) {
  
         mesh->material->GetShader().SetUniform<glm::mat4>("viewProjection", camMatrix);
         mesh->material->GetShader().SetUniform<glm::mat4>("model", modelTransform);
+        mesh->material->GetShader().SetUniform<glm::vec3>("viewPos", game.renderer.GetCamera().pos);
         mesh->Render();
 
         //Unbinding
