@@ -141,24 +141,27 @@ bool GameWindow::Create() {
         monkey->transform->size = glm::vec3(2.0f);
         entities.push_back(monkey);
     }
-    Model teapotModel;
-    teapotModel.LoadModel("../res/teapot.obj");
-    for (auto mesh : teapotModel.meshes) {
+    Model mogusModel;
+    mogusModel.LoadModel("../res/mog.obj");
+    for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_LIT);
-        glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
-        mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
-        mesh->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
-        mesh->material->SetShaderUniform<float>("lightRange", 10.0);
-        mesh->material->SetShaderUniform<int>("specularHighlight", 128);
-        mesh->material->SetShaderUniform<float>("specularStrength", 2.0);
-        mesh->cullFaces = false;
+        mesh->material = std::make_shared<Material>(SHADER_UNLIT);
+        mesh->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(0.0f, 0.0f, 0.0f));
     }
-    auto teapot = std::make_shared<Entity>();
-    auto meshRenderer = teapot->AddComponent<MeshRenderer>();
-    meshRenderer->meshes = teapotModel.meshes;
-    teapot->transform->position = glm::vec3(0.0f);
-    entities.push_back(teapot);
+    mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    mogusModel.meshes[3]->material = std::make_shared<Material>(SHADER_LIT);
+
+    mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(0.5f, 0.5f, 1.0f));
+    mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
+    mogusModel.meshes[3]->material->SetShaderUniform<float>("lightRange", 10.0);
+    mogusModel.meshes[3]->material->SetShaderUniform<int>("specularHighlight", 128);
+    mogusModel.meshes[3]->material->SetShaderUniform<float>("specularStrength", 2.0);
+    
+    auto mogus = std::make_shared<Entity>();
+    auto meshRenderer = mogus->AddComponent<MeshRenderer>();
+    meshRenderer->meshes = mogusModel.meshes;
+    mogus->transform->position = glm::vec3(0.0f, 2.0f, 0.0f);
+    entities.push_back(mogus);
 
     glfwSwapInterval(1);
     glfwMakeContextCurrent(nullptr);
