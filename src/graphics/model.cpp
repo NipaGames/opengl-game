@@ -8,12 +8,16 @@ std::shared_ptr<Mesh> Model::ProcessMesh(const aiMesh* mesh, const aiScene* scen
         processedMesh->vertices.push_back(mesh->mVertices[i].x);
         processedMesh->vertices.push_back(mesh->mVertices[i].y);
         processedMesh->vertices.push_back(mesh->mVertices[i].z);
+
+        processedMesh->normals.push_back(mesh->mNormals[i].x);
+        processedMesh->normals.push_back(mesh->mNormals[i].y);
+        processedMesh->normals.push_back(mesh->mNormals[i].z);
     }
     for(int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
         for(unsigned int j = 0; j < face.mNumIndices; j++)
             processedMesh->indices.push_back(face.mIndices[j]);
-    }  
+    }
     return processedMesh;
 }
 

@@ -13,12 +13,16 @@ public:
     GLuint vao;
     GLuint vbo;
     GLuint ebo;
+    GLuint normalBuffer;
     Mesh() { }
-    Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i) : vertices(v), indices(i) { }
-    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : id(meshId), vertices(v), indices(i) { }
-    Mesh(const Mesh& m) : id(m.id), vertices(m.vertices), indices(m.indices){ }
+    Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& n) : vertices(v), indices(i), normals(n) { }
+    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& n) : id(meshId), vertices(v), indices(i), normals(n) { }
+    Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i) : vertices(v), indices(i), normals(v) { }
+    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : id(meshId), vertices(v), indices(i), normals(v) { }
+    Mesh(const Mesh& m) : id(m.id), vertices(m.vertices), indices(m.indices), normals(m.normals) { }
     ~Mesh();
     std::vector<float> vertices;
+    std::vector<float> normals;
     std::vector<unsigned int> indices;
     std::shared_ptr<Material> material;
     std::string id;

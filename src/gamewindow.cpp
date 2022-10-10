@@ -106,13 +106,7 @@ bool GameWindow::Create() {
     player->AddComponent<PlayerController>();
     entities.push_back(player);
 
-    std::shared_ptr<Material> lightMaterial = std::make_shared<Material>(SHADER_UNLIT);
-    lightMaterial->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(1.0, 1.0, 1.0));
-
     auto light = std::make_shared<Entity>();
-    auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-    mesh->material = lightMaterial;
-    light->AddComponent<MeshRenderer>()->meshes.push_back(mesh);
     light->transform->position = glm::vec3(0.0, 10.0, 0.0);
     entities.push_back(light);
     
@@ -126,8 +120,8 @@ bool GameWindow::Create() {
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
         mesh->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
-        mesh->material->SetShaderUniform<float>("lightRange", 10.0);
-        mesh->material->SetShaderUniform<float>("specularStrength", 0.0);
+        mesh->material->SetShaderUniform<float>("lightRange", 20.0);
+        mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
     }
     for (int i = 0; i < monkeyCount; i++) {
         auto monkey = std::make_shared<Entity>();
@@ -149,14 +143,8 @@ bool GameWindow::Create() {
         mesh->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(0.0f, 0.0f, 0.0f));
     }
     mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
-    mogusModel.meshes[3]->material = std::make_shared<Material>(SHADER_LIT);
-
     mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(0.5f, 0.5f, 1.0f));
-    mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
-    mogusModel.meshes[3]->material->SetShaderUniform<float>("lightRange", 10.0);
-    mogusModel.meshes[3]->material->SetShaderUniform<int>("specularHighlight", 128);
-    mogusModel.meshes[3]->material->SetShaderUniform<float>("specularStrength", 2.0);
-    
+
     auto mogus = std::make_shared<Entity>();
     auto meshRenderer = mogus->AddComponent<MeshRenderer>();
     meshRenderer->meshes = mogusModel.meshes;
