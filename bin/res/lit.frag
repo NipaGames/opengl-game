@@ -18,13 +18,12 @@ void main() {
 
   vec3 normal = normalize(fragmentNormal);
   vec3 lightDir = normalize(lightPos - fragmentPos);
-  float cosTheta = clamp(dot(normal, lightDir), 0, 1);
 
   vec3 ambient = ambientStrength * lightColor;
-  vec3 diffuse = cosTheta * lightColor;
+  vec3 diffuse = max(dot(normal, lightDir), 0.0) * lightColor;
   vec3 viewDir = normalize(viewPos - fragmentPos);
   vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = pow(cosTheta, specularHighlight);
+  float spec = pow(max(dot(viewDir, reflectDir), 0.0), specularHighlight);
   vec3 specular = specularStrength * spec * lightColor;
 
   color = ambient + ((diffuse + specular) * lightIntensity) / max(1.0, pow(abs(distance(fragmentPos, lightPos)) / lightRange, 2)) * objectColor;
