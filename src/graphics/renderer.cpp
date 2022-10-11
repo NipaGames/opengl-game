@@ -29,6 +29,32 @@ void Renderer::Render() {
     glClearColor(0.1f, 0.0f, 0.1f, 1.0f);
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
+    spotlights[0].pos = camera_.pos;
+    spotlights[0].dir = camera_.front;
+
+    for (auto shader : shaders) {
+        glUseProgram(shader.second);
+        for (int i = 0; i < pointLights.size(); i++) {
+            PointLight light = pointLights[i];
+            std::string lightUniform = "pointLights[" + std::to_string(i) + "]";
+            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".pos").c_str()), light.pos.x, light.pos.y, light.pos.z);
+            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".color").c_str()), light.color.x, light.color.y, light.color.z);
+            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".range").c_str()), light.range);
+            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".intensity").c_str()), light.intensity);
+        }
+        for (int i = 0; i < spotlights.size(); i++) {
+            Spotlight light = spotlights[i];
+            std::string lightUniform = "spotlights[" + std::to_string(i) + "]";
+            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".pos").c_str()), light.pos.x, light.pos.y, light.pos.z);
+            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".dir").c_str()), light.dir.x, light.dir.y, light.dir.z);
+            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".color").c_str()), light.color.x, light.color.y, light.color.z);
+            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".cutOffMin").c_str()), light.cutOffMin);
+            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".cutOffMax").c_str()), light.cutOffMax);
+            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".range").c_str()), light.range);
+            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".intensity").c_str()), light.intensity);
+        }
+    }
+    glUseProgram(0);
 
     for (auto meshRenderer : meshes_) {
         meshRenderer->Render(camera_.projectionMatrix * viewMatrix);

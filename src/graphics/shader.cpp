@@ -1,12 +1,11 @@
 #include "graphics/shader.h"
 
+#include "gamewindow.h"
+
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
-
 #include <spdlog/spdlog.h>
-
-std::unordered_map<int, GLuint> shaders;
 
 std::string GetShaderInfoLog(GLuint shader) {
     GLint result = GL_FALSE;
@@ -100,7 +99,7 @@ GLuint Shaders::LoadShaders(int id, const std::string& vertexPath, const std::st
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-    shaders[id] = program;
+    game.renderer.shaders[id] = program;
 
     return program;
 }
@@ -111,7 +110,7 @@ void Shaders::LoadAllShaders() {
 }
 
 GLuint Shaders::GetShaderProgram(int id) {
-    return shaders[id];
+    return game.renderer.shaders[id];
 }
 
 void Shader::Use() const {

@@ -109,7 +109,13 @@ bool GameWindow::Create() {
     auto light = std::make_shared<Entity>();
     light->transform->position = glm::vec3(0.0, 10.0, 0.0);
     entities.push_back(light);
-    
+    Spotlight spotlight;
+    spotlight.intensity = 1.5f;
+    spotlight.cutOffMin = glm::cos(glm::radians(12.5f));
+    spotlight.cutOffMax = glm::cos(glm::radians(20.0f));
+    renderer.spotlights.push_back(spotlight);
+    renderer.pointLights.push_back({ light->transform->position, glm::vec3(1.0, 1.0, 1.0), 20.0, 1.0 });
+
     float range = 7.5f;
     int monkeyCount = 6;
     Model monkeyModel;
@@ -118,11 +124,9 @@ bool GameWindow::Create() {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
-        mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
-        mesh->material->SetShaderUniform<glm::vec3>("light.pos", light->transform->position);
-        mesh->material->SetShaderUniform<glm::vec3>("light.color", glm::vec3(1.0, 1.0, 1.0));
-        mesh->material->SetShaderUniform<float>("light.range", 20.0);
-        mesh->material->SetShaderUniform<float>("light.intensity", 1.0);
+        mesh->material->SetShaderUniform<glm::vec3>("color", color);
+        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(.15, .1, .15));
+        mesh->material->SetShaderUniform<int>("specularHighlight", 32);
         mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
     }
     for (int i = 0; i < monkeyCount; i++) {
@@ -142,10 +146,10 @@ bool GameWindow::Create() {
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(SHADER_UNLIT);
-        mesh->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(0.0f, 0.0f, 0.0f));
+        mesh->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.0f, 0.0f, 0.0f));
     }
-    mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
-    mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("objectColor", glm::vec3(0.5f, 0.5f, 1.0f));
+    mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));
+    mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.5f, 0.5f, 1.0f));
 
     auto mogus = std::make_shared<Entity>();
     auto meshRenderer = mogus->AddComponent<MeshRenderer>();

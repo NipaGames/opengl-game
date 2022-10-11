@@ -2,8 +2,10 @@
 
 #include <opengl.h>
 #include <vector>
+#include <unordered_map>
 
 #include "graphics/camera.h"
+#include "graphics/light.h"
 #include "graphics/material.h"
 #include "graphics/mesh.h"
 #include "graphics/shader.h"
@@ -17,6 +19,9 @@ private:
     std::vector<MeshRenderer*> meshes_;
     Camera camera_;
 public:
+    std::unordered_map<int, GLuint> shaders;
+    std::vector<PointLight> pointLights;
+    std::vector<Spotlight> spotlights;
     Renderer() { }
     virtual ~Renderer() { }
     void SetWindow(GLFWwindow* window) { window_ = window; }
