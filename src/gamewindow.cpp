@@ -119,8 +119,10 @@ bool GameWindow::Create() {
         mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("objectColor", color);
-        mesh->material->SetShaderUniform<glm::vec3>("lightPos", light->transform->position);
-        mesh->material->SetShaderUniform<float>("lightRange", 20.0);
+        mesh->material->SetShaderUniform<glm::vec3>("light.pos", light->transform->position);
+        mesh->material->SetShaderUniform<glm::vec3>("light.color", glm::vec3(1.0, 1.0, 1.0));
+        mesh->material->SetShaderUniform<float>("light.range", 20.0);
+        mesh->material->SetShaderUniform<float>("light.intensity", 1.0);
         mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
     }
     for (int i = 0; i < monkeyCount; i++) {
