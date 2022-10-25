@@ -89,5 +89,5 @@ void main() {
   for(int i = 0; i < spotlights.length(); i++) {
     color += calcSpotlight(spotlights[i], normal);
   }
-  color += material.ambientColor;
+  color += max(dot(normal, normalize(fragmentPos)), 0.0) * material.ambientColor * material.color;
 }
