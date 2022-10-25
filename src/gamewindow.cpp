@@ -110,11 +110,12 @@ bool GameWindow::Create() {
     light->transform->position = glm::vec3(0.0, 10.0, 0.0);
     entities.push_back(light);
     Spotlight spotlight;
-    spotlight.intensity = 1.5f;
+    spotlight.intensity = 0.0f;
     spotlight.cutOffMin = glm::cos(glm::radians(12.5f));
     spotlight.cutOffMax = glm::cos(glm::radians(20.0f));
     renderer.spotlights.push_back(spotlight);
-    renderer.pointLights.push_back({ light->transform->position, glm::vec3(1.0, 1.0, 1.0), 20.0, 1.0 });
+    //renderer.pointLights.push_back({ light->transform->position, glm::vec3(1.0, 1.0, 1.0), 20.0, 1.0 });
+    renderer.directionalLights.push_back({ glm::vec3(0.0, 1.0, 0.0), glm::vec3(1.0, 1.0, 1.0), .5 });
 
     float range = 7.5f;
     int monkeyCount = 6;
@@ -133,7 +134,7 @@ bool GameWindow::Create() {
         auto monkey = std::make_shared<Entity>();
         auto meshRenderer = monkey->AddComponent<MeshRenderer>();
         meshRenderer->meshes = monkeyModel.meshes;
-        monkey->AddComponent<RotateCube>();
+        //monkey->AddComponent<RotateCube>();
         
         float rad = ((2 * M_PI) / monkeyCount) * i;
         monkey->transform->position = glm::vec3(cos(rad) * range, 1.0, sin(rad) * range);

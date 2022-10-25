@@ -21,6 +21,7 @@ private:
 public:
     std::unordered_map<int, GLuint> shaders;
     std::vector<PointLight> pointLights;
+    std::vector<DirectionalLight> directionalLights;
     std::vector<Spotlight> spotlights;
     Renderer() { }
     virtual ~Renderer() { }

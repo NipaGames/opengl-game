@@ -8,6 +8,12 @@ struct PointLight {
   float intensity;
 };
 
+struct DirectionalLight {
+  vec3 dir;
+  vec3 color;
+  float intensity;
+};
+
 struct Spotlight {
   vec3 pos;
   vec3 dir;
@@ -30,19 +36,29 @@ in vec3 fragmentPos;
 
 #define MAX_POINT_LIGHTS 8
 uniform PointLight[MAX_POINT_LIGHTS] pointLights;
+#define MAX_DIRECTIONAL_LIGHTS 8
+uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
 #define MAX_SPOT_LIGHTS 8
 uniform Spotlight[MAX_SPOT_LIGHTS] spotlights;
 uniform Material material;
 uniform vec3 viewPos;
 
-vec3 calcPointLight(PointLight light, vec3 normal) {
-  vec3 lightDir = normalize(light.pos - fragmentPos);
-  vec3 diffuse = max(dot(normal, lightDir), 0.0) * light.color;
+vec3 dirLight(vec3 lightDir, vec3 lightColor, vec3 normal) {
+  vec3 diffuse = max(dot(normal, lightDir), 0.0) * lightColor;
   vec3 viewDir = normalize(viewPos - fragmentPos);
   vec3 reflectDir = reflect(-lightDir, normal);
   float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.specularHighlight);
-  vec3 specular = material.specularStrength * spec * light.color;
-  return ((diffuse + specular) * light.intensity) / max(1.0, pow(abs(distance(fragmentPos, light.pos)) / light.range, 2)) * material.color;
+  vec3 specular = material.specularStrength * spec * lightColor;
+  return diffuse + specular;
+}
+
+vec3 calcDirectionalLight(DirectionalLight light, vec3 normal) {
+  return (dirLight(light.dir, light.color, normal) * light.intensity) * material.color;
+}
+
+vec3 calcPointLight(PointLight light, vec3 normal) {
+  vec3 lightDir = normalize(light.pos - fragmentPos);
+  return (dirLight(lightDir, light.color, normal) * light.intensity) / max(1.0, pow(abs(distance(fragmentPos, light.pos)) / light.range, 2)) * material.color;
 }
 
 vec3 calcSpotlight(Spotlight light, vec3 normal) {
@@ -66,6 +82,9 @@ void main() {
 
   for(int i = 0; i < pointLights.length(); i++) {
     color += calcPointLight(pointLights[i], normal);
+  }
+  for(int i = 0; i < directionalLights.length(); i++) {
+    color += calcDirectionalLight(directionalLights[i], normal);
   }
   for(int i = 0; i < spotlights.length(); i++) {
     color += calcSpotlight(spotlights[i], normal);
