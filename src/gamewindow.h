@@ -41,6 +41,7 @@ public:
     
     bool Create();
     void Run();
+    void Awake();
     void Update();
     void GameThread();
     void ResetCursorPos();

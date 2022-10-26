@@ -9,6 +9,13 @@ Renderer::Renderer(GLFWwindow* window) {
     SetWindow(window);
 }
 
+Renderer::~Renderer() {
+    for (auto[k, v] : shaders) {
+        glDeleteProgram(v);
+    }
+    shaders.clear();
+}
+
 bool Renderer::Init() {
     glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
     glEnable(GL_DEPTH_TEST);
