@@ -18,7 +18,7 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 ![Image showing amogus](/images/screenshot5.png)
 *Sussy situation* 8.10.2022
 ![Image rtx monke](/images/screenshot5.png)
-*RTX monkey <p style="font-size: .2rem;">(not actually)</p>* 26.10.2022
+*RTX monkey <span size="0.5">(not actually)</span>* 26.10.2022
 ### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)
