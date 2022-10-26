@@ -10,6 +10,7 @@ Renderer::Renderer(GLFWwindow* window) {
 }
 
 bool Renderer::Init() {
+    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -26,11 +27,9 @@ bool Renderer::Init() {
 
 void Renderer::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.1f, 0.0f, 0.1f, 1.0f);
+    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
-    spotlights[0].pos = camera_.pos;
-    spotlights[0].dir = camera_.front;
 
     for (auto shader : shaders) {
         glUseProgram(shader.second);

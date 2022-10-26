@@ -2,6 +2,8 @@
 
 #include <opengl.h>
 
+class IComponent;
+template<class C>
 class Component;
 
 #include "graphics/mesh.h"
@@ -10,9 +12,10 @@ class Component;
 
 class Entity {
 private:
-    std::vector<Component*> components_;
+    std::vector<IComponent*> components_;
 public:
     Entity();
+    Entity(const Entity&);
     virtual ~Entity();
 
     Transform* transform;
@@ -22,7 +25,7 @@ public:
     template<typename C>
     C* const GetComponent() {
         for (int i = 0; i < components_.size(); i++) {
-            C* c = dynamic_cast<C*>(components_[i]);
+            C* c = static_cast<C*>(components_[i]);
             if (c != nullptr)
                 return c;
         }
@@ -32,7 +35,7 @@ public:
     std::vector<C* const> GetComponents() {
         std::vector<C* const> components;
         for (int i = 0; i < components_.size(); i++) {
-            C* c = dynamic_cast<C*>(components_[i]);
+            C* c = static_cast<C*>(components_[i]);
             if (c != nullptr)
                 components.push_back((C*) c);
         }
@@ -41,13 +44,13 @@ public:
 
     template<typename C>
     C* AddComponent() {
-        if constexpr(!std::is_base_of_v<Component, C>) {
+        if constexpr(!std::is_base_of_v<Component<C>, C>) {
             spdlog::error("{} doesn't derive from Component-class!", typeid(C).name());
             throw;
         }
         C* component = new C();
-        ((Component*) component)->parent = this;
-        components_.push_back((Component*) component);
+        component->parent = this;
+        components_.push_back((IComponent*) component);
         return component;
     }
 

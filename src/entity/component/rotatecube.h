@@ -5,11 +5,11 @@
 
 #include <opengl.h>
 
-class RotateCube : public Component {
+class RotateCube : public Component<RotateCube> {
 private:
     float speed_ = -3.0f;
 public:
-    void Update() override {
+    void Update() {
         glm::mat4 transform(1.0f);
         transform = glm::rotate(transform, (float) game.GetDeltaTime() * speed_, glm::vec3(0.0f, 1.0f, 0.0f));
         transform = glm::translate(transform, parent->transform->position);

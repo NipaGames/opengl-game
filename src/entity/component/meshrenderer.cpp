@@ -1,7 +1,7 @@
 #include "entity/component/meshrenderer.h"
 #include "gamewindow.h"
 
-void MeshRenderer::Start() {    
+void MeshRenderer::Start() {
     game.renderer.AddMeshRenderer(this);
 }
 

@@ -96,26 +96,22 @@ bool GameWindow::Create() {
 
     spdlog::info("OpenGL version: {}", glGetString(GL_VERSION));
 
+    renderer.skyboxColor = glm::vec3(.5, .75, 1.0);
     renderer.SetWindow(window_);
     if(!renderer.Init())
         return false;
 
     Shaders::LoadAllShaders();
 
-    auto player = std::make_shared<Entity>(); 
-    player->AddComponent<PlayerController>();
+    Entity player;
+    player.AddComponent<PlayerController>();
     entities.push_back(player);
 
-    auto light = std::make_shared<Entity>();
-    light->transform->position = glm::vec3(0.0, 10.0, 0.0);
+    Entity light;
+    light.transform->position = glm::vec3(0.0, 10.0, 0.0);
+    renderer.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
+    renderer.directionalLights.push_back({ glm::normalize(glm::vec3(-1.0, -1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), .25 });
     entities.push_back(light);
-    Spotlight spotlight;
-    spotlight.intensity = 0.0f;
-    spotlight.cutOffMin = glm::cos(glm::radians(12.5f));
-    spotlight.cutOffMax = glm::cos(glm::radians(20.0f));
-    renderer.spotlights.push_back(spotlight);
-    //renderer.pointLights.push_back({ light->transform->position, glm::vec3(1.0, 1.0, 1.0), 20.0, 1.0 });
-    renderer.directionalLights.push_back({ glm::vec3(0.0, 1.0, 0.0), glm::vec3(1.0, 1.0, 1.0), .5 });
 
     float range = 7.5f;
     int monkeyCount = 6;
@@ -126,20 +122,19 @@ bool GameWindow::Create() {
         mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
-        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(.2, .1, .2));
+        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.0));
         mesh->material->SetShaderUniform<int>("specularHighlight", 32);
         mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
     }
     for (int i = 0; i < monkeyCount; i++) {
-        auto monkey = std::make_shared<Entity>();
-        auto meshRenderer = monkey->AddComponent<MeshRenderer>();
+        Entity monkey;
+        auto meshRenderer = monkey.AddComponent<MeshRenderer>();
         meshRenderer->meshes = monkeyModel.meshes;
-        //monkey->AddComponent<RotateCube>();
+        monkey.AddComponent<RotateCube>();
         
         float rad = ((2 * M_PI) / monkeyCount) * i;
-        monkey->transform->position = glm::vec3(cos(rad) * range, 1.0, sin(rad) * range);
-        
-        monkey->transform->size = glm::vec3(2.0f);
+        monkey.transform->position = glm::vec3(cos(rad) * range, 1.0, sin(rad) * range);
+        monkey.transform->size = glm::vec3(2.0f);
         entities.push_back(monkey);
     }
     Model mogusModel;
@@ -152,10 +147,10 @@ bool GameWindow::Create() {
     mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));
     mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.5f, 0.5f, 1.0f));
 
-    auto mogus = std::make_shared<Entity>();
-    auto meshRenderer = mogus->AddComponent<MeshRenderer>();
+    Entity mogus;
+    auto meshRenderer = mogus.AddComponent<MeshRenderer>();
     meshRenderer->meshes = mogusModel.meshes;
-    mogus->transform->position = glm::vec3(0.0f, 2.0f, 0.0f);
+    mogus.transform->position = glm::vec3(0.0f, 2.0f, 0.0f);
     entities.push_back(mogus);
 
     glfwSwapInterval(1);
@@ -205,8 +200,8 @@ void GameWindow::Update() {
         Input::CURSOR_MODE_CHANGE_PENDING = true;
     }
 
-    for (auto entity : entities) {
-        entity->Update();
+    for (Entity& entity : entities) {
+        entity.Update();
     }
 
     Camera& cam = renderer.GetCamera();
@@ -258,8 +253,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void GameWindow::GameThread() {
     glfwMakeContextCurrent(window_);
-    for (auto entity : entities) {
-        entity->Start();
+    for (Entity& entity : entities) {
+        entity.Start();
     }
     while (running_) {
         Update();

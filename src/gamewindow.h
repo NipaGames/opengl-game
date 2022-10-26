@@ -36,7 +36,7 @@ public:
     GameWindow(const std::string&, int, int);
 
     Renderer renderer;
-    std::vector<std::shared_ptr<Entity>> entities;
+    std::vector<Entity> entities;
     std::unordered_map<std::string, const std::shared_ptr<Mesh>> meshes;
     
     bool Create();

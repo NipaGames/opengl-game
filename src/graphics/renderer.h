@@ -23,6 +23,7 @@ public:
     std::vector<PointLight> pointLights;
     std::vector<DirectionalLight> directionalLights;
     std::vector<Spotlight> spotlights;
+    glm::vec3 skyboxColor = glm::vec3(0.0);
     Renderer() { }
     virtual ~Renderer() { }
     void SetWindow(GLFWwindow* window) { window_ = window; }

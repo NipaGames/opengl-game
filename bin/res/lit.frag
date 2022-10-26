@@ -65,12 +65,12 @@ vec3 calcSpotlight(Spotlight light, vec3 normal) {
   vec3 lightDir = normalize(light.pos - fragmentPos);
   float theta = dot(lightDir, normalize(-light.dir));
   if(theta > light.cutOffMax) {
-    PointLight light2;
-    light2.pos = light.pos;
-    light2.color = light.color;
-    light2.range = light.range;
-    light2.intensity = clamp((theta - light.cutOffMax) / (light.cutOffMin - light.cutOffMax), 0.0, 1.0) * light.intensity;
-    return calcPointLight(light2, normal);
+    PointLight pointLight;
+    pointLight.pos = light.pos;
+    pointLight.color = light.color;
+    pointLight.range = light.range;
+    pointLight.intensity = clamp((theta - light.cutOffMax) / (light.cutOffMin - light.cutOffMax), 0.0, 1.0) * light.intensity;
+    return calcPointLight(pointLight, normal);
   }
   else
     return vec3(0.0, 0.0, 0.0);
@@ -89,5 +89,7 @@ void main() {
   for(int i = 0; i < spotlights.length(); i++) {
     color += calcSpotlight(spotlights[i], normal);
   }
-  color += max(dot(normal, normalize(fragmentPos)), 0.0) * material.ambientColor * material.color;
+  // more advanced ambient lighting (not necessary):
+  // color += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
+  color += material.ambientColor;
 }
