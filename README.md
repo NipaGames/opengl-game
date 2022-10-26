@@ -12,19 +12,19 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 ![Image also showing the game](/images/screenshot2.png)
 *Model loading* 4.10.2022
-
+  
 ![Image also showing the game](/images/screenshot3.png)
 *Happy monkey circle* 5.10.2022
-
+  
 ![Image showing the lighting](/images/screenshot4.png)
 *Dark monkey cult and dramatic lighting* 7.10.2022
-
+  
 ![Image showing amogus](/images/screenshot5.png)
 *Sussy situation* 8.10.2022
-
+  
 ![Image of rtx monke](/images/screenshot6.png)
 *RTX monkey <sub>(not actually)</sub>* 26.10.2022
-
+  
 ### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)
