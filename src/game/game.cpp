@@ -5,9 +5,17 @@
 #include "core/entity/component/rotatecube.h"
 #include "core/graphics/model.h"
 
-void TutorialGame::Start() {
+bool MonkeyGame::Init() {
+    window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
+    if(!window_.Create(renderer_)) {
+        return false;
+    }
+    return true;
+}
+
+void MonkeyGame::Start() {
     lastTime_ = glfwGetTime();
-    
+
     Entity player;
     player.AddComponent<PlayerController>();
     entityManager_.entities.push_back(player);
@@ -59,7 +67,7 @@ void TutorialGame::Start() {
     entityManager_.entities.push_back(mogus);
 }
 
-void TutorialGame::Update() {
+void MonkeyGame::Update() {
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
         spdlog::info("{} fps", double(frames_));

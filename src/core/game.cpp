@@ -5,7 +5,7 @@
 #include "core/input.h"
 
 bool Game::Init() {
-    window_ = GameWindow("peli", 1280, 720);
+    window_ = GameWindow("", 1280, 720);
     if(!window_.Create(renderer_)) {
         return false;
     }

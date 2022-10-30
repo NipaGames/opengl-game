@@ -22,12 +22,13 @@ private:
     bool isFullscreen_ = false;
     glm::tvec2<int> prevWndPos_;
     glm::tvec2<int> prevWndSize_;
+    bool useVsync_;
     std::multimap<EventType, std::function<void()>> events_;
 
     void DispatchEvent(EventType);
 public:
     GameWindow() { }
-    GameWindow(const std::string&, int, int);
+    GameWindow(const std::string&, int, int, bool = true);
     
     bool Create(Renderer&);
     void Update();
@@ -35,5 +36,6 @@ public:
     void UpdateInputSystem();
     void ResetCursorPos();
     void OnEvent(EventType, std::function<void()>);
+    bool IsUsingVsync() { return useVsync_; }
     GLFWwindow* const GetWindow() { return window_; }
 };

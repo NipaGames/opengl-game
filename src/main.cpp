@@ -8,7 +8,7 @@
 int main() {
     spdlog::set_pattern("[%T] %-10l %v");
     srand(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-    game = std::make_unique<TutorialGame>();
+    game = std::make_unique<MonkeyGame>();
     if(!game->Init())
         return EXIT_FAILURE;
 

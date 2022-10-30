@@ -3,9 +3,9 @@ echo [BUILD STARTED]
 rem cmake -B build -G "Ninja" .
  cmake -B build .
 cd build
-cmake --build . --config Debug
+cmake --build . --config Release
 echo [BUILD COMPLETE]
 echo.
-cd ../bin/Debug
+cd ../bin/Release
 OpenGLProject
 cd ..

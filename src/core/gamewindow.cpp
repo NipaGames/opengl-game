@@ -70,10 +70,11 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
-GameWindow::GameWindow(const std::string& title, int w, int h) {
+GameWindow::GameWindow(const std::string& title, int w, int h, bool useVsync) {
     title_ = title;
     baseWidth_ = w;
     baseHeight_ = h;
+    useVsync_ = useVsync;
 }
 
 bool GameWindow::Create(Renderer& renderer) {
@@ -117,15 +118,15 @@ bool GameWindow::Create(Renderer& renderer) {
         return false;
 
     Shaders::LoadAllShaders();
-    glfwSwapInterval(1);
+    glfwSwapInterval(useVsync_ ? 1 : 0);
     glfwMakeContextCurrent(nullptr);
     return true;
 }
 
 void GameWindow::Update() {
-    if (Input::VSYNC_POLL_RATE_PENDING) {
-        glfwSwapInterval(1);
-        Input::VSYNC_POLL_RATE_PENDING = false;
+    if (Input::VSYNC_POLL_RATE_CHANGE_PENDING) {
+        glfwSwapInterval(useVsync_ ? 1 : 0);
+        Input::VSYNC_POLL_RATE_CHANGE_PENDING = false;
     }
     Input::PollKeysPressedDown();
 
@@ -180,8 +181,11 @@ void GameWindow::UpdateInputSystem() {
                 glfwGetWindowPos(window_, &prevWndPos_.x, &prevWndPos_.y);
                 glfwGetWindowSize(window_, &prevWndSize_.x, &prevWndSize_.y);
                 const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-                glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
-                Input::VSYNC_POLL_RATE_PENDING = true;
+                if (useVsync_)
+                    glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+                else
+                    glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+                Input::VSYNC_POLL_RATE_CHANGE_PENDING = true;
             }
             else {
                 glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
