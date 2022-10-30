@@ -99,7 +99,7 @@ GLuint Shaders::LoadShaders(int id, const std::string& vertexPath, const std::st
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-    game.GetRenderer().shaders[id] = program;
+    game->GetRenderer().shaders[id] = program;
 
     return program;
 }
@@ -110,7 +110,7 @@ void Shaders::LoadAllShaders() {
 }
 
 GLuint Shaders::GetShaderProgram(int id) {
-    return game.GetRenderer().shaders[id];
+    return game->GetRenderer().shaders[id];
 }
 
 void Shader::Use() const {
