@@ -1,36 +1,15 @@
-#include "core/entity/component/playercontroller.h"
+#include "game/components/playercontroller.h"
 
 #include "core/event.h"
 #include "core/game.h"
 #include "core/input.h"
 
 void PlayerController::OnMouseMove() {
-    if (!Input::IS_MOUSE_LOCKED)
-        return;
-
-    double xPos, yPos;
-    glfwGetCursorPos(game->GetGameWindow().GetWindow(), &xPos, &yPos);
-
-    if (Input::FIRST_MOUSE) {
-        lastMouseX_ = xPos;
-        lastMouseY_ = yPos;
-        Input::FIRST_MOUSE = false;
-    }
-
-    float offsetX = xPos - lastMouseX_;
-    float offsetY = lastMouseY_ - yPos; 
-
-    lastMouseX_ = xPos;
-    lastMouseY_ = yPos;
-
     float sensitivity = 0.1f;
-    offsetX *= sensitivity;
-    offsetY *= sensitivity;
-
     auto& cam = game->GetRenderer().GetCamera();
 
-    cam.yaw   += offsetX;
-    cam.pitch += offsetY;
+    cam.yaw   += static_cast<float>(Input::MOUSE_MOVE_X) * sensitivity;
+    cam.pitch += static_cast<float>(Input::MOUSE_MOVE_Y) * sensitivity;
 
     if(cam.pitch > 89.0f)
         cam.pitch = 89.0f;
@@ -47,7 +26,7 @@ void PlayerController::Start() {
 
 void PlayerController::Update() {
     auto& cam = game->GetRenderer().GetCamera();
-    const float moveSpeed = speed * game->GetDeltaTime();
+    const float moveSpeed = speed * static_cast<float>(game->GetDeltaTime());
     glm::vec3 front = cam.front;
     front.y = 0.0f;
     front = glm::normalize(front);

@@ -1,8 +1,8 @@
 #include "game/game.h"
 
 #include "core/entity/component/meshrenderer.h"
-#include "core/entity/component/playercontroller.h"
-#include "core/entity/component/rotatecube.h"
+#include "game/components/playercontroller.h"
+#include "game/components/rotatecube.h"
 #include "core/graphics/model.h"
 
 bool MonkeyGame::Init() {
@@ -15,16 +15,15 @@ bool MonkeyGame::Init() {
 
 void MonkeyGame::Start() {
     lastTime_ = glfwGetTime();
+    frames_ = 0;
 
-    Entity player;
+    Entity& player = entityManager_.CreateEntity();
     player.AddComponent<PlayerController>();
-    entityManager_.entities.push_back(player);
 
-    Entity light;
+    Entity& light = entityManager_.CreateEntity();
     light.transform->position = glm::vec3(0.0, 10.0, 0.0);
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(-1.0, -1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), .25 });
-    entityManager_.entities.push_back(light);
 
     float range = 7.5f;
     int monkeyCount = 6;
@@ -40,15 +39,14 @@ void MonkeyGame::Start() {
         mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
     }
     for (int i = 0; i < monkeyCount; i++) {
-        Entity monkey;
+        Entity& monkey = entityManager_.CreateEntity();
         auto meshRenderer = monkey.AddComponent<MeshRenderer>();
         meshRenderer->meshes = monkeyModel.meshes;
         monkey.AddComponent<RotateCube>();
         
-        float rad = ((2 * M_PI) / monkeyCount) * i;
+        double rad = ((2 * M_PI) / monkeyCount) * i;
         monkey.transform->position = glm::vec3(cos(rad) * range, 1.0, sin(rad) * range);
         monkey.transform->size = glm::vec3(2.0f);
-        entityManager_.entities.push_back(monkey);
     }
     Model mogusModel;
     mogusModel.LoadModel("../res/mog.obj");
@@ -60,11 +58,10 @@ void MonkeyGame::Start() {
     mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));
     mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.5f, 0.5f, 1.0f));
 
-    Entity mogus;
+    Entity& mogus = entityManager_.CreateEntity();
     auto meshRenderer = mogus.AddComponent<MeshRenderer>();
     meshRenderer->meshes = mogusModel.meshes;
     mogus.transform->position = glm::vec3(0.0f, 2.0f, 0.0f);
-    entityManager_.entities.push_back(mogus);
 }
 
 void MonkeyGame::Update() {

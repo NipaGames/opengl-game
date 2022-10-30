@@ -19,6 +19,7 @@ private:
     GLFWwindow* window_ = nullptr;
     std::string title_;
     int baseWidth_, baseHeight_;
+    double lastMouseX_, lastMouseY_;
     bool isFullscreen_ = false;
     glm::tvec2<int> prevWndPos_;
     glm::tvec2<int> prevWndSize_;

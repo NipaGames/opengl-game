@@ -14,7 +14,6 @@ protected:
     
     bool running_ = false;
     double lastFrame_;
-    int frames_;
     double deltaTime_;
 public:
     virtual bool Init();

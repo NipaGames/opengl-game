@@ -14,7 +14,6 @@ bool Game::Init() {
 
 void Game::Run() {
     running_ = true;
-    frames_ = 0;
     deltaTime_ = glfwGetTime();
 
     // Run rendering, updates etc. in a separate thread
@@ -31,7 +30,7 @@ void Game::Run() {
 void Game::GameThread() {
     glfwMakeContextCurrent(window_.GetWindow());
     Start();
-    for (Entity& entity : entityManager_.entities) {
+    for (Entity& entity : entityManager_.entities_) {
         entity.Start();
     }
     while (running_) {
@@ -53,7 +52,7 @@ void Game::GameThread() {
 
         window_.Update();
         Update();
-        for (Entity& entity : entityManager_.entities) {
+        for (Entity& entity : entityManager_.entities_) {
             entity.Update();
         }
 

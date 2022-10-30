@@ -5,6 +5,9 @@
 #include "core/entity/entity.h"
 
 class EntityManager {
-    public:
-        std::vector<Entity> entities;
+private:
+    std::vector<Entity> entities_;
+public:
+    Entity& CreateEntity();
+    friend class Game;
 };

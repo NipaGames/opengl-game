@@ -132,6 +132,22 @@ void GameWindow::Update() {
 
     if(Input::MOUSE_MOVE_PENDING) {
         Input::MOUSE_MOVE_PENDING = false;
+        if (Input::IS_MOUSE_LOCKED) {
+            double xPos, yPos;
+            glfwGetCursorPos(window_, &xPos, &yPos);
+
+            if (Input::FIRST_MOUSE) {
+                lastMouseX_ = xPos;
+                lastMouseY_ = yPos;
+                Input::FIRST_MOUSE = false;
+            }
+
+            Input::MOUSE_MOVE_X = xPos - lastMouseX_;
+            Input::MOUSE_MOVE_Y = lastMouseY_ - yPos;
+
+            lastMouseX_ = xPos;
+            lastMouseY_ = yPos;
+        }
         DispatchEvent(EventType::MOUSE_MOVE);
     }
 

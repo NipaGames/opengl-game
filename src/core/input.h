@@ -15,6 +15,9 @@ inline std::atomic_bool IS_MOUSE_LOCKED(false);
 inline std::atomic_bool VSYNC_POLL_RATE_CHANGE_PENDING(false);
 inline bool UPDATE_FULLSCREEN = false;
 
+inline double MOUSE_MOVE_X;
+inline double MOUSE_MOVE_Y;
+
 void KeyDown(int key);
 void KeyUp(int key);
 bool IsKeyDown(int key);
