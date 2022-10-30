@@ -1,4 +1,4 @@
-#include "graphics/material.h"
+#include "core/graphics/material.h"
 
 void Material::Use() {
     shader_.Use();

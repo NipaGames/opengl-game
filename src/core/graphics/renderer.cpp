@@ -1,7 +1,7 @@
-#include "graphics/renderer.h"
+#include "core/graphics/renderer.h"
 
-#include "gamewindow.h"
-#include "graphics/mesh.h"
+#include "core/gamewindow.h"
+#include "core/graphics/mesh.h"
 
 #include <spdlog/spdlog.h>
 

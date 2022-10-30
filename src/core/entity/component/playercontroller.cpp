@@ -1,15 +1,15 @@
-#include "entity/component/playercontroller.h"
+#include "core/entity/component/playercontroller.h"
 
-#include "event.h"
-#include "gamewindow.h"
-#include "input.h"
+#include "core/event.h"
+#include "core/game.h"
+#include "core/input.h"
 
 void PlayerController::OnMouseMove() {
     if (!Input::IS_MOUSE_LOCKED)
         return;
 
     double xPos, yPos;
-    glfwGetCursorPos(game.GetWindow(), &xPos, &yPos);
+    glfwGetCursorPos(game.GetGameWindow().GetWindow(), &xPos, &yPos);
 
     if (Input::FIRST_MOUSE) {
         lastMouseX_ = xPos;
@@ -27,7 +27,7 @@ void PlayerController::OnMouseMove() {
     offsetX *= sensitivity;
     offsetY *= sensitivity;
 
-    auto& cam = game.renderer.GetCamera();
+    auto& cam = game.GetRenderer().GetCamera();
 
     cam.yaw   += offsetX;
     cam.pitch += offsetY;
@@ -39,14 +39,14 @@ void PlayerController::OnMouseMove() {
 }
 
 void PlayerController::Start() {
-    game.OnEvent(EventType::MOUSE_MOVE, [this]() { 
+    game.GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
     parent->transform->position.z = -10.0f;
 }
 
 void PlayerController::Update() {
-    auto& cam = game.renderer.GetCamera();
+    auto& cam = game.GetRenderer().GetCamera();
     const float moveSpeed = speed * game.GetDeltaTime();
     glm::vec3 front = cam.front;
     front.y = 0.0f;

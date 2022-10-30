@@ -4,7 +4,7 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "graphics/shader.h"
+#include "core/graphics/shader.h"
 
 class Material {
 private:

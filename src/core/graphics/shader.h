@@ -4,7 +4,7 @@
 #include <string>
 #include <typeinfo>
 
-#include "shaders.h"
+#include "core/graphics/shaders.h"
 
 namespace Shaders {
 GLuint LoadShaders(int, const std::string&, const std::string&);

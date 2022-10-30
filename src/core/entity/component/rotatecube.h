@@ -1,7 +1,7 @@
 #pragma once
 
-#include "entity/component.h"
-#include "entity/entity.h"
+#include "core/entity/component.h"
+#include "core/entity/entity.h"
 
 #include <opengl.h>
 

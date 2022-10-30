@@ -1,4 +1,4 @@
-#include "graphics/model.h"
+#include "core/graphics/model.h"
 
 #include <spdlog/spdlog.h>
 

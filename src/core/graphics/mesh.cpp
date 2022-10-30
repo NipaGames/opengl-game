@@ -1,4 +1,4 @@
-#include "graphics/mesh.h"
+#include "core/graphics/mesh.h"
 #include <iostream>
 
 void Mesh::GenerateVAO() {

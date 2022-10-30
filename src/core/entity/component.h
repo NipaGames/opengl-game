@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-class Entity; // forward declaration, can't #include "entity/entity.h"
+class Entity; // forward declaration, can't #include "core/entity/entity.h"
 class IComponent {
 public:
     Entity* parent;

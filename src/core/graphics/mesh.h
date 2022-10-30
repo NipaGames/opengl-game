@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "graphics/material.h"
-#include "graphics/shader.h"
+#include "core/graphics/material.h"
+#include "core/graphics/shader.h"
 
 class Mesh {
 public:

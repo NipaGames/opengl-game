@@ -1,9 +1,9 @@
 #pragma once
 
-#include "graphics/camera.h"
-#include "graphics/material.h"
-#include "graphics/mesh.h"
-#include "entity/component.h"
+#include "core/graphics/camera.h"
+#include "core/graphics/material.h"
+#include "core/graphics/mesh.h"
+#include "core/entity/component.h"
 
 #include <opengl.h>
 #include <memory.h>

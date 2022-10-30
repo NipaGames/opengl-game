@@ -1,7 +1,7 @@
-#include "entity/entity.h"
+#include "core/entity/entity.h"
 
-#include "gamewindow.h"
-#include "graphics/renderer.h"
+#include "core/gamewindow.h"
+#include "core/graphics/renderer.h"
 
 Entity::Entity() {
     transform = AddComponent<Transform>();

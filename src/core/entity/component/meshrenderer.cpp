@@ -1,8 +1,10 @@
-#include "entity/component/meshrenderer.h"
-#include "gamewindow.h"
+#include "core/entity/component/meshrenderer.h"
+
+#include "core/entity/entity.h"
+#include "core/game.h"
 
 void MeshRenderer::Start() {
-    game.renderer.AddMeshRenderer(this);
+    game.GetRenderer().AddMeshRenderer(this);
 }
 
 void MeshRenderer::Render(const glm::mat4& camMatrix) {
@@ -19,7 +21,7 @@ void MeshRenderer::Render(const glm::mat4& camMatrix) {
  
         mesh->material->GetShader().SetUniform<glm::mat4>("viewProjection", camMatrix);
         mesh->material->GetShader().SetUniform<glm::mat4>("model", modelTransform);
-        mesh->material->GetShader().SetUniform<glm::vec3>("viewPos", game.renderer.GetCamera().pos);
+        mesh->material->GetShader().SetUniform<glm::vec3>("viewPos", game.GetRenderer().GetCamera().pos);
         mesh->Render();
 
         //Unbinding
