@@ -46,7 +46,8 @@ void Game::GameThread() {
         if(Input::WINDOW_SIZE_CHANGE_PENDING) {
             int width, height;
             glfwGetFramebufferSize(window_.GetWindow(), &width, &height);
-            renderer_.UpdateCameraProjection(width, height);
+            if (width > 0 && height > 0)
+                renderer_.UpdateCameraProjection(width, height);
             Input::WINDOW_SIZE_CHANGE_PENDING = false;
         }
 
