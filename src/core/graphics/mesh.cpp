@@ -29,7 +29,7 @@ void Mesh::Render() const {
         glEnable(GL_CULL_FACE);
     else
         glDisable(GL_CULL_FACE);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }
 
 std::shared_ptr<Mesh> Meshes::CreateMeshInstance(const Mesh& m) {

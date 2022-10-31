@@ -147,8 +147,9 @@ void GameWindow::Update() {
 
             lastMouseX_ = xPos;
             lastMouseY_ = yPos;
+
+            DispatchEvent(EventType::MOUSE_MOVE);
         }
-        DispatchEvent(EventType::MOUSE_MOVE);
     }
 
     if (Input::IsKeyPressedDown(GLFW_KEY_ESCAPE)) {
