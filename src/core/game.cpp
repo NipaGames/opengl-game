@@ -28,6 +28,7 @@ void Game::Run() {
 }
 
 void Game::GameThread() {
+    srand(static_cast<unsigned int>(time(0)));
     glfwMakeContextCurrent(window_.GetWindow());
     Start();
     for (Entity& entity : entityManager_.entities_) {
