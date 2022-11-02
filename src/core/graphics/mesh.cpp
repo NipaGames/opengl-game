@@ -24,6 +24,11 @@ void Mesh::GenerateVAO() {
     glBindVertexArray(0);
 }
 
+void Mesh::Bind() const {
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+}
+
 void Mesh::Render() const {
     if (cullFaces)
         glEnable(GL_CULL_FACE);

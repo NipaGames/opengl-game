@@ -33,6 +33,7 @@ void Game::GameThread() {
     for (Entity& entity : entityManager_.entities_) {
         entity.Start();
     }
+    renderer_.Start();
     while (running_) {
         if (glfwWindowShouldClose(window_.GetWindow())) {
             running_ = false;

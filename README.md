@@ -30,6 +30,9 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 ![Image of rtx monke](/images/screenshot6.png)
 *RTX monkey <sub>(not actually)</sub>* 26.10.2022
 
+![Image of terrain generation](/images/screenshot7.png)
+*Simple terrain generation* 2.11.2022
+
 ### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)

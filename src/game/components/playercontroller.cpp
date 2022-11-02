@@ -21,7 +21,6 @@ void PlayerController::Start() {
     game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
-    parent->transform->position.z = -10.0f;
 }
 
 void PlayerController::Update() {

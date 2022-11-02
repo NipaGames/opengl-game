@@ -20,15 +20,16 @@ public:
     Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i) : vertices(v), indices(i), normals(v) { }
     Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : id(meshId), vertices(v), indices(i), normals(v) { }
     Mesh(const Mesh& m) : id(m.id), vertices(m.vertices), indices(m.indices), normals(m.normals) { }
-    ~Mesh();
+    virtual ~Mesh();
     std::vector<float> vertices;
     std::vector<float> normals;
     std::vector<unsigned int> indices;
     std::shared_ptr<Material> material;
     std::string id;
     bool cullFaces = true;
-    void GenerateVAO();
-    void Render() const;
+    virtual void GenerateVAO();
+    virtual void Render() const;
+    virtual void Bind() const;
 };
 
 namespace Meshes {

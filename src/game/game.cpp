@@ -1,12 +1,13 @@
 #include "game/game.h"
 
 #include "core/entity/component/meshrenderer.h"
+#include "core/graphics/model.h"
+#include "core/terrain/plane.h"
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
-#include "core/graphics/model.h"
 
 bool MonkeyGame::Init() {
-    window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
+    window_ = GameWindow("apina peli !!!!!!", 1280, 720, true);
     if(!window_.Create(renderer_)) {
         return false;
     }
@@ -38,8 +39,7 @@ void MonkeyGame::Start() {
     }
     for (int i = 0; i < monkeyCount; i++) {
         Entity& monkey = entityManager_.CreateEntity();
-        auto meshRenderer = monkey.AddComponent<MeshRenderer>();
-        meshRenderer->meshes = monkeyModel.meshes;
+        monkey.AddComponent<MeshRenderer>()->meshes = monkeyModel.meshes;
         monkey.AddComponent<RotateCube>();
         
         double rad = ((2 * M_PI) / monkeyCount) * i;
@@ -57,9 +57,22 @@ void MonkeyGame::Start() {
     mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.5f, 0.5f, 1.0f));
 
     Entity& mogus = entityManager_.CreateEntity();
-    auto meshRenderer = mogus.AddComponent<MeshRenderer>();
-    meshRenderer->meshes = mogusModel.meshes;
+    mogus.AddComponent<MeshRenderer>()->meshes = mogusModel.meshes;
     mogus.transform->position = glm::vec3(0.0f, 2.0f, 0.0f);
+
+    auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
+    plane->GenerateVertices();
+    plane->GenerateVAO();
+    plane->material = std::make_shared<Material>(SHADER_LIT);
+    glm::vec3 color = glm::vec3(0.25, 1.0, 0.5);
+    plane->material->SetShaderUniform<glm::vec3>("color", color);
+    plane->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.0));
+    plane->material->SetShaderUniform<int>("specularHighlight", 8);
+    plane->material->SetShaderUniform<float>("specularStrength", 0);
+    Entity& terrain = entityManager_.CreateEntity();
+    terrain.AddComponent<MeshRenderer>()->meshes.push_back(plane);
+    terrain.transform->size = glm::vec3(100, 2, 100);
+    terrain.transform->position.y = -2.0f;
 }
 
 void MonkeyGame::Update() {

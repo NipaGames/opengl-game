@@ -32,12 +32,7 @@ bool Renderer::Init() {
     return true;
 }
 
-void Renderer::Render() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
-
-    glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
-
+void Renderer::Start() {
     for (auto shader : shaders) {
         glUseProgram(shader.second);
         for (int i = 0; i < pointLights.size(); i++) {
@@ -67,6 +62,13 @@ void Renderer::Render() {
             glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".intensity").c_str()), light.intensity);
         }
     }
+}
+
+void Renderer::Render() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
+
+    glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
     glUseProgram(0);
 
     for (auto meshRenderer : meshes_) {

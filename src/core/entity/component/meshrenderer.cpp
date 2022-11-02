@@ -10,10 +10,8 @@ void MeshRenderer::Start() {
 void MeshRenderer::Render(const glm::mat4& camMatrix) {
     for (auto mesh : meshes) {
         mesh->material->Use();
-        glBindVertexArray(mesh->vao);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
-
+        mesh->Bind();
+        
         glm::mat4 modelTransform(1.0f);
         modelTransform = glm::translate(modelTransform, parent->transform->position);
         modelTransform *= glm::toMat4(parent->transform->rotation);

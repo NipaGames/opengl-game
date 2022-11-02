@@ -30,6 +30,7 @@ public:
     Renderer(GLFWwindow*);
     Camera& GetCamera() { return camera_; }
     bool Init();
+    void Start();
     void Render();
     void UpdateCameraProjection(int, int);
     void AddMeshRenderer(MeshRenderer* mesh) { meshes_.push_back(mesh); }
