@@ -74,8 +74,8 @@ void Plane::GenerateVertices() {
             else hse = heightGrid_[y + 1][x + 1];
 
             // deduce terrain normal
-            float dydx = ((hne + 2 * he + hse) - (hnw + 2 * hw + hsw)) * 1.0f;
-            float dydz = ((hsw + 2 * hs + hse) - (hnw + 2 * hn + hne)) * 1.0f;
+            float dydx = (hne + 2 * he + hse) - (hnw + 2 * hw + hsw);
+            float dydz = (hsw + 2 * hs + hse) - (hnw + 2 * hn + hne);
 
             glm::vec3 normal = glm::normalize(glm::vec3(-dydx, 1.0f, -dydz));
 

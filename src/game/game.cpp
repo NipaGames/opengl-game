@@ -7,7 +7,7 @@
 #include "game/components/rotatecube.h"
 
 bool MonkeyGame::Init() {
-    window_ = GameWindow("apina peli !!!!!!", 1280, 720, true);
+    window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
     if(!window_.Create(renderer_)) {
         return false;
     }
