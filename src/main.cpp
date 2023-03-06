@@ -7,7 +7,7 @@
 
 int main() {
     spdlog::set_pattern("[%T] %-10l %v");
-    srand(static_cast<unsigned int>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())));
+    srand(static_cast<unsigned int>(time(0)));
     game = std::make_unique<MonkeyGame>();
     if(!game->Init())
         return EXIT_FAILURE;
