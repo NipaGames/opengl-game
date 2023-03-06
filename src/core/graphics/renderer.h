@@ -16,6 +16,8 @@
 class Renderer {
 private:
     GLFWwindow* window_;
+    GLuint fbo_;
+    GLuint rbo_;
     std::vector<MeshRenderer*> meshes_;
     Camera camera_;
 public:

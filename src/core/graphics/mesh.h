@@ -13,16 +13,29 @@ public:
     GLuint vao;
     GLuint vbo;
     GLuint ebo;
+    GLuint texture;
     GLuint normalBuffer;
+    GLuint texCoordBuffer;
     Mesh() { }
-    Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& n) : vertices(v), indices(i), normals(n) { }
-    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& n) : id(meshId), vertices(v), indices(i), normals(n) { }
-    Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i) : vertices(v), indices(i), normals(v) { }
-    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : id(meshId), vertices(v), indices(i), normals(v) { }
-    Mesh(const Mesh& m) : id(m.id), vertices(m.vertices), indices(m.indices), normals(m.normals) { }
+    Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& t, const std::vector<float>& n) : vertices(v), indices(i), texCoords(t), normals(n) { }
+    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& t, const std::vector<float>& n) : id(meshId), vertices(v), texCoords(t), indices(i), normals(n) { }
+    Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i) : vertices(v), indices(i), normals(v) {
+        for (int i = 0; i < vertices.size() / 3; i++) {
+            texCoords.push_back(0.0f);
+            texCoords.push_back(0.0f);
+        }
+    }
+    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : id(meshId), vertices(v), indices(i), normals(v) {
+        for (int i = 0; i < vertices.size() / 3; i++) {
+            texCoords.push_back(0.0f);
+            texCoords.push_back(0.0f);
+        }
+    }
+    Mesh(const Mesh& m) : id(m.id), vertices(m.vertices), indices(m.indices), texCoords(m.texCoords), normals(m.normals) { }
     virtual ~Mesh();
     std::vector<float> vertices;
     std::vector<float> normals;
+    std::vector<float> texCoords;
     std::vector<unsigned int> indices;
     std::shared_ptr<Material> material;
     std::string id;

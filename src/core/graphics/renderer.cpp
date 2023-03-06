@@ -10,24 +10,45 @@ Renderer::Renderer(GLFWwindow* window) {
 }
 
 Renderer::~Renderer() {
-    for (auto[k, v] : shaders) {
+    for (auto[k, v] : shaders)
         glDeleteProgram(v);
-    }
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+        glDeleteFramebuffers(1, &fbo_);
     shaders.clear();
 }
 
 bool Renderer::Init() {
     glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glShadeModel(GL_SMOOTH);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // debug line rendering
 
     float aspectRatio = (float) 16 / (float) 9;
 
     camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), aspectRatio, 0.1f, 500.0f);
     camera_.pos = glm::vec3(0.0f, 0.0f, -10.0f);
+    
+    glGenFramebuffers(1, &fbo_);
+    glGenRenderbuffers(1, &rbo_);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
+
+    GLuint colorBuffer;
+    glGenTextures(1, &colorBuffer);
+    glBindTexture(GL_TEXTURE_2D, colorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_);
 
     return true;
 }
@@ -65,6 +86,7 @@ void Renderer::Start() {
 }
 
 void Renderer::Render() {
+    // glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
 
@@ -76,6 +98,7 @@ void Renderer::Render() {
     }
 
     glBindVertexArray(0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glfwSwapBuffers(window_);
 }
 

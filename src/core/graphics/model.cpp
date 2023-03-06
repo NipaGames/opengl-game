@@ -12,6 +12,16 @@ std::shared_ptr<Mesh> Model::ProcessMesh(const aiMesh* mesh, const aiScene* scen
         processedMesh->normals.push_back(mesh->mNormals[i].x);
         processedMesh->normals.push_back(mesh->mNormals[i].y);
         processedMesh->normals.push_back(mesh->mNormals[i].z);
+
+        if(mesh->mTextureCoords[0]) {
+            processedMesh->texCoords.push_back(mesh->mTextureCoords[0][i].x);
+            processedMesh->texCoords.push_back(mesh->mTextureCoords[0][i].y);
+        }
+        else {
+            processedMesh->texCoords.push_back(0.0f);
+            processedMesh->texCoords.push_back(0.0f);
+
+        }
     }
     for(unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];

@@ -3,9 +3,14 @@
 struct Material {
   vec3 color;
 };
-uniform Material material;
+
 out vec3 color;
 
+in vec2 fragmentTexCoord;
+
+uniform Material material;
+uniform sampler2D textureSampler;
+
 void main() {
-  color = material.color;
+  color = texture(textureSampler, fragmentTexCoord).xyz * material.color;
 }

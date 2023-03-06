@@ -33,6 +33,9 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 ![Image of terrain generation](/images/screenshot7.png)
 *Simple terrain generation* 2.11.2022
 
+![Image of texture rendering](/images/screenshot8.png)
+*Now everything is made of this stupid grass texture from Wikimedia* 6.3.2023
+
 ### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)

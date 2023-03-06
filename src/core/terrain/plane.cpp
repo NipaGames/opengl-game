@@ -82,6 +82,10 @@ void Plane::GenerateVertices() {
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
+
+            // yeahh should probably fix texture orientations etc
+            texCoords.push_back(x % 2);
+            texCoords.push_back(y % 2);
         }
     }
 }

@@ -33,6 +33,7 @@ struct Material {
 
 in vec3 fragmentNormal;
 in vec3 fragmentPos;
+in vec2 fragmentTexCoord;
 
 #define MAX_POINT_LIGHTS 8
 uniform PointLight[MAX_POINT_LIGHTS] pointLights;
@@ -42,6 +43,7 @@ uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
 uniform Spotlight[MAX_SPOT_LIGHTS] spotlights;
 uniform Material material;
 uniform vec3 viewPos;
+uniform sampler2D textureSampler;
 
 vec3 dirLight(vec3 lightDir, vec3 lightColor, vec3 normal) {
   vec3 diffuse = max(dot(normal, lightDir), 0.0) * lightColor;
@@ -92,4 +94,5 @@ void main() {
   // more advanced ambient lighting (not necessary):
   // color += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
   color += material.ambientColor;
+  color *= texture(textureSampler, fragmentTexCoord).xyz;
 }
