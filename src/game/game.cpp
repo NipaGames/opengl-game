@@ -24,16 +24,16 @@ void MonkeyGame::Start() {
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(-1.0, -1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), .25 });
 
-    float range = 7.5f;
+    float range = 4.0f;
     int monkeyCount = 6;
     Model monkeyModel;
     monkeyModel.LoadModel("../res/chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/Grass_Texture.png"));
+        mesh->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/ground.jpg"));
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
-        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.2));
+        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.4));
         mesh->material->SetShaderUniform<int>("specularHighlight", 32);
         mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
     }
@@ -43,14 +43,14 @@ void MonkeyGame::Start() {
         monkey.AddComponent<RotateCube>();
         
         double rad = ((2 * M_PI) / monkeyCount) * i;
-        monkey.transform->position = glm::vec3(cos(rad) * range, 1.0, sin(rad) * range);
-        monkey.transform->size = glm::vec3(2.0f);
+        monkey.transform->position = glm::vec3(cos(rad) * range, 0.0, sin(rad) * range);
+        monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
     Model mogusModel;
     mogusModel.LoadModel("../res/mog.obj");
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_UNLIT, Texture::LoadTexture("../res/Grass_Texture.png"));
+        mesh->material = std::make_shared<Material>(SHADER_UNLIT, Texture::LoadTexture("../res/ground.jpg"));
         mesh->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.0f, 0.0f, 0.0f));
     }
     mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));
@@ -58,21 +58,22 @@ void MonkeyGame::Start() {
 
     Entity& mogus = entityManager_.CreateEntity();
     mogus.AddComponent<MeshRenderer>()->meshes = mogusModel.meshes;
-    mogus.transform->position = glm::vec3(0.0f, 2.0f, 0.0f);
+    mogus.transform->position = glm::vec3(0.0f, 0.25f, 0.0f);
+    mogus.transform->size = glm::vec3(.5f);
 
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
+    plane->variation = .5f;
+    plane->heightVariation = .25f;
+    plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
     plane->GenerateVAO();
-    plane->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/Grass_Texture.png"));
-    glm::vec3 color = glm::vec3(0.25, 1.0, 0.5);
-    plane->material->SetShaderUniform<glm::vec3>("color", color);
-    plane->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.0));
+    plane->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/ground.jpg"));
     plane->material->SetShaderUniform<int>("specularHighlight", 8);
     plane->material->SetShaderUniform<float>("specularStrength", 0);
     Entity& terrain = entityManager_.CreateEntity();
     terrain.AddComponent<MeshRenderer>()->meshes.push_back(plane);
     terrain.transform->size = glm::vec3(100, 2, 100);
-    terrain.transform->position.y = -2.0f;
+    terrain.transform->position.y = -.5f;
 }
 
 void MonkeyGame::Update() {

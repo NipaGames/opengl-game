@@ -10,7 +10,7 @@ public:
     void Start();
     void Update();
 
-    float speed = 15;
+    float speed = 10;
     float mass = 4;
     glm::vec3 velocity;
 };

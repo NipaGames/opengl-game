@@ -22,9 +22,10 @@ private:
     Shader shader_;
     Texture::TextureID texture_ = -1;
 public:
-    Material() { }
-    Material(int shaderId) : shader_(shaderId) { }
-    Material(int shaderId, Texture::TextureID textureId) : shader_(shaderId), texture_(textureId) { }
+    Material() { RestoreDefaultUniforms(); }
+    Material(int shaderId) : shader_(shaderId) { RestoreDefaultUniforms(); }
+    Material(int shaderId, Texture::TextureID textureId) : shader_(shaderId), texture_(textureId) { RestoreDefaultUniforms(); }
+    void RestoreDefaultUniforms();
     void Use();
     const Shader& GetShader() { return shader_; }
     Texture::TextureID GetTexture() { return texture_; }

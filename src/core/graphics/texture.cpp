@@ -21,7 +21,6 @@ TextureID Texture::LoadTexture(const std::string& pathStr) {
 
     std::string absPath = std::filesystem::absolute(path).string();
     if (textures_.count(absPath)) {
-        std::cout << textures_[absPath] << std::endl;
         return textures_[absPath];
     }
 

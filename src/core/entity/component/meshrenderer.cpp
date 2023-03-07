@@ -9,6 +9,11 @@ void MeshRenderer::Start() {
 
 void MeshRenderer::Render(const glm::mat4& camMatrix) {
     for (auto mesh : meshes) {
+        // default uniforms
+        // idk if it would be better to define these as default initializers for Material class
+        mesh->material->GetShader().Use();
+        mesh->material->GetShader().SetUniform<glm::vec3>("material.color", glm::vec3(1.0f));
+
         mesh->material->Use();
         mesh->Bind();
         
@@ -22,7 +27,7 @@ void MeshRenderer::Render(const glm::mat4& camMatrix) {
         mesh->material->GetShader().SetUniform<glm::vec3>("viewPos", game->GetRenderer().GetCamera().pos);
         mesh->Render();
 
-        //Unbinding
+        // unbinding
         glBindVertexArray(0);
     }
 }

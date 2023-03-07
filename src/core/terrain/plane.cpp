@@ -12,20 +12,29 @@ void Plane::GenerateVertices() {
         heightGrid_[y] = std::vector<float>(tiling_.x + 1);
         for (int x = 0; x <= tiling_.x; x++) {
             glm::vec3 pos;
-            pos.x = static_cast<float>(y) * tileSize.x - .5f;
-            pos.y = static_cast<float>(x) * tileSize.y - .5f;
+            glm::vec2 v = glm::vec2(0);
+
+            if (variation > 0) {
+                if (y > 0 && y < tiling_.y) {
+                    v.x = (float) rand() / (RAND_MAX) - .5f;
+                    v.x *= variation;
+                }
+                if (x > 0 && x < tiling_.x) {
+                    v.y = (float) rand() / (RAND_MAX) - .5f;
+                    v.y *= variation;
+                }
+            }
+            
+            pos.x = static_cast<float>(y) * tileSize.x - .5f + v.x * tileSize.x;
+            pos.y = static_cast<float>(x) * tileSize.y - .5f + v.y * tileSize.y;
             vertices.push_back(pos.x);
-            float height = (float) rand() / (RAND_MAX);
+            float height = ((float) rand() / (RAND_MAX)) * heightVariation;
             heightGrid_[y][x] = height;
             vertices.push_back(height);
             vertices.push_back(pos.y);
 
-            // span the texture all over the grid
-            // texCoords.push_back((1.0f / tiling_.x) * x);
-            // texCoords.push_back((1.0f / tiling_.y) * y);
-
-            texCoords.push_back(x);
-            texCoords.push_back(y);
+            texCoords.push_back((x + v.x * tileSize.x) / textureSize.x);
+            texCoords.push_back((y + v.y * tileSize.y) / textureSize.y);
         }
     }
     for (int y = 0; y < tiling_.y; y++) {
