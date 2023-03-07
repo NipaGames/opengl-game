@@ -4,6 +4,9 @@
 #include "core/game.h"
 #include "core/input.h"
 
+#define GRAVITY 9.81
+#define MAX_FALL_VELOCITY -53
+
 void PlayerController::OnMouseMove() {
     float sensitivity = 0.1f;
     auto& cam = game->GetRenderer().GetCamera();
@@ -45,10 +48,22 @@ void PlayerController::Update() {
             horizontalVelocity = glm::normalize(horizontalVelocity);
 
         parent->transform->position += horizontalVelocity * moveSpeed;
-        if (Input::IsKeyDown(GLFW_KEY_SPACE))
-            parent->transform->position += moveSpeed * cam.up;
-        if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
-            parent->transform->position -= moveSpeed * cam.up;
-        cam.pos = parent->transform->position;
+        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && parent->transform->position.y < .1)
+            velocity.y = 10;
     }
+
+    if (velocity.y > MAX_FALL_VELOCITY)
+        velocity.y -= GRAVITY * mass * static_cast<float>(game->GetDeltaTime());
+
+    if (parent->transform->position.y <= 0.0f && velocity.y < 0.0f) {
+        velocity.y = 0;
+        parent->transform->position.y = 0.0f;
+    }
+
+    parent->transform->position += velocity * static_cast<float>(game->GetDeltaTime());
+
+    cam.pos.x = parent->transform->position.x;
+    cam.pos.z = parent->transform->position.z;
+
+    cam.pos.y = parent->transform->position.y + 2.0f;
 }
