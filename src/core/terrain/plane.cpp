@@ -21,8 +21,11 @@ void Plane::GenerateVertices() {
             vertices.push_back(pos.y);
 
             // span the texture all over the grid
-            texCoords.push_back((1.0f / tiling_.x) * x);
-            texCoords.push_back((1.0f / tiling_.y) * y);
+            // texCoords.push_back((1.0f / tiling_.x) * x);
+            // texCoords.push_back((1.0f / tiling_.y) * y);
+
+            texCoords.push_back(x);
+            texCoords.push_back(y);
         }
     }
     for (int y = 0; y < tiling_.y; y++) {
