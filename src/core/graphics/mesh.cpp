@@ -1,8 +1,9 @@
 #include "core/graphics/mesh.h"
+
 #include <iostream>
 #include <spdlog/spdlog.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+
+#include "core/graphics/texture.h"
 
 void Mesh::GenerateVAO() {
     glGenVertexArrays(1, &vao);
@@ -18,27 +19,8 @@ void Mesh::GenerateVAO() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]), &indices[0], GL_STATIC_DRAW);
 
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width, height, nrChannels;
-    uint8_t* data = nullptr;
-    data = stbi_load("../res/Grass_Texture.png", &width, &height, &nrChannels, 0);
-    if (data == nullptr) {
-        spdlog::warn("texture load failed");
-    }
- 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data);
-
     glGenBuffers(2, &texCoordBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
-    std::cout << texCoords.size() << std::endl;
     glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(texCoords[0]), &texCoords[0], GL_STATIC_DRAW);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(1);
@@ -53,7 +35,7 @@ void Mesh::GenerateVAO() {
 }
 
 void Mesh::Bind() const {
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, material->GetTexture());
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 }

@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "core/graphics/shader.h"
+#include "core/graphics/texture.h"
 
 class Material {
 private:
@@ -19,11 +20,14 @@ private:
     std::unordered_map<std::string, glm::vec3> vec3Uniforms_;
 
     Shader shader_;
+    Texture::TextureID texture_ = -1;
 public:
     Material() { }
     Material(int shaderId) : shader_(shaderId) { }
+    Material(int shaderId, Texture::TextureID textureId) : shader_(shaderId), texture_(textureId) { }
     void Use();
     const Shader& GetShader() { return shader_; }
+    Texture::TextureID GetTexture() { return texture_; }
 
     template<typename T>
     void SetShaderUniform(const std::string& name, const T& value) {

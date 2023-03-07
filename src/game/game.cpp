@@ -30,7 +30,7 @@ void MonkeyGame::Start() {
     monkeyModel.LoadModel("../res/chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_LIT);
+        mesh->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/Grass_Texture.png"));
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
         mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.0));
@@ -50,7 +50,7 @@ void MonkeyGame::Start() {
     mogusModel.LoadModel("../res/mog.obj");
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_UNLIT);
+        mesh->material = std::make_shared<Material>(SHADER_UNLIT, Texture::LoadTexture("../res/Grass_Texture.png"));
         mesh->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.0f, 0.0f, 0.0f));
     }
     mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));
@@ -63,7 +63,7 @@ void MonkeyGame::Start() {
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
     plane->GenerateVertices();
     plane->GenerateVAO();
-    plane->material = std::make_shared<Material>(SHADER_LIT);
+    plane->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/Grass_Texture.png"));
     glm::vec3 color = glm::vec3(0.25, 1.0, 0.5);
     plane->material->SetShaderUniform<glm::vec3>("color", color);
     plane->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.0));

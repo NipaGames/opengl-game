@@ -13,7 +13,6 @@ public:
     GLuint vao;
     GLuint vbo;
     GLuint ebo;
-    GLuint texture;
     GLuint normalBuffer;
     GLuint texCoordBuffer;
     Mesh() { }

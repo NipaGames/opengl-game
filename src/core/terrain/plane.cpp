@@ -19,6 +19,10 @@ void Plane::GenerateVertices() {
             heightGrid_[y][x] = height;
             vertices.push_back(height);
             vertices.push_back(pos.y);
+
+            // span the texture all over the grid
+            texCoords.push_back((1.0f / tiling_.x) * x);
+            texCoords.push_back((1.0f / tiling_.y) * y);
         }
     }
     for (int y = 0; y < tiling_.y; y++) {
@@ -82,10 +86,6 @@ void Plane::GenerateVertices() {
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
-
-            // yeahh should probably fix texture orientations etc
-            texCoords.push_back(x % 2);
-            texCoords.push_back(y % 2);
         }
     }
 }
