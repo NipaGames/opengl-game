@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <spdlog/spdlog.h>
 
+using namespace Shaders;
+
 std::string GetShaderInfoLog(GLuint shader) {
     GLint result = GL_FALSE;
     int logLength;
@@ -37,7 +39,7 @@ std::string GetProgramInfoLog(GLuint program) {
     return "";
 }
 
-GLuint Shaders::LoadShaders(int id, const std::string& vertexPath, const std::string& fragmentPath) {
+GLuint Shaders::LoadShaders(ShaderID id, const std::string& vertexPath, const std::string& fragmentPath) {
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -109,7 +111,7 @@ void Shaders::LoadAllShaders() {
     LoadShaders(SHADER_LIT, "../res/lit.vert", "../res/lit.frag");
 }
 
-GLuint Shaders::GetShaderProgram(int id) {
+GLuint Shaders::GetShaderProgram(ShaderID id) {
     return game->GetRenderer().shaders[id];
 }
 

@@ -7,19 +7,21 @@
 #include "core/graphics/shaders.h"
 
 namespace Shaders {
-GLuint LoadShaders(int, const std::string&, const std::string&);
+typedef int ShaderID;
+
+GLuint LoadShaders(ShaderID, const std::string&, const std::string&);
 void LoadAllShaders();
-GLuint GetShaderProgram(int);
+GLuint GetShaderProgram(ShaderID);
 };
 
 class Shader {
 private:
-    int id_;
+    Shaders::ShaderID id_;
 public:
     Shader() : id_(SHADER_LIT) { }
-    Shader(int id) : id_(id) { }
+    Shader(Shaders::ShaderID id) : id_(id) { }
     void Use() const;
-    int GetId() const { return id_; }
+    Shaders::ShaderID GetId() const { return id_; }
 
     // this implementation sucks ass, maybe i'll come with something better later
     // it will do well enough for now
