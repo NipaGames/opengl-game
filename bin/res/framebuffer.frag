@@ -5,6 +5,6 @@ in vec2 fragmentTexCoord;
 
 uniform sampler2D screenTexture;
 
-void main() { 
+void main() {
     color = texture(screenTexture, fragmentTexCoord);
 }

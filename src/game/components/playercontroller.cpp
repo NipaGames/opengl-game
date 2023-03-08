@@ -4,7 +4,7 @@
 #include "core/game.h"
 #include "core/input.h"
 
-#define GRAVITY 9.81
+#define GRAVITY 9.81f
 #define MAX_FALL_VELOCITY -53
 
 void PlayerController::OnMouseMove() {
