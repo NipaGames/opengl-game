@@ -2,6 +2,7 @@
 
 #include "core/entity/component/meshrenderer.h"
 #include "core/graphics/model.h"
+#include "core/input.h"
 #include "core/terrain/plane.h"
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
@@ -22,7 +23,6 @@ void MonkeyGame::Start() {
     player.AddComponent<PlayerController>();
 
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
-    renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(-1.0, -1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), .25 });
 
     float range = 4.0f;
     int monkeyCount = 6;
@@ -62,7 +62,6 @@ void MonkeyGame::Start() {
     mogus.transform->size = glm::vec3(.5f);
 
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
-    plane->variation = .5f;
     plane->heightVariation = .25f;
     plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
@@ -77,6 +76,9 @@ void MonkeyGame::Start() {
 }
 
 void MonkeyGame::Update() {
+    if (Input::IsKeyPressedDown(GLFW_KEY_N))
+        game->GetRenderer().highlightNormals = !game->GetRenderer().highlightNormals;
+    
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
         spdlog::info("{} fps", double(frames_));

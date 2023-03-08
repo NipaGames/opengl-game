@@ -14,6 +14,9 @@
 #include "core/event.h"
 #include "core/graphics/renderer.h"
 
+#define BASE_WIDTH 1280
+#define BASE_HEIGHT 720
+
 class GameWindow {
 private:
     GLFWwindow* window_ = nullptr;

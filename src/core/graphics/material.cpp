@@ -5,9 +5,7 @@ void Material::RestoreDefaultUniforms() {
     SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.0f));
 }
 
-void Material::Use() {
-    shader_.Use();
-    
+void Material::Use() {    
     if (texture_ == -1)
         shader_.SetUniform("material.hasTexture", false);
     else

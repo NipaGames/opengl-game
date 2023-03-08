@@ -49,13 +49,13 @@ bool Renderer::Init() {
 
     glGenTextures(1, &MSAATextureColorBuffer_);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MSAATextureColorBuffer_);
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, 1280, 720, GL_TRUE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, BASE_WIDTH, BASE_HEIGHT, GL_TRUE);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, MSAATextureColorBuffer_, 0);
 
     glGenRenderbuffers(1, &rbo_);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, 1280, 720);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, BASE_WIDTH, BASE_HEIGHT);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_);
 
@@ -64,7 +64,7 @@ bool Renderer::Init() {
 
     glGenTextures(1, &textureColorBuffer_);
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, BASE_WIDTH, BASE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
@@ -73,6 +73,7 @@ bool Renderer::Init() {
 
 
     framebufferShader_ = Shader(SHADER_FRAMEBUFFER);
+    normalShader_ = Shader(SHADER_HIGHLIGHT_NORMALS);
 
     // create a quad for the framebuffer
     // yeah this is really janky but i can't be bothered to write a shape interface for 2d objects right now
@@ -144,9 +145,13 @@ void Renderer::Render() {
     glUseProgram(0);
 
     for (auto meshRenderer : meshes_) {
-        meshRenderer->Render(camera_.projectionMatrix * viewMatrix);
+        meshRenderer->Render(camera_.projectionMatrix, viewMatrix);
     }
-
+    if (highlightNormals) {
+        for (auto meshRenderer : meshes_) {
+            meshRenderer->Render(camera_.projectionMatrix, viewMatrix, &normalShader_);
+        }
+    }
     // second pass (draw framebuffer onto screen)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, MSAAFbo_);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_);

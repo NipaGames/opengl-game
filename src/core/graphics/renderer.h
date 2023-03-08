@@ -25,12 +25,14 @@ private:
     std::vector<MeshRenderer*> meshes_;
     Camera camera_;
     Shader framebufferShader_;
+    Shader normalShader_;
 public:
     std::unordered_map<int, GLuint> shaders;
     std::vector<PointLight> pointLights;
     std::vector<DirectionalLight> directionalLights;
     std::vector<Spotlight> spotlights;
     glm::vec3 skyboxColor = glm::vec3(0.0);
+    bool highlightNormals = false;
     Renderer() { }
     virtual ~Renderer();
     void SetWindow(GLFWwindow* window) { window_ = window; }

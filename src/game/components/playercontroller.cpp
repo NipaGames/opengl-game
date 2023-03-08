@@ -47,20 +47,34 @@ void PlayerController::Update() {
         if (horizontalVelocity != glm::vec3(0.0f))
             horizontalVelocity = glm::normalize(horizontalVelocity);
 
+        if (Input::IsKeyPressedDown(GLFW_KEY_F)) {
+            isFlying_ = !isFlying_;
+        }
+
         parent->transform->position += horizontalVelocity * moveSpeed;
         if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && parent->transform->position.y < .1)
             velocity.y = 10;
+        
+         if (isFlying_) {
+            if (Input::IsKeyDown(GLFW_KEY_SPACE))
+                parent->transform->position.y += speed * game->GetDeltaTime();
+            if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+                parent->transform->position.y -= speed * game->GetDeltaTime();
+         }
     }
 
     if (velocity.y > MAX_FALL_VELOCITY)
         velocity.y -= GRAVITY * mass * static_cast<float>(game->GetDeltaTime());
 
-    if (parent->transform->position.y <= 0.0f && velocity.y < 0.0f) {
+    if (!isFlying_ && parent->transform->position.y <= 0.0f && velocity.y < 0.0f) {
         velocity.y = 0;
         parent->transform->position.y = 0.0f;
     }
 
-    parent->transform->position += velocity * static_cast<float>(game->GetDeltaTime());
+    if (!isFlying_)
+        parent->transform->position += velocity * static_cast<float>(game->GetDeltaTime());
+    else
+        velocity = glm::vec3(0.0f);
 
     cam.pos.x = parent->transform->position.x;
     cam.pos.z = parent->transform->position.z;

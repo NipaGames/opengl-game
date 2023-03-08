@@ -9,7 +9,8 @@
 namespace Shaders {
 typedef int ShaderID;
 
-GLuint LoadShaders(ShaderID, const std::string&, const std::string&);
+GLuint LoadShaders(ShaderID, const std::string&, const std::string&, const std::string& geometryPath = "");
+void AttachGeometryShader(ShaderID, const std::string&);
 void LoadAllShaders();
 GLuint GetShaderProgram(ShaderID);
 };

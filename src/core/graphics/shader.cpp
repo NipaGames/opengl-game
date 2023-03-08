@@ -39,70 +39,67 @@ std::string GetProgramInfoLog(GLuint program) {
     return "";
 }
 
-GLuint Shaders::LoadShaders(ShaderID id, const std::string& vertexPath, const std::string& fragmentPath) {
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    std::string vertexShaderData;
-    std::ifstream vertexShaderStream(vertexPath, std::ios::in);
-    if (vertexShaderStream.is_open()) {
+void LoadShaderFromFile(GLuint shader, const std::string& path) {
+    std::string shaderData;
+    std::ifstream shaderStream(path, std::ios::in);
+    if (shaderStream.is_open()) {
         std::stringstream ss;
-        ss << vertexShaderStream.rdbuf();
-        vertexShaderData = ss.str();
-        vertexShaderStream.close();
+        ss << shaderStream.rdbuf();
+        shaderData = ss.str();
+        shaderStream.close();
     } else {
-        spdlog::error("Cannot load vertex shader '{}'!", vertexPath);
-        return 0;
+        spdlog::error("Cannot load shader '{}'!", path);
+        return;
     }
+    spdlog::info("Compiling shader '{}'!", path);
+    char const* shaderDataPtr = shaderData.c_str();
+    glShaderSource(shader, 1, &shaderDataPtr, nullptr);
+    glCompileShader(shader);
 
-    std::string fragmentShaderData;
-    std::ifstream fragmentShaderStream(fragmentPath, std::ios::in);
-    if (fragmentShaderStream.is_open()) {
-        std::stringstream ss;
-        ss << fragmentShaderStream.rdbuf();
-        fragmentShaderData = ss.str();
-        fragmentShaderStream.close();
-    } else {
-        spdlog::error("Cannot load fragment shader '{}'!", fragmentPath);
-        return 0;
+    auto shaderMessage = GetShaderInfoLog(shader);
+	if (shaderMessage != "")
+		spdlog::info(shaderMessage);
+}
+
+void DetachShaders(GLuint program, GLuint vert, GLuint frag, GLuint geometry = -1) {
+    glDetachShader(program, vert);
+    glDeleteShader(vert);
+
+    glDetachShader(program, frag);
+    glDeleteShader(frag);
+
+    if (geometry != -1) {
+        glDetachShader(program, geometry);
+        glDeleteShader(geometry);
     }
+}
 
-    spdlog::info("Compiling vertex shader '{}'!", vertexPath);
-    char const* vertexShaderDataPtr = vertexShaderData.c_str();
-    glShaderSource(vertexShader, 1, &vertexShaderDataPtr, nullptr);
-    glCompileShader(vertexShader);
-
-    auto vertexShaderMessage = GetShaderInfoLog(vertexShader);
-	if (vertexShaderMessage != "")
-		spdlog::info(vertexShaderMessage);
-
-    spdlog::info("Compiling fragment shader '{}'!", fragmentPath);
-    char const* fragmentShaderDataPtr = fragmentShaderData.c_str();
-    glShaderSource(fragmentShader, 1, &fragmentShaderDataPtr, nullptr);
-    glCompileShader(fragmentShader);
-
-    auto fragmentShaderMessage = GetShaderInfoLog(fragmentShader);
-	if (fragmentShaderMessage != "")
-		spdlog::info(fragmentShaderMessage);
-
-    spdlog::info("Linking program");
+GLuint Shaders::LoadShaders(ShaderID id, const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath) {
     GLuint program = glCreateProgram();
+    
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    LoadShaderFromFile(vertexShader, vertexPath);
 	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-	glLinkProgram(program);
 
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    LoadShaderFromFile(fragmentShader, fragmentPath);
+	glAttachShader(program, fragmentShader);
+
+    GLuint geometryShader = -1;
+    if (geometryPath != "") {
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+        LoadShaderFromFile(geometryShader, geometryPath);
+        glAttachShader(program, geometryShader);
+    }
+
+    glLinkProgram(program);
     auto programMessage = GetProgramInfoLog(program);
 	if (programMessage != "")
 		spdlog::info(programMessage);
 
-    glDetachShader(program, vertexShader);
-	glDetachShader(program, fragmentShader);
-	
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+    DetachShaders(vertexShader, fragmentShader, geometryShader);
 
     game->GetRenderer().shaders[id] = program;
-
     return program;
 }
 
@@ -110,6 +107,7 @@ void Shaders::LoadAllShaders() {
     LoadShaders(SHADER_UNLIT, "../res/unlit.vert", "../res/unlit.frag");
     LoadShaders(SHADER_LIT, "../res/lit.vert", "../res/lit.frag");
     LoadShaders(SHADER_FRAMEBUFFER, "../res/framebuffer.vert", "../res/framebuffer.frag");
+    LoadShaders(SHADER_HIGHLIGHT_NORMALS, "../res/normals.vert", "../res/normals.frag", "../res/normals.geom");
 }
 
 GLuint Shaders::GetShaderProgram(ShaderID id) {

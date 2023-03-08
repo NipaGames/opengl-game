@@ -6,6 +6,7 @@
 class PlayerController : public Component<PlayerController> {
 private:
     void OnMouseMove();
+    bool isFlying_ = false;
 public:
     void Start();
     void Update();

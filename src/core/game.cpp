@@ -5,7 +5,7 @@
 #include "core/input.h"
 
 bool Game::Init() {
-    window_ = GameWindow("", 1280, 720);
+    window_ = GameWindow("", BASE_WIDTH, BASE_HEIGHT);
     if(!window_.Create(renderer_)) {
         return false;
     }

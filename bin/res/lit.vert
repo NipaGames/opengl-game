@@ -8,11 +8,12 @@ out vec3 fragmentNormal;
 out vec3 fragmentPos;
 out vec2 fragmentTexCoord;
 
-uniform mat4 viewProjection;
+uniform mat4 projection;
+uniform mat4 view;
 uniform mat4 model;
 
 void main() {
-  gl_Position = viewProjection * model * vec4(pos, 1);
+  gl_Position = projection * view * model * vec4(pos, 1);
   fragmentPos = vec3(model * vec4(pos, 1));
   fragmentNormal = mat3(transpose(inverse(model))) * normal;
   fragmentTexCoord = texCoord;
