@@ -29,7 +29,7 @@ public:
     
     template<typename T>
     void SetUniform(const std::string& name, const T& value) const {
-        if constexpr(std::is_same_v<T, int>)
+        if constexpr(std::is_same_v<T, int> || std::is_same_v<T, bool>)
             glUniform1i(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), value); 
         if constexpr(std::is_same_v<T, float>)
             glUniform1f(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), value);

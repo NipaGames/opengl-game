@@ -30,10 +30,10 @@ void MonkeyGame::Start() {
     monkeyModel.LoadModel("../res/chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/ground.jpg"));
+        mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
-        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.4));
+        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.25f));
         mesh->material->SetShaderUniform<int>("specularHighlight", 32);
         mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
     }
@@ -50,7 +50,7 @@ void MonkeyGame::Start() {
     mogusModel.LoadModel("../res/mog.obj");
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_UNLIT, Texture::LoadTexture("../res/ground.jpg"));
+        mesh->material = std::make_shared<Material>(SHADER_UNLIT);
         mesh->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.0f, 0.0f, 0.0f));
     }
     mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));

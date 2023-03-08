@@ -7,6 +7,12 @@ void Material::RestoreDefaultUniforms() {
 
 void Material::Use() {
     shader_.Use();
+    
+    if (texture_ == -1)
+        shader_.SetUniform("material.hasTexture", false);
+    else
+        shader_.SetUniform("material.hasTexture", true);
+    
     for (auto i : intUniforms_)
         shader_.SetUniform("material." + i.first, i.second);
     for (auto f : floatUniforms_)

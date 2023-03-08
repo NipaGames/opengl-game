@@ -29,6 +29,7 @@ struct Material {
   float specularStrength;
   int specularHighlight;
   vec3 ambientColor;
+  bool hasTexture;
 };
 
 in vec3 fragmentNormal;
@@ -94,5 +95,6 @@ void main() {
   // more advanced ambient lighting (not necessary):
   // color += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
   color += material.ambientColor;
-  color *= texture(textureSampler, fragmentTexCoord).xyz;
+  if (material.hasTexture)
+    color *= texture(textureSampler, fragmentTexCoord).xyz;
 }
