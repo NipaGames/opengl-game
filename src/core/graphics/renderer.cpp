@@ -12,8 +12,13 @@ Renderer::Renderer(GLFWwindow* window) {
 Renderer::~Renderer() {
     for (auto[k, v] : shaders)
         glDeleteProgram(v);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, fbo_);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
         glDeleteFramebuffers(1, &fbo_);
+    glBindRenderbuffer(GL_RENDERBUFFER, MSAAFbo_);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+        glDeleteFramebuffers(1, &MSAAFbo_);
 
     glDeleteBuffers(1, &quadVao_);
     glDeleteBuffers(1, &quadVbo_);
@@ -29,6 +34,9 @@ bool Renderer::Init() {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glShadeModel(GL_SMOOTH);
+
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glEnable(GL_MULTISAMPLE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // debug line rendering
 
     float aspectRatio = (float) 16 / (float) 9;
@@ -36,22 +44,31 @@ bool Renderer::Init() {
     camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), aspectRatio, 0.1f, 500.0f);
     camera_.pos = glm::vec3(0.0f, 0.0f, -10.0f);
     
+    glGenFramebuffers(1, &MSAAFbo_);
+    glBindFramebuffer(GL_FRAMEBUFFER, MSAAFbo_);
+
+    glGenTextures(1, &MSAATextureColorBuffer_);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MSAATextureColorBuffer_);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, 1280, 720, GL_TRUE);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, MSAATextureColorBuffer_, 0);
+
+    glGenRenderbuffers(1, &rbo_);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, 1280, 720);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_);
+
     glGenFramebuffers(1, &fbo_);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
     glGenTextures(1, &textureColorBuffer_);
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer_, 0);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer_, 0); 
-
-    glGenRenderbuffers(1, &rbo_);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_);
 
     framebufferShader_ = Shader(SHADER_FRAMEBUFFER);
 
@@ -117,7 +134,7 @@ void Renderer::Start() {
 
 void Renderer::Render() {
     // first pass (draw into framebuffer)
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+    glBindFramebuffer(GL_FRAMEBUFFER, MSAAFbo_);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
@@ -129,6 +146,12 @@ void Renderer::Render() {
     }
 
     // second pass (draw framebuffer onto screen)
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, MSAAFbo_);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_);
+    int width, height;
+    glfwGetFramebufferSize(window_, &width, &height);
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);
     glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
@@ -145,11 +168,12 @@ void Renderer::Render() {
 void Renderer::UpdateCameraProjection(int width, int height) {
     glViewport(0, 0, width, height);
 
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MSAATextureColorBuffer_);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, width, height, GL_TRUE);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
     camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), (float) width / (float) height, 0.1f, 500.0f);
 }

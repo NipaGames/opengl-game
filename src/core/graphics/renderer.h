@@ -19,6 +19,8 @@ private:
     GLuint fbo_;
     GLuint rbo_;
     GLuint textureColorBuffer_;
+    GLuint MSAAFbo_;
+    GLuint MSAATextureColorBuffer_;
     GLuint quadVao_, quadVbo_;
     std::vector<MeshRenderer*> meshes_;
     Camera camera_;

@@ -3,6 +3,7 @@
 #include "core/graphics/shader.h"
 #include "core/graphics/shaders.h"
 #include "core/input.h"
+#include "core/game.h"
 
 #include <atomic>
 #include <glm/glm.hpp>
@@ -209,7 +210,7 @@ void GameWindow::UpdateInputSystem() {
             }
             glm::tvec2<int> framebufferSize;
             glfwGetFramebufferSize(window_, &framebufferSize.x, &framebufferSize.y);
-            glViewport(0, 0, framebufferSize.x, framebufferSize.y);
+            game->GetRenderer().UpdateCameraProjection(framebufferSize.x, framebufferSize.y);
         }
         Input::UPDATE_FULLSCREEN = false;
     }
