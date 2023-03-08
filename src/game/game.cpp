@@ -35,7 +35,7 @@ void MonkeyGame::Start() {
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
         mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.25f));
         mesh->material->SetShaderUniform<int>("specularHighlight", 32);
-        mesh->material->SetShaderUniform<float>("specularStrength", 1.0);
+        mesh->material->SetShaderUniform<float>("specularStrength", 1.5f);
     }
     for (int i = 0; i < monkeyCount; i++) {
         Entity& monkey = entityManager_.CreateEntity();

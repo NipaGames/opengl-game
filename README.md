@@ -36,6 +36,9 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 ![Image of texture rendering](/images/screenshot8.png)
 *Now everything is made of this stupid grass texture from Wikimedia* 6.3.2023
 
+![Image of inverted color showcase](/images/screenshot9.png)
+*Annoying filter to invert colors* 8.3.2023
+
 ### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)

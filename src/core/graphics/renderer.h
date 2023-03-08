@@ -18,8 +18,11 @@ private:
     GLFWwindow* window_;
     GLuint fbo_;
     GLuint rbo_;
+    GLuint textureColorBuffer_;
+    GLuint quadVao_, quadVbo_;
     std::vector<MeshRenderer*> meshes_;
     Camera camera_;
+    Shader framebufferShader_;
 public:
     std::unordered_map<int, GLuint> shaders;
     std::vector<PointLight> pointLights;

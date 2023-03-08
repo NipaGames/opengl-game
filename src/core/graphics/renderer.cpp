@@ -14,6 +14,10 @@ Renderer::~Renderer() {
         glDeleteProgram(v);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
         glDeleteFramebuffers(1, &fbo_);
+
+    glDeleteBuffers(1, &quadVao_);
+    glDeleteBuffers(1, &quadVbo_);
+
     shaders.clear();
 }
 
@@ -33,22 +37,48 @@ bool Renderer::Init() {
     camera_.pos = glm::vec3(0.0f, 0.0f, -10.0f);
     
     glGenFramebuffers(1, &fbo_);
-    glGenRenderbuffers(1, &rbo_);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
 
-    GLuint colorBuffer;
-    glGenTextures(1, &colorBuffer);
-    glBindTexture(GL_TEXTURE_2D, colorBuffer);
+    glGenTextures(1, &textureColorBuffer_);
+    glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer_, 0); 
 
+    glGenRenderbuffers(1, &rbo_);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_);
+
+    framebufferShader_ = Shader(SHADER_FRAMEBUFFER);
+
+    // create a quad for the framebuffer
+    // yeah this is really janky but i can't be bothered to write a shape interface for 2d objects right now
+
+    // also, this is straight from https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/5.1.framebuffers/framebuffers.cpp
+    float quadVertices[] = {
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+    glGenVertexArrays(1, &quadVao_);
+    glGenBuffers(1, &quadVbo_);
+    glBindVertexArray(quadVao_);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVbo_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
     return true;
 }
@@ -86,9 +116,10 @@ void Renderer::Start() {
 }
 
 void Renderer::Render() {
-    // glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+    // first pass (draw into framebuffer)
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
+    glEnable(GL_DEPTH_TEST);
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
     glUseProgram(0);
@@ -97,12 +128,28 @@ void Renderer::Render() {
         meshRenderer->Render(camera_.projectionMatrix * viewMatrix);
     }
 
-    glBindVertexArray(0);
+    // second pass (draw framebuffer onto screen)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    framebufferShader_.Use();
+    glBindVertexArray(quadVao_);
+    glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
     glfwSwapBuffers(window_);
 }
 
 void Renderer::UpdateCameraProjection(int width, int height) {
     glViewport(0, 0, width, height);
+
+    glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
     camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), (float) width / (float) height, 0.1f, 500.0f);
 }

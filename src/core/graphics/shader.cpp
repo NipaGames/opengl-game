@@ -109,6 +109,7 @@ GLuint Shaders::LoadShaders(ShaderID id, const std::string& vertexPath, const st
 void Shaders::LoadAllShaders() {
     LoadShaders(SHADER_UNLIT, "../res/unlit.vert", "../res/unlit.frag");
     LoadShaders(SHADER_LIT, "../res/lit.vert", "../res/lit.frag");
+    LoadShaders(SHADER_FRAMEBUFFER, "../res/framebuffer.vert", "../res/framebuffer.frag");
 }
 
 GLuint Shaders::GetShaderProgram(ShaderID id) {
