@@ -208,9 +208,9 @@ void GameWindow::UpdateInputSystem() {
             else {
                 glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
             }
-            glm::tvec2<int> framebufferSize;
-            glfwGetFramebufferSize(window_, &framebufferSize.x, &framebufferSize.y);
-            game->GetRenderer().UpdateCameraProjection(framebufferSize.x, framebufferSize.y);
+            glm::tvec2<int> windowSize;
+            glfwGetWindowSize(window_, &windowSize.x, &windowSize.y);
+            game->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
         }
         Input::UPDATE_FULLSCREEN = false;
     }
