@@ -5,6 +5,9 @@
 #include "core/game.h"
 #include "game/game.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 int main() {
     spdlog::set_pattern("[%T] %-10l %v");
     srand(static_cast<unsigned int>(time(0)));

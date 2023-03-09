@@ -57,9 +57,9 @@ void PlayerController::Update() {
         
          if (isFlying_) {
             if (Input::IsKeyDown(GLFW_KEY_SPACE))
-                parent->transform->position.y += speed * game->GetDeltaTime();
+                parent->transform->position.y += speed * static_cast<float>(game->GetDeltaTime());
             if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
-                parent->transform->position.y -= speed * game->GetDeltaTime();
+                parent->transform->position.y -= speed * static_cast<float>(game->GetDeltaTime());
          }
     }
 

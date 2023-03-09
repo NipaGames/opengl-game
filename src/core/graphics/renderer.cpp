@@ -156,7 +156,7 @@ void Renderer::Render() {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, MSAAFbo_);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_);
     int width, height;
-    glfwGetFramebufferSize(window_, &width, &height);
+    glfwGetWindowSize(window_, &width, &height);
     glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
