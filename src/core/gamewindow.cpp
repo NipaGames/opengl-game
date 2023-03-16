@@ -2,6 +2,7 @@
 
 #include "core/graphics/shader.h"
 #include "core/graphics/shaders.h"
+#include "core/ui/text.h"
 #include "core/input.h"
 #include "core/game.h"
 
@@ -121,6 +122,10 @@ bool GameWindow::Create(Renderer& renderer) {
     Shaders::LoadAllShaders();
     glfwSwapInterval(useVsync_ ? 1 : 0);
     glfwMakeContextCurrent(nullptr);
+
+    if(!UI::Text::Init())
+        return false;
+
     return true;
 }
 

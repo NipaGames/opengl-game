@@ -1,5 +1,5 @@
 #version 330 core
-out vec3 color;
+out vec4 color;
 
 struct PointLight {
   vec3 pos;
@@ -76,25 +76,26 @@ vec3 calcSpotlight(Spotlight light, vec3 normal) {
     return calcPointLight(pointLight, normal);
   }
   else
-    return vec3(0.0, 0.0, 0.0);
+    return vec3(0.0);
 }
 
 void main() {
   vec3 normal = normalize(fragmentNormal);
-  color = vec3(0.0);
+  vec3 col = vec3(0.0);
 
   for(int i = 0; i < pointLights.length(); i++) {
-    color += calcPointLight(pointLights[i], normal);
+    col += calcPointLight(pointLights[i], normal);
   }
   for(int i = 0; i < directionalLights.length(); i++) {
-    color += calcDirectionalLight(directionalLights[i], normal);
+    col += calcDirectionalLight(directionalLights[i], normal);
   }
   for(int i = 0; i < spotlights.length(); i++) {
-    color += calcSpotlight(spotlights[i], normal);
+    col += calcSpotlight(spotlights[i], normal);
   }
   // more advanced ambient lighting (not necessary):
-  // color += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
-  color += material.ambientColor;
+  // col += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
+  col += material.ambientColor;
   if (material.hasTexture)
-    color *= texture(textureSampler, fragmentTexCoord).xyz;
+    col *= texture(textureSampler, fragmentTexCoord).xyz;
+  color = vec4(col, 1.0);
 }

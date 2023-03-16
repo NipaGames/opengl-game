@@ -28,10 +28,10 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
         modelTransform *= glm::toMat4(parent->transform->rotation);
         modelTransform = glm::scale(modelTransform, parent->transform->size);
 
-        shader->SetUniform<glm::mat4>("projection", projectionMatrix);
-        shader->SetUniform<glm::mat4>("view", viewMatrix);
-        shader->SetUniform<glm::mat4>("model", modelTransform);
-        shader->SetUniform<glm::vec3>("viewPos", game->GetRenderer().GetCamera().pos);
+        shader->SetUniform("projection", projectionMatrix);
+        shader->SetUniform("view", viewMatrix);
+        shader->SetUniform("model", modelTransform);
+        shader->SetUniform("viewPos", game->GetRenderer().GetCamera().pos);
         mesh->Render();
 
         // unbinding

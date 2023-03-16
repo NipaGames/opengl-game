@@ -5,7 +5,7 @@ struct Material {
   bool hasTexture;
 };
 
-out vec3 color;
+out vec4 color;
 
 in vec2 fragmentTexCoord;
 
@@ -13,7 +13,7 @@ uniform Material material;
 uniform sampler2D textureSampler;
 
 void main() {
-  color = material.color;
+  color = vec4(material.color, 1.0);
   if (material.hasTexture)
-    color *= texture(textureSampler, fragmentTexCoord).xyz;
+    color *= texture(textureSampler, fragmentTexCoord);
 }

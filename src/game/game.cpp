@@ -2,6 +2,7 @@
 
 #include "core/entity/component/meshrenderer.h"
 #include "core/graphics/model.h"
+#include "core/ui/text.h"
 #include "core/input.h"
 #include "core/terrain/plane.h"
 #include "game/components/playercontroller.h"
@@ -73,6 +74,12 @@ void MonkeyGame::Start() {
     terrain.AddComponent<MeshRenderer>()->meshes.push_back(plane);
     terrain.transform->size = glm::vec3(100, 2, 100);
     terrain.transform->position.y = -.5f;
+
+    auto font = UI::Text::LoadFontFile("../res/comicsans.ttf", 48);
+    if (font != std::nullopt) {
+
+    }
+
 }
 
 void MonkeyGame::Update() {
