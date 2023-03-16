@@ -118,13 +118,12 @@ bool GameWindow::Create(Renderer& renderer) {
     renderer.SetWindow(window_);
     if(!renderer.Init())
         return false;
+    if(!UI::Text::Init())
+        return false;
 
     Shaders::LoadAllShaders();
     glfwSwapInterval(useVsync_ ? 1 : 0);
     glfwMakeContextCurrent(nullptr);
-
-    if(!UI::Text::Init())
-        return false;
 
     return true;
 }

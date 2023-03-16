@@ -14,6 +14,6 @@ public:
 
     std::vector<std::shared_ptr<Mesh>> meshes;
 
-    void Start();
-    void Render(const glm::mat4&, const glm::mat4&, const Shader* shader = nullptr);
+    virtual void Start();
+    virtual void Render(const glm::mat4&, const glm::mat4&, const Shader* = nullptr);
 };

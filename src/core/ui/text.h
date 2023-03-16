@@ -24,5 +24,5 @@ struct Font {
 bool Init();
 std::optional<Font> LoadFontFile(const std::string&, const glm::ivec2&);
 std::optional<Font> LoadFontFile(const std::string&, int);
-void RenderText(Shader&, const Font&, const std::string&, glm::vec2, float, const glm::vec3&);
+void RenderText(const Font&, const std::string&, glm::vec2, float);
 };

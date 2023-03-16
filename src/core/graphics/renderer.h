@@ -10,6 +10,7 @@
 #include "core/graphics/mesh.h"
 #include "core/graphics/shader.h"
 #include "core/graphics/shaders.h"
+#include "core/ui/uicomponent.h"
 
 #include "core/entity/component/meshrenderer.h"
 
@@ -23,6 +24,7 @@ private:
     GLuint MSAATextureColorBuffer_;
     GLuint quadVao_, quadVbo_;
     std::vector<MeshRenderer*> meshes_;
+    std::vector<IUIComponent*> uiComponents_;
     Camera camera_;
     Shader framebufferShader_;
     Shader normalShader_;
@@ -43,4 +45,5 @@ public:
     void Render();
     void UpdateCameraProjection(int, int);
     void AddMeshRenderer(MeshRenderer* mesh) { meshes_.push_back(mesh); }
+    void AddUIComponent(IUIComponent* uiComponent) { uiComponents_.push_back(uiComponent); }
 };

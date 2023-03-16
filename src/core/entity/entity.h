@@ -44,10 +44,6 @@ public:
 
     template<typename C>
     C* AddComponent() {
-        if constexpr(!std::is_base_of_v<Component<C>, C>) {
-            spdlog::error("{} doesn't derive from Component-class!", typeid(C).name());
-            throw;
-        }
         C* component = new C();
         component->parent = this;
         components_.push_back((IComponent*) component);

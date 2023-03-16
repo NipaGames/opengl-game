@@ -108,6 +108,7 @@ void Shaders::LoadAllShaders() {
     LoadShaders(SHADER_LIT, "../res/lit.vert", "../res/lit.frag");
     LoadShaders(SHADER_FRAMEBUFFER, "../res/framebuffer.vert", "../res/framebuffer.frag");
     LoadShaders(SHADER_HIGHLIGHT_NORMALS, "../res/normals.vert", "../res/normals.frag", "../res/normals.geom");
+    LoadShaders(SHADER_UI_TEXT, "../res/text.vert", "../res/text.frag");
 }
 
 GLuint Shaders::GetShaderProgram(ShaderID id) {

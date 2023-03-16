@@ -143,6 +143,9 @@ void Renderer::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
+    int width, height;
+    glfwGetWindowSize(window_, &width, &height);
+
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
     glUseProgram(0);
 
@@ -154,11 +157,14 @@ void Renderer::Render() {
             meshRenderer->Render(camera_.projectionMatrix, viewMatrix, &normalShader_);
         }
     }
+    glm::mat4 uiProjection = glm::ortho(0.0f, (float) width, 0.0f, (float) height);
+    for (auto uiComponent : uiComponents_) {
+        uiComponent->IRender(uiProjection);
+    }
+
     // second pass (draw framebuffer onto screen)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, MSAAFbo_);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_);
-    int width, height;
-    glfwGetWindowSize(window_, &width, &height);
     glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

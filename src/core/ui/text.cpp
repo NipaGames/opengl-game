@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 #include <unordered_map>
+#include <iostream>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -17,7 +18,7 @@ bool UI::Text::Init() {
         return false;
     }
     spdlog::info("FreeType init successful.");
-
+    
     glGenVertexArrays(1, &charVao);
     glGenBuffers(1, &charVbo);
     glBindVertexArray(charVao);
@@ -27,6 +28,7 @@ bool UI::Text::Init() {
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
     return true;
 }
 
@@ -68,6 +70,7 @@ bool RenderGlyphs(Font& font) {
         };
         font.charMap.insert(std::pair<WCHAR, Character>(c, character));
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
     return warn;
 }
 
@@ -89,11 +92,10 @@ std::optional<Font> UI::Text::LoadFontFile(const std::string& path, int size) {
     return LoadFontFile(path, glm::ivec2(0, size));
 }
 
-void UI::Text::RenderText(Shader& shader, const Font& font, const std::string& text, glm::vec2 pos, float size, const glm::vec3& color) {
-    shader.Use();
-    shader.SetUniform("textColor", color);
-
+void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size) {
     glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(charVao);
+
     for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
         Character c = font.charMap.at(*it);
 
@@ -108,7 +110,7 @@ void UI::Text::RenderText(Shader& shader, const Font& font, const std::string& t
 
             { actualPos.x,     actualPos.y + h,   0.0f, 0.0f },
             { actualPos.x + w, actualPos.y,       1.0f, 1.0f },
-            { actualPos.x + w, actualPos.y + h,   1.0f, 0.0f }           
+            { actualPos.x + w, actualPos.y + h,   1.0f, 0.0f }   
         };
 
         glBindTexture(GL_TEXTURE_2D, c.texture);
@@ -121,4 +123,6 @@ void UI::Text::RenderText(Shader& shader, const Font& font, const std::string& t
         // just multiplies by 64 since for some reason freetype uses 1/64 pixel as a unit
         pos.x += (c.advance >> 6) * size;
     }
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
