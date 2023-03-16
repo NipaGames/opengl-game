@@ -39,6 +39,9 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 ![Image of inverted color showcase](/images/screenshot9.png)
 *Annoying filter to invert colors* 8.3.2023
 
+![Image of text rendering showcase](/images/screenshot10.png)
+*The words of wisdom* 16.3.2023
+
 ### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)
