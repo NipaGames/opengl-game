@@ -157,10 +157,6 @@ void Renderer::Render() {
             meshRenderer->Render(camera_.projectionMatrix, viewMatrix, &normalShader_);
         }
     }
-    glm::mat4 uiProjection = glm::ortho(0.0f, (float) width, 0.0f, (float) height);
-    for (auto uiComponent : uiComponents_) {
-        uiComponent->IRender(uiProjection);
-    }
 
     // second pass (draw framebuffer onto screen)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, MSAAFbo_);
@@ -176,6 +172,11 @@ void Renderer::Render() {
     glBindVertexArray(quadVao_);
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glm::mat4 uiProjection = glm::ortho(0.0f, (float) width, 0.0f, (float) height);
+    for (auto uiComponent : uiComponents_) {
+        uiComponent->IRender(uiProjection);
+    }
 
     glfwSwapBuffers(window_);
 }

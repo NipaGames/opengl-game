@@ -8,6 +8,8 @@
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
 
+UI::TextComponent* text = nullptr;
+
 bool MonkeyGame::Init() {
     window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
     if(!window_.Create(renderer_)) {
@@ -76,10 +78,31 @@ void MonkeyGame::Start() {
     terrain.transform->position.y = -.5f;
 
 
-    auto font = UI::Text::LoadFontFile("../res/comicsans.ttf", 48);
+    auto font = UI::Text::LoadFontFile("../res/Augusta.ttf", 48);
     if (font != std::nullopt) {
-        Entity& text = entityManager_.CreateEntity();
-        text.AddComponent<UI::TextComponent>()->font = *font;
+        auto fontId = UI::Text::AssignFont(*font);
+        Entity& textEntity = entityManager_.CreateEntity();
+        text = textEntity.AddComponent<UI::TextComponent>();
+        text->font = fontId;
+        text->parent->transform->position.x = 25;
+        text->parent->transform->position.y = 25;
+        text->parent->transform->size.x = 1.0f;
+
+        // free way to crash your computer below
+
+        // probably a good way to render this shit would be to pre-render
+        // the textures every time the text is changed (not very often)
+        // also shows how i haven't really implemented any order for depth buffer blending
+
+        /*for (int i = 0; i < 5000; i++) {
+            Entity& testText = entityManager_.CreateEntity();
+            auto textComponent = testText.AddComponent<UI::TextComponent>();
+            textComponent->font = fontId;
+            textComponent->parent->transform->position.x = rand() % 1280;
+            textComponent->parent->transform->position.y = rand() % 720;
+            textComponent->parent->transform->size.x = 1.0f;
+            textComponent->SetText("testi teksti");
+        }*/
     }
 }
 
@@ -90,6 +113,8 @@ void MonkeyGame::Update() {
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
         spdlog::info("{} fps", double(frames_));
+        if (text != nullptr)
+            text->SetText(std::to_string(frames_) + " fps");
         frames_ = 0;
         lastTime_ += 1.0;
     }

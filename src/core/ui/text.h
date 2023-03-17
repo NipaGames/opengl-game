@@ -20,9 +20,12 @@ struct Font {
     FT_Face fontFace;
     std::unordered_map<WCHAR, Character> charMap;
 };
+typedef uint32_t FontID;
 
 bool Init();
 std::optional<Font> LoadFontFile(const std::string&, const glm::ivec2&);
 std::optional<Font> LoadFontFile(const std::string&, int);
 void RenderText(const Font&, const std::string&, glm::vec2, float);
+FontID AssignFont(Font&);
+const Font& GetFont(FontID);
 };

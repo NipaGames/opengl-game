@@ -11,6 +11,9 @@ using namespace UI::Text;
 
 FT_Library freeType;
 GLuint charVao, charVbo;
+std::unordered_map<FontID, Font> fonts;
+FontID currentFontPtr = 0;
+
 
 bool UI::Text::Init() {
     if (FT_Init_FreeType(&freeType)) {
@@ -90,6 +93,15 @@ std::optional<Font> UI::Text::LoadFontFile(const std::string& path, const glm::i
 
 std::optional<Font> UI::Text::LoadFontFile(const std::string& path, int size) {
     return LoadFontFile(path, glm::ivec2(0, size));
+}
+
+const Font& UI::Text::GetFont(FontID id) {
+    return fonts.at(id);
+}
+
+FontID UI::Text::AssignFont(Font& font) {
+    fonts[currentFontPtr] = font;
+    return currentFontPtr++;
 }
 
 void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size) {
