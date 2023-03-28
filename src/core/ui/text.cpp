@@ -107,6 +107,7 @@ FontID UI::Text::AssignFont(Font& font) {
 void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size) {
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(charVao);
+    glBindBuffer(GL_ARRAY_BUFFER, charVbo);
 
     for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
         Character c = font.charMap.at(*it);
@@ -124,17 +125,44 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
             { actualPos.x + w, actualPos.y,       1.0f, 1.0f },
             { actualPos.x + w, actualPos.y + h,   1.0f, 0.0f }   
         };
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
 
         glBindTexture(GL_TEXTURE_2D, c.texture);
-        glBindBuffer(GL_ARRAY_BUFFER, charVbo);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // some bitshift magic from learnopengl.com
         // just multiplies by 64 since for some reason freetype uses 1/64 pixel as a unit
         pos.x += (c.advance >> 6) * size;
     }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+int UI::Text::GetTextWidth(const Font& font, const std::string& text) {
+    int width = 0;
+    for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
+        Character c = font.charMap.at(*it);
+        width += (c.advance >> 6);
+    }
+    return width;
+}
+
+glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& text) {
+    int max = 0;
+    int min = 0;
+    for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
+        Character c = font.charMap.at(*it);
+        int cMax = c.bearing.y;
+        int cMin = c.bearing.y - c.size.y;
+        if (cMax > max) max = cMax;
+        if (cMin < min) min = cMin;
+    }
+    return glm::ivec2(-min, max);
+}
+
+int UI::Text::GetTextHeight(const Font& font, const std::string& text) {
+    auto padding = GetVerticalPadding(font, text);
+    return padding[1] + padding[0];
 }

@@ -33,7 +33,6 @@ bool Renderer::Init() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
@@ -140,6 +139,7 @@ void Renderer::Start() {
 void Renderer::Render() {
     // first pass (draw into framebuffer)
     glBindFramebuffer(GL_FRAMEBUFFER, MSAAFbo_);
+    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
@@ -165,7 +165,6 @@ void Renderer::Render() {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);
-    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     framebufferShader_.Use();

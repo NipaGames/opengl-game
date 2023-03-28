@@ -1,6 +1,6 @@
 #include "core/entity/entitymanager.h"
 
 Entity& EntityManager::CreateEntity() {
-    entities_.push_back(Entity());
+    entities_.emplace_back();
     return entities_.back();
 }

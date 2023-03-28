@@ -7,13 +7,13 @@ Entity::Entity() {
     transform = AddComponent<Transform>();
 }
 
-Entity::Entity(const Entity& e) {
-    for (auto c : e.components_) {
-        IComponent* newComponent = c->Clone();
-        newComponent->parent = this;
-        components_.push_back(newComponent);
+Entity::Entity(Entity&& e) {
+    components_ = e.components_;
+    transform = e.transform;
+    for (auto c : components_) {
+        c->parent = this;
     }
-    transform = GetComponent<Transform>();
+    e.components_.clear();
 }
 
 Entity::~Entity() {

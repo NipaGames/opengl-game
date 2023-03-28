@@ -8,7 +8,7 @@
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
 
-UI::TextComponent* text = nullptr;
+UI::TextComponent* fpsText = nullptr;
 
 bool MonkeyGame::Init() {
     window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
@@ -82,11 +82,11 @@ void MonkeyGame::Start() {
     if (font != std::nullopt) {
         auto fontId = UI::Text::AssignFont(*font);
         Entity& textEntity = entityManager_.CreateEntity();
-        text = textEntity.AddComponent<UI::TextComponent>();
-        text->font = fontId;
-        text->parent->transform->position.x = 25;
-        text->parent->transform->position.y = 25;
-        text->parent->transform->size.x = 1.0f;
+        fpsText = textEntity.AddComponent<UI::TextComponent>();
+        fpsText->font = fontId;
+        textEntity.transform->position.x = 25;
+        textEntity.transform->position.y = 25;
+        textEntity.transform->size.x = 1.0f;
 
         // free way to crash your computer below
 
@@ -94,14 +94,14 @@ void MonkeyGame::Start() {
         // the textures every time the text is changed (not very often)
         // also shows how i haven't really implemented any order for depth buffer blending
 
-        /*for (int i = 0; i < 5000; i++) {
+        /*for (int i = 0; i < 1000; i++) {
             Entity& testText = entityManager_.CreateEntity();
             auto textComponent = testText.AddComponent<UI::TextComponent>();
             textComponent->font = fontId;
-            textComponent->parent->transform->position.x = rand() % 1280;
-            textComponent->parent->transform->position.y = rand() % 720;
-            textComponent->parent->transform->size.x = 1.0f;
-            textComponent->SetText("testi teksti");
+            testText.transform->position.x = rand() % 1280;
+            testText.transform->position.y = rand() % 720;
+            testText.transform->size.x = 1.0f;
+            textComponent->SetText(std::to_string(i));
         }*/
     }
 }
@@ -113,8 +113,8 @@ void MonkeyGame::Update() {
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
         spdlog::info("{} fps", double(frames_));
-        if (text != nullptr)
-            text->SetText(std::to_string(frames_) + " fps");
+        if (fpsText != nullptr)
+            fpsText->SetText(std::to_string(frames_) + " fps");
         frames_ = 0;
         lastTime_ += 1.0;
     }
