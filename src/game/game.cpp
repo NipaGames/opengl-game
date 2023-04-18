@@ -93,7 +93,6 @@ void MonkeyGame::Start() {
         Entity& textEntity = entityManager_.CreateEntity();
         fpsText = textEntity.AddComponent<UI::TextComponent>();
         fpsText->color = glm::vec4(1.0f);
-        fpsText->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
         fpsText->font = fontId;
         textEntity.transform->position.x = 25;
         textEntity.transform->position.y = 680;
@@ -101,19 +100,19 @@ void MonkeyGame::Start() {
         canvas.AddUIComponent((UI::UIComponent*) fpsText);
 
         auto font2Id = UI::Text::AssignFont(*font2);
-        Entity& textEntity2 = entityManager_.CreateEntity();
-        auto testText = textEntity2.AddComponent<UI::TextComponent>();
-        testText->font = font2Id;
+        Entity& versionTextEntity = entityManager_.CreateEntity();
+        auto versionText = versionTextEntity.AddComponent<UI::TextComponent>();
+        versionText->font = font2Id;
         #ifdef VERSION_SPECIFIED
-        testText->SetText("v" + std::to_string(VERSION_MAJ) + "." + std::to_string(VERSION_MIN));
+        versionText->SetText("v" + std::to_string(VERSION_MAJ) + "." + std::to_string(VERSION_MIN));
         #else
-        testText->SetText("[invalid version]");
+        versionText->SetText("[invalid version]");
         #endif
-        testText->color = glm::vec4(glm::vec3(1.0f), .75f);
-        textEntity2.transform->position.x = 10;
-        textEntity2.transform->position.y = 15;
-        textEntity2.transform->size.z = .4f;
-        canvas.AddUIComponent((UI::UIComponent*) testText);
+        versionText->color = glm::vec4(glm::vec3(1.0f), .75f);
+        versionTextEntity.transform->position.x = 10;
+        versionTextEntity.transform->position.y = 10;
+        versionTextEntity.transform->size.z = .4f;
+        canvas.AddUIComponent((UI::UIComponent*) versionText);
 
         // free way to crash your computer below
 
@@ -129,6 +128,7 @@ void MonkeyGame::Start() {
             testText.transform->position.y = rand() % 720;
             testText.transform->size.x = 1.0f;
             textComponent->SetText(std::to_string(i));
+            canvas.AddUIComponent(textComponent);
         }*/
     }
 }
