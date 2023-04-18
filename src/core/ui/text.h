@@ -25,7 +25,7 @@ typedef uint32_t FontID;
 bool Init();
 std::optional<Font> LoadFontFile(const std::string&, const glm::ivec2&);
 std::optional<Font> LoadFontFile(const std::string&, int);
-void RenderText(const Font&, const std::string&, glm::vec2, float);
+void RenderText(const Font&, const std::string&, glm::vec2, float, float);
 glm::ivec2 GetVerticalPadding(const Font&, const std::string&);
 int GetTextWidth(const Font&, const std::string&);
 int GetTextHeight(const Font&, const std::string&);

@@ -74,8 +74,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 GameWindow::GameWindow(const std::string& title, int w, int h, bool useVsync) {
     title_ = title;
-    baseWidth_ = w;
-    baseHeight_ = h;
+    baseWndSize_ = glm::ivec2(w, h);
     useVsync_ = useVsync;
 }
 
@@ -93,7 +92,7 @@ bool GameWindow::Create(Renderer& renderer) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window_ = glfwCreateWindow(baseWidth_, baseHeight_, title_.c_str(), NULL, NULL);
+    window_ = glfwCreateWindow(baseWndSize_.x, baseWndSize_.y, title_.c_str(), NULL, NULL);
     if(!window_) {
         spdlog::critical("GLFW window init failed. Make sure your GPU is OpenGL 3.3 compatible.");
         glfwTerminate();
@@ -198,24 +197,22 @@ void GameWindow::UpdateInputSystem() {
     glfwWaitEvents();
     if (Input::UPDATE_FULLSCREEN) {
         isFullscreen_ = !isFullscreen_;
-        if ((glfwGetWindowMonitor(window_) != nullptr) != isFullscreen_) {
-            if (isFullscreen_) {
-                glfwGetWindowPos(window_, &prevWndPos_.x, &prevWndPos_.y);
-                glfwGetWindowSize(window_, &prevWndSize_.x, &prevWndSize_.y);
-                const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-                if (useVsync_)
-                    glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
-                else
-                    glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
-                Input::VSYNC_POLL_RATE_CHANGE_PENDING = true;
-            }
-            else {
-                glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
-            }
-            glm::tvec2<int> windowSize;
-            glfwGetWindowSize(window_, &windowSize.x, &windowSize.y);
-            game->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
+        if (isFullscreen_) {
+            glfwGetWindowPos(window_, &prevWndPos_.x, &prevWndPos_.y);
+            glfwGetWindowSize(window_, &prevWndSize_.x, &prevWndSize_.y);
+            const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+            if (useVsync_)
+                glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+            else
+                glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+            Input::VSYNC_POLL_RATE_CHANGE_PENDING = true;
         }
+        else {
+            glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
+        }
+        glm::ivec2 windowSize;
+        glfwGetWindowSize(window_, &windowSize.x, &windowSize.y);
+        game->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
         Input::UPDATE_FULLSCREEN = false;
     }
     if (Input::CURSOR_MODE_CHANGE_PENDING) {

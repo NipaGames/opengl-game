@@ -7,10 +7,12 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include "core/graphics/shape.h"
+
 using namespace UI::Text;
 
 FT_Library freeType;
-GLuint charVao, charVbo;
+Shape charShape;
 std::unordered_map<FontID, Font> fonts;
 FontID currentFontPtr = 0;
 
@@ -21,16 +23,7 @@ bool UI::Text::Init() {
         return false;
     }
     spdlog::info("FreeType init successful.");
-    
-    glGenVertexArrays(1, &charVao);
-    glGenBuffers(1, &charVbo);
-    glBindVertexArray(charVao);
-    glBindBuffer(GL_ARRAY_BUFFER, charVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    charShape.GenerateVAO();
 
     return true;
 }
@@ -104,16 +97,15 @@ FontID UI::Text::AssignFont(Font& font) {
     return currentFontPtr++;
 }
 
-void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size) {
+void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size, float modifier) {    
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(charVao);
-    glBindBuffer(GL_ARRAY_BUFFER, charVbo);
+    charShape.Bind();
 
     for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
         Character c = font.charMap.at(*it);
 
         glm::vec2 actualPos(pos.x + c.bearing.x * size, pos.y - (c.size.y - c.bearing.y) * size);
-        float w = c.size.x * size;
+        float w = c.size.x * size * modifier;
         float h = c.size.y * size;
 
         float vertices[6][4] = {
@@ -132,7 +124,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
 
         // some bitshift magic from learnopengl.com
         // just multiplies by 64 since for some reason freetype uses 1/64 pixel as a unit
-        pos.x += (c.advance >> 6) * size;
+        pos.x += (c.advance >> 6) * size * modifier;
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

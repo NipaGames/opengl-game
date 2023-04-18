@@ -21,11 +21,11 @@ class GameWindow {
 private:
     GLFWwindow* window_ = nullptr;
     std::string title_;
-    int baseWidth_, baseHeight_;
     double lastMouseX_, lastMouseY_;
     bool isFullscreen_ = false;
-    glm::tvec2<int> prevWndPos_;
-    glm::tvec2<int> prevWndSize_;
+    glm::ivec2 prevWndPos_;
+    glm::ivec2 prevWndSize_;
+    glm::ivec2 baseWndSize_;
     bool useVsync_;
     std::multimap<EventType, std::function<void()>> events_;
 

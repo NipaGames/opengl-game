@@ -172,9 +172,8 @@ void Renderer::Render() {
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    glm::mat4 uiProjection = glm::ortho(0.0f, (float) width, 0.0f, (float) height);
-    for (auto uiComponent : uiComponents_) {
-        uiComponent->IRender(uiProjection);
+    for (auto c : canvases_) {
+        c.second.Draw();
     }
 
     glfwSwapBuffers(window_);
@@ -191,4 +190,13 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), (float) width / (float) height, 0.1f, 500.0f);
+    
+    for (auto c : canvases_) {
+        c.second.UpdateWindowSize();
+    }
+}
+
+UI::Canvas& Renderer::CreateCanvas(std::string id) {
+    canvases_.insert({ id, UI::Canvas() });
+    return canvases_.at(id);
 }

@@ -55,7 +55,14 @@ std::shared_ptr<Mesh> Meshes::CreateMeshInstance(const Mesh& m) {
 }
 
 Mesh::~Mesh() {
-    glDeleteBuffers(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
+    if (vao != NULL)
+        glDeleteVertexArrays(1, &vao);
+    if (vbo != NULL)
+        glDeleteBuffers(1, &vbo);
+    if (ebo != NULL)
+        glDeleteBuffers(1, &ebo);
+    if (texCoordBuffer != NULL)
+        glDeleteBuffers(1, &texCoordBuffer);
+    if (normalBuffer != NULL)
+        glDeleteBuffers(1, &normalBuffer);
 }

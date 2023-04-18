@@ -8,6 +8,11 @@
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
 
+
+// TODO: define these rather in cmake
+#define BUILD_MAJ 0
+#define BUILD_MIN 1
+
 UI::TextComponent* fpsText = nullptr;
 
 bool MonkeyGame::Init() {
@@ -77,16 +82,29 @@ void MonkeyGame::Start() {
     terrain.transform->size = glm::vec3(100, 2, 100);
     terrain.transform->position.y = -.5f;
 
+    UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
 
-    auto font = UI::Text::LoadFontFile("../res/Augusta.ttf", 48);
-    if (font != std::nullopt) {
+    auto font = UI::Text::LoadFontFile("../res/Augusta.ttf", 96);
+    auto font2 = UI::Text::LoadFontFile("../res/SEGOEUI.ttf", 48);
+    if (font != std::nullopt && font2 != std::nullopt) {
         auto fontId = UI::Text::AssignFont(*font);
         Entity& textEntity = entityManager_.CreateEntity();
         fpsText = textEntity.AddComponent<UI::TextComponent>();
         fpsText->font = fontId;
         textEntity.transform->position.x = 25;
-        textEntity.transform->position.y = 25;
-        textEntity.transform->size.x = 1.0f;
+        textEntity.transform->position.y = 680;
+        textEntity.transform->size.z = .5f;
+        canvas.AddUIComponent((UI::UIComponent*) fpsText);
+
+        auto font2Id = UI::Text::AssignFont(*font2);
+        Entity& textEntity2 = entityManager_.CreateEntity();
+        auto testText = textEntity2.AddComponent<UI::TextComponent>();
+        testText->font = font2Id;
+        testText->SetText("v" + std::to_string(BUILD_MAJ) + "." + std::to_string(BUILD_MIN));
+        textEntity2.transform->position.x = 10;
+        textEntity2.transform->position.y = 10;
+        textEntity2.transform->size.z = .4f;
+        canvas.AddUIComponent((UI::UIComponent*) testText);
 
         // free way to crash your computer below
 
@@ -108,7 +126,7 @@ void MonkeyGame::Start() {
 
 void MonkeyGame::Update() {
     if (Input::IsKeyPressedDown(GLFW_KEY_N))
-        game->GetRenderer().highlightNormals = !game->GetRenderer().highlightNormals;
+        GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
     
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
