@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(OpenGLProject)
+project(OpenGLProject VERSION 0.1)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
@@ -32,6 +32,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 FILE(GLOB_RECURSE Sources ${CMAKE_SOURCE_DIR}/src/*.cpp)
 list(FILTER Sources EXCLUDE REGEX ".*thirdparty/[^\\.]*\\.cpp$")
 add_executable(OpenGLProject ${Sources})
+target_compile_definitions(OpenGLProject PRIVATE VERSION_MAJ=${PROJECT_VERSION_MAJOR} VERSION_MIN=${PROJECT_VERSION_MINOR})
 string (REPLACE ";" "\n\t- " SourcesFormatted "\n\t- ${Sources}")
 message("All project sources: ${SourcesFormatted}")
 

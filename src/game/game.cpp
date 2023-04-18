@@ -9,9 +9,11 @@
 #include "game/components/rotatecube.h"
 
 
-// TODO: define these rather in cmake
-#define BUILD_MAJ 0
-#define BUILD_MIN 1
+#ifdef VERSION_MAJ
+#ifdef VERSION_MIN
+#define VERSION_SPECIFIED
+#endif
+#endif
 
 UI::TextComponent* fpsText = nullptr;
 
@@ -100,9 +102,13 @@ void MonkeyGame::Start() {
         Entity& textEntity2 = entityManager_.CreateEntity();
         auto testText = textEntity2.AddComponent<UI::TextComponent>();
         testText->font = font2Id;
-        testText->SetText("v" + std::to_string(BUILD_MAJ) + "." + std::to_string(BUILD_MIN));
+        #ifdef VERSION_SPECIFIED
+        testText->SetText("v" + std::to_string(VERSION_MAJ) + "." + std::to_string(VERSION_MIN));
+        #else
+        testText->SetText("[invalid version]");
+        #endif
         textEntity2.transform->position.x = 10;
-        textEntity2.transform->position.y = 10;
+        textEntity2.transform->position.y = 15;
         textEntity2.transform->size.z = .4f;
         canvas.AddUIComponent((UI::UIComponent*) testText);
 
