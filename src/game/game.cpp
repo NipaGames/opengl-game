@@ -92,6 +92,8 @@ void MonkeyGame::Start() {
         auto fontId = UI::Text::AssignFont(*font);
         Entity& textEntity = entityManager_.CreateEntity();
         fpsText = textEntity.AddComponent<UI::TextComponent>();
+        fpsText->color = glm::vec4(1.0f);
+        fpsText->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
         fpsText->font = fontId;
         textEntity.transform->position.x = 25;
         textEntity.transform->position.y = 680;
@@ -107,6 +109,7 @@ void MonkeyGame::Start() {
         #else
         testText->SetText("[invalid version]");
         #endif
+        testText->color = glm::vec4(glm::vec3(1.0f), .75f);
         textEntity2.transform->position.x = 10;
         textEntity2.transform->position.y = 15;
         textEntity2.transform->size.z = .4f;

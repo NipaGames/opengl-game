@@ -28,7 +28,7 @@ private:
 public:
     UI::Text::FontID font;
     glm::vec2 pos = glm::vec3(0.0f);
-    glm::vec3 color = glm::vec3(1.0f);
+    glm::vec4 color = glm::vec4(1.0f);
     TextRenderingMethod renderingMethod = TextRenderingMethod::RENDER_TO_TEXTURE; // Must be declared before start, no effect otherwise
     
     virtual ~TextComponent();

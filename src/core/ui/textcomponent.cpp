@@ -80,7 +80,7 @@ void UI::TextComponent::ResizeText() {
     
     // finally drawing
     shader_.Use();
-    shader_.SetUniform("textColor", glm::vec3(1.0f));
+    shader_.SetUniform("textColor", glm::vec4(1.0f));
     glm::ivec2 windowSize;
     glfwGetWindowSize(game->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     shader_.SetUniform("projection", glm::ortho(0.0f, (float) windowSize.x, 0.0f, (float) windowSize.y));

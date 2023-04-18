@@ -100,6 +100,7 @@ bool GameWindow::Create(Renderer& renderer) {
     }
 
     glfwMakeContextCurrent(window_);
+    glfwSetWindowSizeLimits(window_, 400, 225, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 

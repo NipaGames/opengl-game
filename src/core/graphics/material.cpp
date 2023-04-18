@@ -6,6 +6,7 @@ void Material::RestoreDefaultUniforms() {
 }
 
 void Material::Use() {    
+    shader_.Use();
     if (texture_ == -1)
         shader_.SetUniform("material.hasTexture", false);
     else
