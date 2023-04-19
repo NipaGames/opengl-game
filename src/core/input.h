@@ -8,6 +8,7 @@ inline std::unordered_map<int, bool> keysPressedBeforePoll_;
 inline std::unordered_map<int, bool> keysPressed_;
 
 inline std::atomic_bool WINDOW_SIZE_CHANGE_PENDING(false);
+inline std::atomic_bool SET_FULLSCREEN_PENDING(false);
 inline std::atomic_bool CURSOR_MODE_CHANGE_PENDING(false);
 inline std::atomic_bool MOUSE_MOVE_PENDING(false);
 inline std::atomic_bool FIRST_MOUSE(true);

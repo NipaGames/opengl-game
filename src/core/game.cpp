@@ -45,7 +45,13 @@ void Game::GameThread() {
         deltaTime_ = currentTime - lastFrame_;
         lastFrame_ = currentTime;
 
-        if(Input::WINDOW_SIZE_CHANGE_PENDING) {
+        if (Input::SET_FULLSCREEN_PENDING) {
+            const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+            game->GetRenderer().UpdateCameraProjection(mode->width, mode->height);
+            Input::SET_FULLSCREEN_PENDING = false;
+            Input::WINDOW_SIZE_CHANGE_PENDING = false;
+        }
+        if (Input::WINDOW_SIZE_CHANGE_PENDING) {
             int width, height;
             glfwGetFramebufferSize(window_.GetWindow(), &width, &height);
             if (width > 0 && height > 0)

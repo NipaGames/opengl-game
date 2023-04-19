@@ -198,22 +198,24 @@ void GameWindow::UpdateInputSystem() {
     glfwWaitEvents();
     if (Input::UPDATE_FULLSCREEN) {
         isFullscreen_ = !isFullscreen_;
+        glm::ivec2 windowSize;
         if (isFullscreen_) {
+            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
             glfwGetWindowPos(window_, &prevWndPos_.x, &prevWndPos_.y);
             glfwGetWindowSize(window_, &prevWndSize_.x, &prevWndSize_.y);
-            const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
             if (useVsync_)
-                glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+                glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
             else
-                glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+                glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
             Input::VSYNC_POLL_RATE_CHANGE_PENDING = true;
+            Input::SET_FULLSCREEN_PENDING = true;
         }
         else {
             glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
+            glfwGetWindowSize(window_, &windowSize.x, &windowSize.y);
+            game->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
         }
-        glm::ivec2 windowSize;
-        glfwGetWindowSize(window_, &windowSize.x, &windowSize.y);
-        game->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
         Input::UPDATE_FULLSCREEN = false;
     }
     if (Input::CURSOR_MODE_CHANGE_PENDING) {

@@ -28,6 +28,7 @@ private:
     Camera camera_;
     Shader framebufferShader_;
     Shader normalShader_;
+    glm::ivec2 viewportSize_;
 public:
     std::unordered_map<int, GLuint> shaders;
     std::vector<PointLight> pointLights;

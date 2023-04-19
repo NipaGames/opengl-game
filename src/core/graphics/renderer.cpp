@@ -101,6 +101,8 @@ bool Renderer::Init() {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
+    glfwGetWindowSize(window_, &viewportSize_.x, &viewportSize_.y);
+
     return true;
 }
 
@@ -143,9 +145,6 @@ void Renderer::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    int width, height;
-    glfwGetWindowSize(window_, &width, &height);
-
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
     glUseProgram(0);
 
@@ -161,7 +160,7 @@ void Renderer::Render() {
     // second pass (draw framebuffer onto screen)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, MSAAFbo_);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_);
-    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBlitFramebuffer(0, 0, viewportSize_.x, viewportSize_.y, 0, 0, viewportSize_.x, viewportSize_.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);
@@ -180,6 +179,7 @@ void Renderer::Render() {
 }
 
 void Renderer::UpdateCameraProjection(int width, int height) {
+    viewportSize_ = glm::ivec2(width, height);
     glViewport(0, 0, width, height);
 
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, MSAATextureColorBuffer_);
