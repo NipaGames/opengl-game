@@ -91,17 +91,19 @@ void MonkeyGame::Start() {
     if (font != std::nullopt && font2 != std::nullopt) {
         auto fontId = UI::Text::AssignFont(*font);
         Entity& textEntity = entityManager_.CreateEntity();
-        fpsText = textEntity.AddComponent<UI::TextComponent>();
+        fpsText = textEntity.AddComponent<UI::TextComponent>(&canvas, 2);
+        fpsText->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
         fpsText->color = glm::vec4(1.0f);
         fpsText->font = fontId;
+        fpsText->SetText("bruh");
+        fpsText->AddToCanvas();
         textEntity.transform->position.x = 25;
         textEntity.transform->position.y = 680;
         textEntity.transform->size.z = .5f;
-        canvas.AddUIComponent((UI::UIComponent*) fpsText);
 
         auto font2Id = UI::Text::AssignFont(*font2);
         Entity& versionTextEntity = entityManager_.CreateEntity();
-        auto versionText = versionTextEntity.AddComponent<UI::TextComponent>();
+        UI::TextComponent* versionText = versionTextEntity.AddComponent<UI::TextComponent>(&canvas);
         versionText->font = font2Id;
         #ifdef VERSION_SPECIFIED
         versionText->SetText("v" + std::to_string(VERSION_MAJ) + "." + std::to_string(VERSION_MIN));
@@ -109,10 +111,10 @@ void MonkeyGame::Start() {
         versionText->SetText("[invalid version]");
         #endif
         versionText->color = glm::vec4(glm::vec3(1.0f), .75f);
+        versionText->AddToCanvas();
         versionTextEntity.transform->position.x = 10;
         versionTextEntity.transform->position.y = 10;
         versionTextEntity.transform->size.z = .4f;
-        canvas.AddUIComponent((UI::UIComponent*) versionText);
 
         // free way to crash your computer below
 
@@ -120,15 +122,15 @@ void MonkeyGame::Start() {
         // the textures every time the text is changed (not very often)
         // also shows how i haven't really implemented any order for depth buffer blending
 
-        /*for (int i = 0; i < 1000; i++) {
+        /*for (int i = 0; i < 100; i++) {
             Entity& testText = entityManager_.CreateEntity();
-            auto textComponent = testText.AddComponent<UI::TextComponent>();
+            auto textComponent = testText.AddComponent<UI::TextComponent>(&canvas);
+            textComponent->AddToCanvas();
             textComponent->font = fontId;
-            testText.transform->position.x = rand() % 1280;
-            testText.transform->position.y = rand() % 720;
+            testText.transform->position.x = (i / 10) % 1280 * 128;
+            testText.transform->position.y = (i % 10) * 72;
             testText.transform->size.x = 1.0f;
             textComponent->SetText(std::to_string(i));
-            canvas.AddUIComponent(textComponent);
         }*/
     }
 }
