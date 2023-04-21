@@ -13,7 +13,7 @@ UI::TextComponent::~TextComponent() {
 void UI::TextComponent::Start() {
     shader_ = Shader(SHADER_UI_TEXT);
     renderingMethod_ = renderingMethod;
-    shape.GenerateVAO();
+    shape_.GenerateVAO();
     hasStarted_ = true;
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         glGenFramebuffers(1, &fbo_);
@@ -41,7 +41,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         float w = textSize_.x * size * modifier;
         float h = textSize_.y * size;
         glActiveTexture(GL_TEXTURE0);
-        shape.Bind();
+        shape_.Bind();
         float vertices[6][4] = {
             { pos.x,     pos.y - padding_[0] + h,   0.0f, 1.0f },            
             { pos.x,     pos.y - padding_[0],       0.0f, 0.0f },

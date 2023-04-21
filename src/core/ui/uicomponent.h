@@ -9,15 +9,27 @@ class UIComponent : public Component<UIComponent> {
 friend class Canvas;
 protected:
     Canvas* canvas_ = nullptr;
+    int priority_ = 0;
+    bool isAddedToCanvas_ = false;
 public:
     UIComponent(Canvas* c, int p = 0) {
         canvas_ = c;
-        canvas_->AddUIComponent(this, p);
+        priority_ = p;
     }
     UIComponent() { }
+    virtual IComponent* Clone() const override {
+        UIComponent* c = new UIComponent(canvas_, priority_);
+        if (isAddedToCanvas_)
+            c->AddToCanvas();
+        return c;
+    }
     virtual ~UIComponent() {
-        if (canvas_ != nullptr)
+        if (isAddedToCanvas_ && canvas_ != nullptr)
             canvas_->RemoveUIComponent(this);
+    }
+    virtual void AddToCanvas() {
+        canvas_->AddUIComponent(this, priority_);
+        isAddedToCanvas_ = true;
     }
     virtual void Render(const glm::mat4&) { }
     virtual void UpdateWindowSize() { }

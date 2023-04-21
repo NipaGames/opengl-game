@@ -7,6 +7,16 @@ Entity::Entity() {
     transform = AddComponent<Transform>();
 }
 
+Entity::Entity(const Entity& e) {
+    components_.clear();
+    for (auto c : e.components_) {
+        IComponent* c2 = c->Clone();
+        c2->parent = this;
+        components_.push_back(c2);
+    }
+    transform = GetComponent<Transform>();
+}
+
 Entity::Entity(Entity&& e) {
     components_ = e.components_;
     transform = e.transform;

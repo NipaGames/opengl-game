@@ -1,13 +1,14 @@
 #pragma once
 
-#include <vector>
+#include <list>
 
 #include "core/entity/entity.h"
 
 class EntityManager {
 private:
-    std::vector<Entity> entities_;
+    std::list<Entity> entities_;
 public:
     Entity& CreateEntity();
+    Entity& AddEntity(Entity);
     friend class Game;
 };

@@ -1,8 +1,11 @@
 #pragma once
 #include <iostream>
 
-class Entity; // forward declaration, can't #include "core/entity/entity.h"
+class Entity;
+// forward declaration, can't #include "core/entity/entity.h"
+
 class IComponent {
+friend class Entity;
 public:
     Entity* parent;
     virtual IComponent* Clone() const = 0;
@@ -13,7 +16,7 @@ public:
 template<class Derived>
 class Component : public IComponent {
 public:
-    virtual ~Component() { }
+    virtual ~Component() {  }
     virtual IComponent* Clone() const override {
         return new Derived(static_cast<Derived const&>(*this));
     }

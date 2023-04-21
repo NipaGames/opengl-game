@@ -15,8 +15,8 @@ private:
     std::vector<IComponent*> components_;
 public:
     Entity();
-    Entity(const Entity&) = delete;
-    Entity(Entity&& e);
+    Entity(const Entity&);
+    Entity(Entity&&);
     virtual ~Entity();
 
     Transform* transform;
