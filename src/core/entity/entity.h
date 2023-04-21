@@ -33,28 +33,27 @@ public:
         return nullptr;
     }
     template<typename C>
-    std::vector<C* const> GetComponents() {
-        std::vector<C* const> components;
-        for (int i = 0; i < components_.size(); i++) {
-            C* c = static_cast<C*>(components_[i]);
-            if (c != nullptr)
-                components.push_back((C*) c);
+    void RemoveComponent() {
+        for (auto it = components_.begin(); it != components_.end(); it++) {
+            C* c = static_cast<C*>(*it);
+            if (c != nullptr) {
+                components_.erase(it);
+                delete c;
+                return;
+            }
         }
-        return components;
     }
-
-    template<typename C>
-    C* AddComponent() {
-        C* component = new C();
+    template<typename... C>
+    void RemoveComponents() {
+        ([&] {
+            RemoveComponent<C>();
+        } (), ...);
+    }
+    template<typename C, typename... Args>
+    C* AddComponent(Args... args) {
+        C* component = new C((args)...);
         component->parent = this;
         components_.push_back((IComponent*) component);
         return component;
-    }
-
-    template<typename... C>
-    void AddComponents() {
-        ([&] { // i have no fucking idea how this and c++ lambdas in general work
-            AddComponent<C>();
-        } (), ...);
     }
 };

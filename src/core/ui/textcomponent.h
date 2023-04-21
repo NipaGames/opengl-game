@@ -6,6 +6,7 @@
 #include "core/graphics/shape.h"
 #include "core/ui/text.h"
 #include "core/ui/uicomponent.h"
+#include "core/ui/canvas.h"
 
 namespace UI {
 enum class TextRenderingMethod {
@@ -26,12 +27,13 @@ private:
     Shape shape;
     void ResizeText();
 public:
-    UI::Text::FontID font;
+    Text::FontID font;
     glm::vec2 pos = glm::vec3(0.0f);
     glm::vec4 color = glm::vec4(1.0f);
     TextRenderingMethod renderingMethod = TextRenderingMethod::RENDER_TO_TEXTURE; // Must be declared before start, no effect otherwise
     
     virtual ~TextComponent();
+    TextComponent(UI::Canvas* c, int p = 0) : UIComponent(c, p) { }
 
     void Start();
     void Render(const glm::mat4&);
