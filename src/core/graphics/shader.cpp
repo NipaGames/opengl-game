@@ -10,9 +10,7 @@
 using namespace Shaders;
 
 std::string GetShaderInfoLog(GLuint shader) {
-    GLint result = GL_FALSE;
     int logLength;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
 	if (logLength > 0){
 		char* message = new char[logLength + 1];
@@ -25,9 +23,7 @@ std::string GetShaderInfoLog(GLuint shader) {
 }
 
 std::string GetProgramInfoLog(GLuint program) {
-    GLint result = GL_FALSE;
     int logLength;
-    glGetProgramiv(program, GL_LINK_STATUS, &result);
 	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
 	if (logLength > 0){
 		char* message = new char[logLength + 1];

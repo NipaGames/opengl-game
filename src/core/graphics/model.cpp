@@ -50,7 +50,7 @@ void Model::LoadModel(const std::string& path) {
     }
     aiNode* rootNode = scene->mRootNode;
 	
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !rootNode) {
+    if(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !rootNode) {
         spdlog::error(importer.GetErrorString());
         return;
     }
