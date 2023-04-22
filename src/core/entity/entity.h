@@ -34,7 +34,7 @@ public:
     }
     template<typename C>
     void RemoveComponent() {
-        for (auto it = components_.begin(); it != components_.end(); it++) {
+        for (auto it = components_.begin(); it != components_.end(); ++it) {
             C* c = static_cast<C*>(*it);
             if (c != nullptr) {
                 components_.erase(it);

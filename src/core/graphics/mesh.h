@@ -24,12 +24,7 @@ public:
             texCoords.push_back(0.0f);
         }
     }
-    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : id(meshId), vertices(v), indices(i), normals(v) {
-        for (int i = 0; i < vertices.size() / 3; i++) {
-            texCoords.push_back(0.0f);
-            texCoords.push_back(0.0f);
-        }
-    }
+    Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : Mesh(v, i) { id = meshId; }
     Mesh(const Mesh& m) : id(m.id), vertices(m.vertices), indices(m.indices), texCoords(m.texCoords), normals(m.normals) { }
     virtual ~Mesh();
     std::vector<float> vertices;

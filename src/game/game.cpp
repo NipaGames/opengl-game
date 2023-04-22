@@ -95,7 +95,6 @@ void MonkeyGame::Start() {
         fpsText->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
         fpsText->color = glm::vec4(1.0f);
         fpsText->font = fontId;
-        fpsText->SetText("bruh");
         fpsText->AddToCanvas();
         textEntity.transform->position.x = 25;
         textEntity.transform->position.y = 680;

@@ -101,7 +101,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
     glActiveTexture(GL_TEXTURE0);
     charShape.Bind();
 
-    for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
+    for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
 
         glm::vec2 actualPos(pos.x + c.bearing.x * size, pos.y - (c.size.y - c.bearing.y) * size);
@@ -134,7 +134,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
 
 int UI::Text::GetTextWidth(const Font& font, const std::string& text) {
     int width = 0;
-    for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
+    for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
         width += (c.advance >> 6);
     }
@@ -144,7 +144,7 @@ int UI::Text::GetTextWidth(const Font& font, const std::string& text) {
 glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& text) {
     int max = 0;
     int min = 0;
-    for (std::string::const_iterator it = text.begin(); it != text.end(); it++) {
+    for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
         int cMax = c.bearing.y;
         int cMin = c.bearing.y - c.size.y;
