@@ -1,7 +1,9 @@
 #pragma once
-#include <functional>
+
 #include <iostream>
+#include <sstream>
 #include <unordered_map>
+#include <spdlog/spdlog.h>
 
 class IComponent {
 friend class Entity;
@@ -15,12 +17,24 @@ public:
     virtual void IUpdate() = 0;
     static IComponent* CreateInstance() { return nullptr; }
     template<typename C>
-    static void RegisterComponent() {
-        COMPONENT_INITIALIZERS_[&typeid(C)] = *C::CreateInstance;
+    static bool RegisterComponent() {
+        const type_info* type = &typeid(C);
+        COMPONENT_INITIALIZERS_[type] = *C::CreateInstance;
+        std::string name = std::string(type->name());
+        size_t i = name.find(" ");
+        if (i != std::string::npos)
+            name = name.substr(i + 1);
+        std::cout << "<Registered component " << name << ">" << std::endl;
+        return true;
     }
 };
+// all components that aren't straightly derived from Component will need this
+#define REGISTER_COMPONENT(C) inline bool _##C_isRegistered = IComponent::RegisterComponent<C>()
+
 template<class Derived>
 class Component : public IComponent {
+protected:
+    inline static bool _isRegistered = IComponent::RegisterComponent<Derived>();
 public:
     virtual ~Component() {  }
     virtual IComponent* Clone() const override {

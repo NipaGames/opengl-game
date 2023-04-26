@@ -17,12 +17,6 @@ public:
         priority_ = p;
     }
     UIComponent() { }
-    virtual IComponent* Clone() const override {
-        UIComponent* c = new UIComponent(canvas_, priority_);
-        if (isAddedToCanvas_)
-            c->AddToCanvas();
-        return c;
-    }
     virtual ~UIComponent() {
         if (isAddedToCanvas_ && canvas_ != nullptr)
             canvas_->RemoveUIComponent(this);

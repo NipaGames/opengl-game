@@ -33,29 +33,6 @@ public:
     
     virtual ~TextComponent();
     TextComponent(UI::Canvas* c, int p = 0) : UIComponent(c, p) { }
-    virtual IComponent* Clone() const override {
-        TextComponent* c = new TextComponent(canvas_, priority_);
-        if (this->isAddedToCanvas_)
-            c->AddToCanvas();
-        c->shader_ = this->shader_;
-        c->text_ = this->text_;
-        c->textSize_ = this->textSize_;
-        c->padding_ = this->padding_;
-        c->renderingMethod_ = this->renderingMethod_;
-        c->font = this->font;
-        c->color = this->color;
-        c->renderingMethod = this->renderingMethod;
-        c->hasStarted_ = this->hasStarted_;
-
-        c->shape_ = Shape();
-        if (hasStarted_ && renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
-            c->shape_.GenerateVAO();
-            glGenBuffers(1, &c->fbo_);
-            glGenTextures(1, &c->texture_);
-            c->SetText(c->text_);
-        }
-        return c;
-    }
     
     void Start();
     void Render(const glm::mat4&);
@@ -63,4 +40,5 @@ public:
     void SetText(const std::string&);
     const std::string& GetText();
 };
+REGISTER_COMPONENT(TextComponent);
 };
