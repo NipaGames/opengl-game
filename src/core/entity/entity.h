@@ -51,9 +51,15 @@ public:
     }
     template<typename C, typename... Args>
     C* AddComponent(Args... args) {
-        C* component = new C((args)...);
-        component->parent = this;
-        components_.push_back((IComponent*) component);
-        return component;
+        C* c = new C((args)...);
+        c->parent = this;
+        components_.push_back((IComponent*) c);
+        return c;
+    }
+    IComponent* AddComponent(const type_info* type) {
+        IComponent* c = IComponent::COMPONENT_INITIALIZERS_.at(type)();
+        c->parent = this;
+        components_.push_back((IComponent*) c);
+        return c;
     }
 };

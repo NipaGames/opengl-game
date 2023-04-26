@@ -29,8 +29,12 @@ void MonkeyGame::Start() {
     lastTime_ = glfwGetTime();
     frames_ = 0;
 
+    // temporary
+    IComponent::RegisterComponent<PlayerController>();
+    IComponent::RegisterComponent<RotateCube>();
+
     Entity& player = entityManager_.CreateEntity();
-    player.AddComponent<PlayerController>();
+    player.AddComponent(&typeid(PlayerController)); // temporary
 
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
 
@@ -50,7 +54,7 @@ void MonkeyGame::Start() {
     for (int i = 0; i < monkeyCount; i++) {
         Entity& monkey = entityManager_.CreateEntity();
         monkey.AddComponent<MeshRenderer>()->meshes = monkeyModel.meshes;
-        monkey.AddComponent<RotateCube>();
+        monkey.AddComponent(&typeid(RotateCube)); // temporary
         
         double rad = ((2 * M_PI) / monkeyCount) * i;
         monkey.transform->position = glm::vec3(cos(rad) * range, 0.0, sin(rad) * range);
