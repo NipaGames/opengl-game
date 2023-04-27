@@ -1,4 +1,7 @@
 # opengl-game
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2c5efd5e34e747f38f03a249bb6672ef)](https://app.codacy.com/gh/NipaGames/opengl-game?utm_source=github.com&utm_medium=referral&utm_content=NipaGames/opengl-game&utm_campaign=Badge_Grade)
+
 ## Repository status <img src="/images/status.png?" width="150" height="30" align="right"/>
 
 - Working: you can clone and build the repo and expect working results
