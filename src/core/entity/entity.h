@@ -56,8 +56,8 @@ public:
         components_.push_back((IComponent*) c);
         return c;
     }
-    IComponent* AddComponent(const type_info* type) {
-        IComponent* c = IComponent::COMPONENT_INITIALIZERS_.at(type)();
+    IComponent* AddComponent(const type_info* type, const ComponentData& data = ComponentData()) {
+        IComponent* c = IComponent::COMPONENT_INITIALIZERS_.at(type)(data);
         c->parent = this;
         components_.push_back((IComponent*) c);
         return c;

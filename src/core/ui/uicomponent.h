@@ -22,6 +22,8 @@ public:
             canvas_->RemoveUIComponent(this);
     }
     virtual void AddToCanvas() {
+        if (canvas_ == nullptr)
+            return;
         canvas_->AddUIComponent(this, priority_);
         isAddedToCanvas_ = true;
     }
