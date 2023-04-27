@@ -6,23 +6,40 @@
 #include <unordered_map>
 #include <spdlog/spdlog.h>
 
+typedef std::unordered_map<std::string, std::any> VariableMap;
+
+template<typename T>
+class ComponentDataValue {
+public:
+    std::string name;
+    T* ptr = nullptr;
+    ComponentDataValue() { }
+    ComponentDataValue(const std::string& name, T* ptr, VariableMap& map) {
+        this->name = name;
+        this->ptr = ptr;
+        map[name] = *this;
+    }
+};
+
 class ComponentData {
 public:
-    std::unordered_map<std::string, std::any> vars;
+    VariableMap vars;
     template<typename T>
     const T& Get(const std::string& key) {
         if (!vars.count(key))
-            vars[key] = T();
-        return std::any_cast<const T&>(vars.at(key));
+            ComponentDataValue<T>(key, nullptr, vars);
+        return *std::any_cast<const ComponentDataValue<T>&>(vars.at(key)).ptr;
     }
     template<typename T>
     void Set(const std::string& key, const T& val) {
-        vars[key] = val;
-    }
-    void Set(const std::string& key, const char* val) {
-        vars[key] = std::string(val);
+        *std::any_cast<ComponentDataValue<T>&>(vars[key]).ptr = val;
     }
 };
+
+#define DEFINE_COMPONENT_DATA_VALUE(T, name, val) \
+T name = val; \
+ComponentDataValue<T> _valPtr_##name = ComponentDataValue<T>(#name, &name, this->data.vars)
+
 
 class IComponent {
 friend class Entity;

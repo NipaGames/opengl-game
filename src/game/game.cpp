@@ -91,7 +91,7 @@ void MonkeyGame::Start() {
     if (font != std::nullopt && font2 != std::nullopt) {
         auto fontId = UI::Text::AssignFont(*font);
         Entity& textEntity = entityManager_.CreateEntity();
-        fpsText = textEntity.AddComponent<UI::TextComponent>(&canvas, 2);
+        fpsText = textEntity.AddComponent<UI::TextComponent>(&canvas);
         fpsText->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
         fpsText->color = glm::vec4(1.0f);
         fpsText->font = fontId;
@@ -115,12 +115,7 @@ void MonkeyGame::Start() {
         versionTextEntity.transform->position.y = 10;
         versionTextEntity.transform->size.z = .4f;
 
-        // free way to crash your computer below
-
-        // probably a good way to render this shit would be to pre-render
-        // the textures every time the text is changed (not very often)
-        // also shows how i haven't really implemented any order for depth buffer blending
-
+        // super text rendering benchmark 9000
         /*for (int i = 0; i < 100; i++) {
             Entity& testText = entityManager_.CreateEntity();
             auto textComponent = testText.AddComponent<UI::TextComponent>(&canvas);
