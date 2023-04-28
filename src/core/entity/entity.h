@@ -25,18 +25,19 @@ public:
     void Update();
     template<typename C>
     C* const GetComponent() {
-        for (int i = 0; i < components_.size(); i++) {
-            C* c = static_cast<C*>(components_[i]);
-            if (c != nullptr)
-                return c;
+        size_t hash = typeid(C).hash_code();
+        for (auto c : components_) {
+            if (c->typeHash == hash)
+                return static_cast<C*>(c);
         }
         return nullptr;
     }
     template<typename C>
     void RemoveComponent() {
+        size_t hash = typeid(C).hash_code();
         for (auto it = components_.begin(); it != components_.end(); ++it) {
             C* c = static_cast<C*>(*it);
-            if (c != nullptr) {
+            if (c->typeHash == hash) {
                 components_.erase(it);
                 delete c;
                 return;
@@ -53,12 +54,21 @@ public:
     C* AddComponent(Args... args) {
         C* c = new C((args)...);
         c->parent = this;
+        c->typeHash = typeid(C).hash_code();
         components_.push_back((IComponent*) c);
         return c;
     }
     IComponent* AddComponent(const type_info* type, const ComponentData& data = ComponentData()) {
-        IComponent* c = IComponent::COMPONENT_INITIALIZERS_.at(type)(data);
+        int i = 0;
+        for (;i < IComponent::COMPONENT_TYPES_.size(); i++) {
+            if (IComponent::COMPONENT_TYPES_[i].type == type)
+                break;
+        }
+        if (i == IComponent::COMPONENT_TYPES_.size())
+            return nullptr;
+        IComponent* c = IComponent::COMPONENT_TYPES_[i].initializer(data);
         c->parent = this;
+        c->typeHash = type->hash_code();
         components_.push_back((IComponent*) c);
         return c;
     }

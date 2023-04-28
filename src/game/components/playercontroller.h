@@ -11,7 +11,7 @@ public:
     void Start();
     void Update();
 
-    float speed = 10;
+    DEFINE_COMPONENT_DATA_VALUE(int, speed, 10);
     float mass = 4;
     glm::vec3 velocity;
 };

@@ -32,7 +32,9 @@ void MonkeyGame::Start() {
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
     
     Entity& player = entityManager_.CreateEntity();
-    player.AddComponent<PlayerController>();
+    ComponentData d;
+    d.Set("speed", 15); // will go back to the normal speed someday
+    player.AddComponent(&typeid(PlayerController), d);
 
     float range = 4.0f;
     int monkeyCount = 6;
