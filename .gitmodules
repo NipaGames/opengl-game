@@ -4,6 +4,3 @@
 [submodule "src/thirdparty/spdlog"]
 	path = src/thirdparty/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "src/thirdparty/nlohmann-json"]
-	path = src/thirdparty/nlohmann-json
-	url = https://github.com/nlohmann/json
