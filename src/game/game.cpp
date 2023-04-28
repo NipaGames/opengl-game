@@ -37,7 +37,7 @@ void MonkeyGame::Start() {
     float range = 4.0f;
     int monkeyCount = 6;
     Model monkeyModel;
-    monkeyModel.LoadModel("../res/chimp.fbx");
+    monkeyModel.LoadModel("../res/objects/chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(SHADER_LIT);
@@ -57,7 +57,7 @@ void MonkeyGame::Start() {
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
     Model mogusModel;
-    mogusModel.LoadModel("../res/mog.obj");
+    mogusModel.LoadModel("../res/objects/mog.obj");
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(SHADER_UNLIT);
@@ -76,7 +76,7 @@ void MonkeyGame::Start() {
     plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
     plane->GenerateVAO();
-    plane->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/ground.jpg"));
+    plane->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/textures/ground.jpg"));
     plane->material->SetShaderUniform<int>("specularHighlight", 8);
     plane->material->SetShaderUniform<float>("specularStrength", 0);
     Entity& terrain = entityManager_.CreateEntity();
@@ -86,8 +86,8 @@ void MonkeyGame::Start() {
 
     UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
 
-    auto font = UI::Text::LoadFontFile("../res/Augusta.ttf", 96);
-    auto font2 = UI::Text::LoadFontFile("../res/SEGOEUI.ttf", 48);
+    auto font = UI::Text::LoadFontFile("../res/fonts/Augusta.ttf", 96);
+    auto font2 = UI::Text::LoadFontFile("../res/fonts/SEGOEUI.ttf", 48);
     if (font != std::nullopt && font2 != std::nullopt) {
         auto fontId = UI::Text::AssignFont(*font);
         Entity& textEntity = entityManager_.CreateEntity();
