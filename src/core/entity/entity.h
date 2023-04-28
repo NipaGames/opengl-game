@@ -72,4 +72,11 @@ public:
         components_.push_back((IComponent*) c);
         return c;
     }
+    IComponent* AddComponent(const std::string& name, const ComponentData& data = ComponentData()) {
+        for (auto& c : IComponent::COMPONENT_TYPES_) {
+            if (c.name == name)
+                return AddComponent(c.type, data);
+        }
+        return nullptr;
+    }
 };

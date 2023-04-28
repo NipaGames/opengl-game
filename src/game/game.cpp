@@ -34,7 +34,7 @@ void MonkeyGame::Start() {
     Entity& player = entityManager_.CreateEntity();
     ComponentData d;
     d.Set("speed", 15); // will go back to the normal speed someday
-    player.AddComponent(&typeid(PlayerController), d);
+    player.AddComponent("PlayerController", d);
 
     float range = 4.0f;
     int monkeyCount = 6;
