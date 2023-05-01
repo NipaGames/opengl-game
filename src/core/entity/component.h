@@ -9,6 +9,7 @@
 class IComponentDataValue {
 public:
     std::string name;
+    const type_info* type;
     virtual void CloneValuesTo(const std::shared_ptr<IComponentDataValue>&) = 0;
 };
 
@@ -19,8 +20,11 @@ class ComponentDataValue : public IComponentDataValue {
 public:
     T* ptr = nullptr;
     T val;
-    ComponentDataValue() { }
+    ComponentDataValue() {
+        this->type = &typeid(T);
+    }
     ComponentDataValue(const std::string& name, T* ptr) {
+        this->type = &typeid(T);
         this->name = name;
         this->ptr = ptr;
         if (ptr != nullptr)
@@ -62,6 +66,11 @@ public:
         data->val = val;
         if (data->ptr != nullptr)
             *data->ptr = val;
+    }
+    const type_info* GetType(const std::string& key) {
+        if (!vars.count(key))
+            return nullptr;
+        return vars.at(key)->type;
     }
 };
 

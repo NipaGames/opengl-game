@@ -17,18 +17,31 @@ public:
     Entity();
     Entity(const Entity&);
     Entity(Entity&&);
+    Entity Entity::operator=(const Entity& e) {
+        return Entity(e);
+    }
     virtual ~Entity();
 
     Transform* transform;
 
     void Start();
     void Update();
-    template<typename C>
-    C* const GetComponent() {
-        size_t hash = typeid(C).hash_code();
+    IComponent* const GetComponent(const type_info* type) {
+        size_t hash = type->hash_code();
         for (auto c : components_) {
             if (c->typeHash == hash)
-                return static_cast<C*>(c);
+                return c;
+        }
+        return nullptr;
+    }
+    template<typename C>
+    C* const GetComponent() {
+        return static_cast<C*>(GetComponent(&typeid(C)));
+    }
+    IComponent* GetComponent(const std::string& name) {
+        for (auto& c : IComponent::COMPONENT_TYPES_) {
+            if (c.name == name)
+                return GetComponent(c.type);
         }
         return nullptr;
     }

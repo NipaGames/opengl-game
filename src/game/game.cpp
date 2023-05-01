@@ -1,10 +1,11 @@
 #include "game/game.h"
 
+#include "core/input.h"
 #include "core/entity/component/meshrenderer.h"
 #include "core/graphics/model.h"
-#include "core/ui/textcomponent.h"
-#include "core/input.h"
+#include "core/stage/stage.h"
 #include "core/terrain/plane.h"
+#include "core/ui/textcomponent.h"
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
 
@@ -28,6 +29,8 @@ bool MonkeyGame::Init() {
 void MonkeyGame::Start() {
     lastTime_ = glfwGetTime();
     frames_ = 0;
+
+    Stage::AddStage(Stage::ReadStageFromFile("../res/stages/test.json"));
 
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
     
@@ -128,6 +131,7 @@ void MonkeyGame::Start() {
             testText.transform->size.x = 1.0f;
             textComponent->SetText(std::to_string(i));
         }*/
+        Stage::LoadStage("teststage");
     }
 }
 
