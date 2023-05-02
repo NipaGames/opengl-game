@@ -7,6 +7,10 @@
 ## About
 At the moment this is just a rendering test with WASD-controls and first-person camera.
 ## Progress
+### Version history:
+- **v0.3:** stage loading basics
+- **v0.2:** whacky ass reflection things and shit for serialization later
+
 ![Image showing the game](/images/screenshot.png)
 *Cube rendering test* 30.9.2022 (DD-MM-YYYY)
 <br><br>
