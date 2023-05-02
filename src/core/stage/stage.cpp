@@ -108,7 +108,7 @@ std::vector<Entity> ParseEntities(const json& entities, bool autoEnabled, int* i
             parsedEntities.insert(parsedEntities.end(), recursiveEntities.begin(), recursiveEntities.end());
         }
         else if (invalidEntities != nullptr) {
-            *invalidEntities++;
+            (*invalidEntities)++;
         }
     }
     return parsedEntities;
