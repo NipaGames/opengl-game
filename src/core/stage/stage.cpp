@@ -11,6 +11,7 @@
 using json = nlohmann::json;
 
 std::vector<Stage::Stage> stages;
+std::vector<std::string> loadedStages;
 
 #define STAGE_JSON_ENTITIES_KEY "entities"
 #define STAGE_JSON_ENTITIES_AUTO_KEY "entities-auto"
@@ -87,7 +88,7 @@ std::vector<Entity> ParseEntities(const json& entities, bool autoEnabled, int* i
     std::vector<Entity> parsedEntities;
     for (const auto&[ek, ev] : entities.items()) {
         if (ev.is_object()) {
-            Entity entity;
+            Entity entity("");
             if (!autoEnabled)
                 entity.id = ek;
             for (const auto&[ck, cv] : ev.items()) {
@@ -164,28 +165,48 @@ void Stage::AddStage(const Stage& stage) {
 bool Stage::LoadStage(const std::string& id) {
     if (stages.empty())
         return false;
-    auto sIt = std::find_if(stages.begin(), stages.end(), [&](const Stage& s) {
-        return s.id == id;
-    });
+    auto sIt = std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
     if (sIt == stages.end())
         return false;
-    const Stage& s = *sIt;
+    Stage& s = *sIt;
 
     for (const Entity& e : s.entities) {
-        if (e.id.empty())
-            game->GetEntityManager().AddEntity(e);
+        if (e.id.empty()) {
+            Entity& instantiated = game->GetEntityManager().AddEntity(e);
+            s.instantiatedEntities.insert(instantiated.GetHash());
+        }
         else {
-            game->GetEntityManager()[e.id].OverrideComponentValues(e);
+            bool hasEntityAlready = game->GetEntityManager().CountEntities(e.id) > 0;
+            Entity& entity = game->GetEntityManager()[e.id];
+            entity.OverrideComponentValues(e);
+            if (!hasEntityAlready)
+                s.instantiatedEntities.insert(entity.GetHash());
         }
     }
+    loadedStages.insert(loadedStages.begin(), s.id);
     spdlog::info("Loaded stage '" + id + "' (" + std::to_string(s.entities.size()) + " entities modified)");
     return true;
 }
 
 bool Stage::UnloadStage(const std::string& id) {
+    auto idIt = std::find(loadedStages.begin(), loadedStages.end(), id);
+    if (idIt == loadedStages.end())
+        return false;
+    auto sIt = std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
+    Stage& s = *sIt;
+    for (size_t hash : s.instantiatedEntities) {
+        game->GetEntityManager().RemoveEntity(hash);
+    }
+    loadedStages.erase(idIt);
     return true;
 }
 
 void Stage::UnloadAllStages() {
+    for (const std::string& s : loadedStages) {
+        UnloadStage(s);
+    }
+}
 
+const std::vector<std::string>& Stage::GetLoadedStages() {
+    return loadedStages;
 }

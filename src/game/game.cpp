@@ -130,12 +130,16 @@ void MonkeyGame::Start() {
             textComponent->SetText(std::to_string(i));
         }*/
     }
-    Stage::LoadStage("teststage");
 }
 
 void MonkeyGame::Update() {
     if (Input::IsKeyPressedDown(GLFW_KEY_N))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
+
+    if (Input::IsKeyPressedDown(GLFW_KEY_L)) {
+        Stage::UnloadAllStages();
+        Stage::LoadStage("teststage");
+    }
     
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {

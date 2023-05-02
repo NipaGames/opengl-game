@@ -1,11 +1,14 @@
 @echo off
+rem Build type can be either Debug or Release
+set BUILD_TYPE=Debug
 echo [BUILD STARTED]
+
 rem cmake -B build -G "Ninja" .
- cmake -B build .
+cmake -B build .
 cd build
-cmake --build . --config Debug || exit 1
+cmake --build . --config %BUILD_TYPE% || exit 1
 echo [BUILD COMPLETE]
 echo.
-cd ../bin/Debug
+cd ../bin/%BUILD_TYPE%
 OpenGLProject
 cd ..
