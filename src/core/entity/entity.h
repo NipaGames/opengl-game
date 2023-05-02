@@ -14,7 +14,7 @@ class Entity {
 private:
     std::vector<IComponent*> components_;
 public:
-    Entity();
+    Entity(const std::string& id = "") : id(id), transform(AddComponent<Transform>()) { }
     Entity(const Entity&);
     Entity(Entity&&);
     Entity Entity::operator=(const Entity& e) {
@@ -23,6 +23,7 @@ public:
     virtual ~Entity();
 
     Transform* transform;
+    std::string id;
 
     void Start();
     void Update();
@@ -45,11 +46,16 @@ public:
         }
         return nullptr;
     }
-    template<typename C>
-    void RemoveComponent() {
-        size_t hash = typeid(C).hash_code();
+    IComponent* GetComponent(size_t hash) {
+        for (auto& c : IComponent::COMPONENT_TYPES_) {
+            if (c.type->hash_code() == hash)
+                return GetComponent(c.type);
+        }
+        return nullptr;
+    }
+    void RemoveComponent(size_t hash) {
         for (auto it = components_.begin(); it != components_.end(); ++it) {
-            C* c = static_cast<C*>(*it);
+            IComponent* c = *it;
             if (c->typeHash == hash) {
                 components_.erase(it);
                 delete c;
@@ -57,11 +63,21 @@ public:
             }
         }
     }
+    template<typename C>
+    void RemoveComponent() {
+        RemoveComponent(typeid(C).hash_code());
+    }
     template<typename... C>
     void RemoveComponents() {
         ([&] {
             RemoveComponent<C>();
         } (), ...);
+    }
+    void RemoveComponent(const std::string& name) {
+        for (auto& c : IComponent::COMPONENT_TYPES_) {
+            if (c.name == name)
+                RemoveComponent(c.type->hash_code());
+        }
     }
     template<typename C, typename... Args>
     C* AddComponent(Args... args) {
@@ -91,5 +107,20 @@ public:
                 return AddComponent(c.type, data);
         }
         return nullptr;
+    }
+    IComponent* AddComponent(size_t hash, const ComponentData& data = ComponentData()) {
+        for (auto& c : IComponent::COMPONENT_TYPES_) {
+            if (c.type->hash_code() == hash)
+                return AddComponent(c.type, data);
+        }
+        return nullptr;
+    }
+    void OverrideComponentValues(const Entity& e) {
+        for (auto c : e.components_) {
+            IComponent* mc = GetComponent(c->typeHash);
+            for (auto&[k, v] : c->data.vars) {
+                v->CloneValuesTo(mc->data.vars[k]);
+            }
+        }
     }
 };

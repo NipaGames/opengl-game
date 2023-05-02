@@ -35,6 +35,7 @@ void Game::GameThread() {
         entity.Start();
     }
     renderer_.Start();
+    lastFrame_ = glfwGetTime();
     while (running_) {
         if (glfwWindowShouldClose(window_.GetWindow())) {
             running_ = false;

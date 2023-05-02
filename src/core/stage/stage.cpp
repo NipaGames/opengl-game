@@ -13,6 +13,7 @@ using json = nlohmann::json;
 std::vector<Stage::Stage> stages;
 
 #define STAGE_JSON_ENTITIES_KEY "entities"
+#define STAGE_JSON_ENTITIES_AUTO_KEY "entities-auto"
 
 // this is just messed up, sorry
 // may god have mercy on anyone who has chosen to read the following code
@@ -35,6 +36,18 @@ void* AddInitializer(const ValueInitializer& init) {
 #define INIT_TYPES_LN_(ln, f, ...) void* _init_ln##ln = AddInitializer<__VA_ARGS__>(f)
 #define INIT_TYPES_LN(ln, f, ...) INIT_TYPES_LN_(ln, f, __VA_ARGS__)
 #define INIT_TYPES(f, ...) INIT_TYPES_LN(__LINE__, f, __VA_ARGS__)
+
+INIT_TYPES([](IComponent* c, const std::string& k, const json& j) {
+    if (!j.is_number())
+        return false;
+    if (c->data.vars[k]->type->hash_code() == typeid(double).hash_code())
+        c->data.Set(k, (double) j);
+    else if (c->data.vars[k]->type->hash_code() == typeid(float).hash_code())
+        c->data.Set(k, (float) j);
+    else if (c->data.vars[k]->type->hash_code() == typeid(int).hash_code())
+        c->data.Set(k, (int) j);
+    return true;
+}, double, float, int);
 
 INIT_TYPES([](IComponent* c, const std::string& k, const json& j) {
     glm::vec3 vec;
@@ -70,12 +83,14 @@ bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal)
     return false; 
 }
 
-std::vector<Entity> ParseEntities(const json& entities, int* invalidEntities = nullptr) {
+std::vector<Entity> ParseEntities(const json& entities, bool autoEnabled, int* invalidEntities = nullptr) {
     std::vector<Entity> parsedEntities;
-    for (auto& e : entities) {
-        if (e.is_object()) {
+    for (const auto&[ek, ev] : entities.items()) {
+        if (ev.is_object()) {
             Entity entity;
-            for (const auto&[ck, cv] : e.items()) {
+            if (!autoEnabled)
+                entity.id = ek;
+            for (const auto&[ck, cv] : ev.items()) {
                 if (!cv.is_object())
                     continue;
                 IComponent* c = entity.GetComponent(ck);
@@ -88,8 +103,8 @@ std::vector<Entity> ParseEntities(const json& entities, int* invalidEntities = n
             }
             parsedEntities.push_back(entity);
         }
-        else if (e.is_array()) {
-            std::vector<Entity> recursiveEntities = ParseEntities(e, invalidEntities);
+        else if (ev.is_array()) {
+            std::vector<Entity> recursiveEntities = ParseEntities(ev, autoEnabled, invalidEntities);
             parsedEntities.insert(parsedEntities.end(), recursiveEntities.begin(), recursiveEntities.end());
         }
         else if (invalidEntities != nullptr) {
@@ -117,19 +132,27 @@ Stage::Stage Stage::ReadStageFromFile(const std::string& path) {
         return s;
     }
     s.id = data.items().begin().key();
+    int invalidEntities = 0;
     if (root.contains(STAGE_JSON_ENTITIES_KEY)) {
         json& entities = root[STAGE_JSON_ENTITIES_KEY];
-        if (entities.is_array()) {
-            int invalidEntities = 0;
-            s.entities = ParseEntities(entities, &invalidEntities);
-            if (invalidEntities > 0) {
-                spdlog::warn("'" + std::string(STAGE_JSON_ENTITIES_KEY) + "' contains " + std::to_string(invalidEntities) + " invalid entities! ('" + path + "')");
-            }
-        }
-        else {
-            spdlog::warn("'" + std::string(STAGE_JSON_ENTITIES_KEY) + "' must be an array! ('" + path + "')");
-        }
+        if (entities.is_object())
+            s.entities = ParseEntities(entities, false, &invalidEntities);
+        else
+            spdlog::warn("'" + std::string(STAGE_JSON_ENTITIES_KEY) + "' must be an object! ('" + path + "')");
     }
+    if (root.contains(STAGE_JSON_ENTITIES_AUTO_KEY)) {
+        json& autoEntities = root[STAGE_JSON_ENTITIES_AUTO_KEY];
+        if (autoEntities.is_array()) {
+            auto& parsedEntities = ParseEntities(autoEntities, true, &invalidEntities);
+            s.entities.insert(s.entities.end(), parsedEntities.begin(), parsedEntities.end());
+        }
+        else
+            spdlog::warn("'" + std::string(STAGE_JSON_ENTITIES_AUTO_KEY) + "' must be an array! ('" + path + "')");
+    }
+    if (invalidEntities > 0) {
+        spdlog::warn(std::to_string(invalidEntities) + " invalid entities! ('" + path + "')");
+    }
+
     return s;
 }
 
@@ -149,9 +172,13 @@ bool Stage::LoadStage(const std::string& id) {
     const Stage& s = *sIt;
 
     for (const Entity& e : s.entities) {
-        game->GetEntityManager().AddEntity(e);
+        if (e.id.empty())
+            game->GetEntityManager().AddEntity(e);
+        else {
+            game->GetEntityManager()[e.id].OverrideComponentValues(e);
+        }
     }
-    spdlog::info("Loaded stage '" + id + "' (" + std::to_string(s.entities.size()) + " entities)");
+    spdlog::info("Loaded stage '" + id + "' (" + std::to_string(s.entities.size()) + " entities modified)");
     return true;
 }
 

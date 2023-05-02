@@ -122,7 +122,7 @@ protected:
 public:
     virtual ~Component() { }
     virtual IComponent* Clone() const override {
-        return new Derived(static_cast<Derived const&>(*this));
+        return new Derived(static_cast<const Derived&>(*this));
     }
     void IStart() override { static_cast<Derived*>(this)->Start(); }
     void IUpdate() override { static_cast<Derived*>(this)->Update(); }

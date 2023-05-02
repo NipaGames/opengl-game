@@ -3,11 +3,8 @@
 #include "core/gamewindow.h"
 #include "core/graphics/renderer.h"
 
-Entity::Entity() {
-    transform = AddComponent<Transform>();
-}
-
 Entity::Entity(const Entity& e) {
+    id = e.id;
     components_.clear();
     for (auto c : e.components_) {
         IComponent* c2 = c->Clone();
@@ -18,6 +15,7 @@ Entity::Entity(const Entity& e) {
 }
 
 Entity::Entity(Entity&& e) {
+    id = e.id;
     components_ = e.components_;
     transform = e.transform;
     for (auto c : components_) {

@@ -1,6 +1,16 @@
 {
     "teststage": {
-        "entities": [
+        "entities": {
+            "Player": {
+                "Transform": {
+                    "position": [ 10, 0, 10 ]
+                },
+                "PlayerController": {
+                    "speed": 20
+                }
+            }
+        },
+        "entities-auto": [
             {
                 "Transform": {
                     "position": [ 20, 10, 20 ],

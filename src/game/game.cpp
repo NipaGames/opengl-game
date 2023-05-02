@@ -34,10 +34,8 @@ void MonkeyGame::Start() {
 
     renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
     
-    Entity& player = entityManager_.CreateEntity();
-    ComponentData d;
-    d.Set("speed", 15); // will go back to the normal speed someday
-    player.AddComponent("PlayerController", d);
+    Entity& player = entityManager_.CreateEntity("Player");
+    player.AddComponent<PlayerController>();
 
     float range = 4.0f;
     int monkeyCount = 6;
@@ -131,8 +129,8 @@ void MonkeyGame::Start() {
             testText.transform->size.x = 1.0f;
             textComponent->SetText(std::to_string(i));
         }*/
-        Stage::LoadStage("teststage");
     }
+    Stage::LoadStage("teststage");
 }
 
 void MonkeyGame::Update() {
