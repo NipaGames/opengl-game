@@ -179,12 +179,15 @@ bool Stage::LoadStage(const std::string& id) {
             bool hasEntityAlready = game->GetEntityManager().CountEntities(e.id) > 0;
             Entity& entity = game->GetEntityManager()[e.id];
             entity.OverrideComponentValues(e);
-            if (!hasEntityAlready)
+            if (!hasEntityAlready) {
                 s.instantiatedEntities.insert(entity.GetHash());
+                entity.Start();
+            }
         }
     }
     loadedStages.insert(loadedStages.begin(), s.id);
     spdlog::info("Loaded stage '" + id + "' (" + std::to_string(s.entities.size()) + " entities modified)");
+    game->GetRenderer().UpdateLighting();
     return true;
 }
 
@@ -198,6 +201,7 @@ bool Stage::UnloadStage(const std::string& id) {
         game->GetEntityManager().RemoveEntity(hash);
     }
     loadedStages.erase(idIt);
+    game->GetRenderer().UpdateLighting();
     return true;
 }
 

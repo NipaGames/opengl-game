@@ -12,45 +12,45 @@
 #include <unordered_map>
 
 namespace Input {
-void KeyDown(int key){
-    std::lock_guard<std::mutex> lock(keysMutex_);
-    keys_[key] = true;
-    keysPressedBeforePoll_[key] = true;
-}
+    void KeyDown(int key){
+        std::lock_guard<std::mutex> lock(keysMutex_);
+        keys_[key] = true;
+        keysPressedBeforePoll_[key] = true;
+    }
 
-void KeyUp(int key){
-    std::lock_guard<std::mutex> lock(keysMutex_);
-    keys_[key] = false;
-    keysPressed_[key] = false;
-}
+    void KeyUp(int key){
+        std::lock_guard<std::mutex> lock(keysMutex_);
+        keys_[key] = false;
+        keysPressed_[key] = false;
+    }
 
-bool IsKeyDown(int key){
-    std::lock_guard<std::mutex> lock(keysMutex_);
-    if (!keys_.count(key))
-        return false;
-    return keys_[key];
-}
+    bool IsKeyDown(int key){
+        std::lock_guard<std::mutex> lock(keysMutex_);
+        if (!keys_.count(key))
+            return false;
+        return keys_[key];
+    }
 
-bool IsKeyPressedDown(int key){
-    std::lock_guard<std::mutex> lock(keysMutex_);
-    if (!keysPressed_.count(key))
-        return false;
-    bool val = keysPressed_[key];
-    return val;
-}
+    bool IsKeyPressedDown(int key){
+        std::lock_guard<std::mutex> lock(keysMutex_);
+        if (!keysPressed_.count(key))
+            return false;
+        bool val = keysPressed_[key];
+        return val;
+    }
 
 
-void ClearKeysPressedDown() {
-    std::lock_guard<std::mutex> lock(keysMutex_);
-    keysPressed_.clear();
-}
+    void ClearKeysPressedDown() {
+        std::lock_guard<std::mutex> lock(keysMutex_);
+        keysPressed_.clear();
+    }
 
-void PollKeysPressedDown() {
-    std::lock_guard<std::mutex> lock(keysMutex_);
-    keysPressed_.clear();
-    keysPressed_ = keysPressedBeforePoll_;
-    keysPressedBeforePoll_.clear();
-}
+    void PollKeysPressedDown() {
+        std::lock_guard<std::mutex> lock(keysMutex_);
+        keysPressed_.clear();
+        keysPressed_ = keysPressedBeforePoll_;
+        keysPressedBeforePoll_.clear();
+    }
 }
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {

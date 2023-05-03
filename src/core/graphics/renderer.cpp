@@ -106,36 +106,18 @@ bool Renderer::Init() {
     return true;
 }
 
-void Renderer::Start() {
-    for (auto shader : shaders) {
-        glUseProgram(shader.second);
-        for (int i = 0; i < pointLights.size(); i++) {
-            PointLight& light = pointLights[i];
-            std::string lightUniform = "pointLights[" + std::to_string(i) + "]";
-            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".pos").c_str()), light.pos.x, light.pos.y, light.pos.z);
-            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".color").c_str()), light.color.x, light.color.y, light.color.z);
-            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".range").c_str()), light.range);
-            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".intensity").c_str()), light.intensity);
-        }
-        for (int i = 0; i < directionalLights.size(); i++) {
-            DirectionalLight& light = directionalLights[i];
-            std::string lightUniform = "directionalLights[" + std::to_string(i) + "]";
-            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".dir").c_str()), light.dir.x, light.dir.y, light.dir.z);
-            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".color").c_str()), light.color.x, light.color.y, light.color.z);
-            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".intensity").c_str()), light.intensity);
-        }
-        for (int i = 0; i < spotlights.size(); i++) {
-            Spotlight& light = spotlights[i];
-            std::string lightUniform = "spotlights[" + std::to_string(i) + "]";
-            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".pos").c_str()), light.pos.x, light.pos.y, light.pos.z);
-            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".dir").c_str()), light.dir.x, light.dir.y, light.dir.z);
-            glUniform3f(glGetUniformLocation(shader.second, std::string(lightUniform + ".color").c_str()), light.color.x, light.color.y, light.color.z);
-            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".cutOffMin").c_str()), light.cutOffMin);
-            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".cutOffMax").c_str()), light.cutOffMax);
-            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".range").c_str()), light.range);
-            glUniform1f(glGetUniformLocation(shader.second, std::string(lightUniform + ".intensity").c_str()), light.intensity);
+void Renderer::UpdateLighting() {
+    for (const auto&[_, shader] : shaders) {
+        glUseProgram(shader);
+        Light::ResetIndices();
+        for (auto l : lights) {
+            l->ApplyLight(shader);
         }
     }
+}
+
+void Renderer::Start() {
+    UpdateLighting();
 }
 
 void Renderer::Render() {

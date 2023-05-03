@@ -78,6 +78,10 @@ public:
 T name = val; \
 std::shared_ptr<ComponentDataValue<T>> _valPtr_##name = ComponentDataValue<T>::Create(#name, &name, this->data.vars)
 
+#define DEFINE_COMPONENT_DATA_VALUE_DEFAULT(T, name) \
+T name; \
+std::shared_ptr<ComponentDataValue<T>> _valPtr_##name = ComponentDataValue<T>::Create(#name, &name, this->data.vars)
+
 struct ComponentType;
 
 class IComponent {
@@ -107,7 +111,7 @@ public:
     }
 };
 // all components that aren't straightly derived from Component will need this
-#define REGISTER_COMPONENT(C) inline bool _##C_isRegistered = IComponent::RegisterComponent<C>()
+#define REGISTER_COMPONENT(C) inline bool _isRegistered_##C = IComponent::RegisterComponent<C>()
 
 struct ComponentType {
     std::string name;

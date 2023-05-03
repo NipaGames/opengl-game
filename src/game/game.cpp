@@ -32,7 +32,9 @@ void MonkeyGame::Start() {
 
     Stage::AddStage(Stage::ReadStageFromFile("../res/stages/test.json"));
 
-    renderer_.directionalLights.push_back({ glm::normalize(glm::vec3(1.0, 1.0, 0.0)), glm::vec3(1.0, 1.0, 1.0), 1.0 });
+    Light::DirectionalLight* light = entityManager_.CreateEntity("DirectionalLight1").AddComponent<Light::DirectionalLight>();
+    light->dir = glm::normalize(glm::vec3(1.0, 1.0, 0.0));
+    renderer_.lights.push_back(light);
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
@@ -46,7 +48,7 @@ void MonkeyGame::Start() {
         mesh->material = std::make_shared<Material>(SHADER_LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
-        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.25f));
+        mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(.1f));
         mesh->material->SetShaderUniform<int>("specularHighlight", 32);
         mesh->material->SetShaderUniform<float>("specularStrength", 1.5f);
     }
