@@ -16,7 +16,10 @@ private:
     size_t hash_;
     static size_t GenerateHash();
 public:
-    Entity(const std::string& id = "") : id(id), transform(AddComponent<Transform>()) { hash_ = GenerateHash(); }
+    Entity(const std::string& id = "") : id(id) {
+        hash_ = GenerateHash();
+        AddComponent<Transform>();
+    }
     Entity(const Entity&);
     Entity(Entity&&);
     const Entity& operator=(const Entity& e) {
@@ -90,7 +93,9 @@ public:
         C* c = new C((args)...);
         c->parent = this;
         c->typeHash = typeid(C).hash_code();
-        components_.push_back((IComponent*) c);
+        components_.push_back(static_cast<IComponent*>(c));
+        if (typeid(C) == typeid(Transform))
+            transform = dynamic_cast<Transform*>(c);
         return c;
     }
     IComponent* AddComponent(const type_info* type, const ComponentData& data = ComponentData()) {
@@ -105,6 +110,8 @@ public:
         c->parent = this;
         c->typeHash = type->hash_code();
         components_.push_back((IComponent*) c);
+        if (type == &typeid(Transform))
+            transform = static_cast<Transform*>(c);
         return c;
     }
     IComponent* AddComponent(const std::string& name, const ComponentData& data = ComponentData()) {

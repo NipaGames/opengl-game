@@ -20,10 +20,15 @@ void PlayerController::OnMouseMove() {
         cam.pitch = -89.0f;
 }
 
+void PlayerController::Spawn() {
+    parent->transform->position = spawnPosition;
+}
+
 void PlayerController::Start() {
     game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
+    Spawn();
 }
 
 void PlayerController::Update() {

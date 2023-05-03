@@ -89,9 +89,12 @@ std::list<Entity> ParseEntities(const json& entities, bool autoEnabled, int* inv
     for (const auto&[ek, ev] : entities.items()) {
         if (ev.is_object()) {
             Entity entity("");
+            entity.RemoveComponent<Transform>();
+            entity.transform = nullptr;
             if (!autoEnabled)
                 entity.id = ek;
             for (const auto&[ck, cv] : ev.items()) {
+                std::vector<std::shared_ptr<IComponentDataValue>> affectedValPtrs;
                 if (!cv.is_object())
                     continue;
                 IComponent* c = entity.GetComponent(ck);
@@ -104,6 +107,13 @@ std::list<Entity> ParseEntities(const json& entities, bool autoEnabled, int* inv
                 }
                 for (const auto&[k, v] : cv.items()) {
                     SetComponentValue(c, k, v);
+                    affectedValPtrs.push_back(c->data.vars.at(k));
+                }
+                for (auto it = c->data.vars.cbegin(); it != c->data.vars.cend();) {
+                    if (std::find(affectedValPtrs.begin(), affectedValPtrs.end(), it->second) == affectedValPtrs.end())
+                        c->data.vars.erase(it++);
+                    else
+                        ++it;
                 }
             }
             parsedEntities.push_back(entity);

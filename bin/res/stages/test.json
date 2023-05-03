@@ -3,7 +3,7 @@
         "entities": {
             "Player": {
                 "PlayerController": {
-                    "speed": 20
+                    "spawnPosition": [ 0, 5, -8 ]
                 }
             }
         },
