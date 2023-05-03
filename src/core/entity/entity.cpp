@@ -40,7 +40,9 @@ void Entity::CopyFrom(const Entity& e) {
 
 void Entity::Start() {
     for (auto component : components_) {
-        component->IStart();
+        if (!component->hasStarted_)
+            component->IStart();
+        component->hasStarted_ = true;
     }
 }
 

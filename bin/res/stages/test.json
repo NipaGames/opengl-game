@@ -2,9 +2,6 @@
     "teststage": {
         "entities": {
             "Player": {
-                "Transform": {
-                    "position": [ 10, 0, 10 ]
-                },
                 "PlayerController": {
                     "speed": 20
                 }
@@ -18,9 +15,8 @@
                 }
             },
             {
-                "Transform": {
-                    "position": [ 0, -2, 0 ],
-                    "size": 0.5
+                "Light::DirectionalLight": {
+                    "dir": [ 0.7071, 0.7071, 0.0 ]
                 }
             }
         ]

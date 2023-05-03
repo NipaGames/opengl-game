@@ -18,20 +18,25 @@ namespace Light {
     enum class LightType {
         POINT,
         DIRECTIONAL,
-        SPOTLIGHT
+        SPOTLIGHT,
+        NONE
     };
 
     class Light : public Component<Light> {
     private:
-        LightType type_;
+        LightType type_ = LightType::NONE;
     protected:
         void SetType(LightType t) { type_ = t; }
     public:
         DEFINE_COMPONENT_DATA_VALUE(glm::vec3, color, glm::vec3(1.0f));
         DEFINE_COMPONENT_DATA_VALUE(float, intensity, 1.0f);
 
+        bool isAdded = false;
+        virtual ~Light();
+        IComponent* Clone() const override;
+        void Start() override;
         LightType GetType() { return type_; }
-        virtual void ApplyLight(GLuint) { }
+        virtual void ApplyLight(GLuint) const { }
     };
 
     class PointLight: public Light {
@@ -39,13 +44,7 @@ namespace Light {
         DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
 
         PointLight() { SetType(LightType::POINT); }
-        void ApplyLight(GLuint shader) {
-            std::string lightUniform = "pointLights[" + std::to_string(POINT_LIGHTS_INDEX++) + "]";
-            glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".pos").c_str()), parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
-            glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".range").c_str()), range);
-            glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".color").c_str()), color.x, color.y, color.z);
-            glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".intensity").c_str()), intensity);
-        }
+        void ApplyLight(GLuint) const override;
     };
     REGISTER_COMPONENT(PointLight);
 
@@ -54,12 +53,7 @@ namespace Light {
         DEFINE_COMPONENT_DATA_VALUE_DEFAULT(glm::vec3, dir);
         
         DirectionalLight() { SetType(LightType::DIRECTIONAL); }
-        void ApplyLight(GLuint shader) {
-            std::string lightUniform = "directionalLights[" + std::to_string(DIRECTIONAL_LIGHTS_INDEX++) + "]";
-            glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".dir").c_str()), dir.x, dir.y, dir.z);
-            glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".color").c_str()), color.x, color.y, color.z);
-            glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".intensity").c_str()), intensity);
-        }
+        void ApplyLight(GLuint) const override;
     };
     REGISTER_COMPONENT(DirectionalLight);
 
@@ -71,15 +65,7 @@ namespace Light {
         DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
 
         Spotlight() { Light::SetType(LightType::SPOTLIGHT); }
-        void ApplyLight(GLuint shader) {
-            std::string lightUniform = "spotlightsights[" + std::to_string(POINT_LIGHTS_INDEX++) + "]";
-            glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".pos").c_str()), parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
-            glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".range").c_str()), range);
-             glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".cutOffMin").c_str()), cutOffMin);
-            glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".cutOffMax").c_str()), cutOffMax);
-            glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".color").c_str()), color.x, color.y, color.z);
-            glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".intensity").c_str()), intensity);
-        }
+        void ApplyLight(GLuint) const override;
     };
     REGISTER_COMPONENT(Spotlight);
 }

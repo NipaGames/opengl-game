@@ -34,7 +34,7 @@ void MonkeyGame::Start() {
 
     Light::DirectionalLight* light = entityManager_.CreateEntity("DirectionalLight1").AddComponent<Light::DirectionalLight>();
     light->dir = glm::normalize(glm::vec3(1.0, 1.0, 0.0));
-    renderer_.lights.push_back(light);
+    light->intensity = .1f;
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();

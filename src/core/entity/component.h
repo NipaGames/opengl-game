@@ -87,6 +87,7 @@ struct ComponentType;
 class IComponent {
 friend class Entity;
 private:
+    bool hasStarted_ = false;
     static inline std::vector<ComponentType> COMPONENT_TYPES_;
 public:
     ComponentData data;
@@ -96,7 +97,14 @@ public:
     virtual ~IComponent() = default;
     virtual void IStart() = 0;
     virtual void IUpdate() = 0;
-    static IComponent* CreateInstance(const ComponentData&) { return nullptr; }
+    template<typename C>
+    static IComponent* CreateInstance(const ComponentData& data) {
+        IComponent* c = new C();
+        for (auto[k, v] : data.vars) {
+            v->CloneValuesTo(c->data.vars[k]);
+        }
+        return c;
+    }
     template<typename C>
     static bool RegisterComponent() {
         const type_info* type = &typeid(C);
@@ -105,11 +113,12 @@ public:
         if (i != std::string::npos)
             name = name.substr(i + 1);
 
-        COMPONENT_TYPES_.push_back({ name, type, C::CreateInstance });
+        COMPONENT_TYPES_.push_back({ name, type, CreateInstance<C> });
         std::cout << "<Registered component " << name << ">" << std::endl;
         return true;
     }
 };
+
 // all components that aren't straightly derived from Component will need this
 #define REGISTER_COMPONENT(C) inline bool _isRegistered_##C = IComponent::RegisterComponent<C>()
 
@@ -142,11 +151,4 @@ public:
 
     virtual void Start() { }
     virtual void Update() { }
-    static IComponent* CreateInstance(const ComponentData& data) {
-        IComponent* c = new Derived();
-        for (auto[k, v] : data.vars) {
-            v->CloneValuesTo(c->data.vars[k]);
-        }
-        return c;
-    }
 };

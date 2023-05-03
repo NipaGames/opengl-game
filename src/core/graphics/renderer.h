@@ -24,6 +24,7 @@ private:
     GLuint MSAATextureColorBuffer_;
     GLuint quadVao_, quadVbo_;
     std::vector<MeshRenderer*> meshes_;
+    std::vector<Light::Light*> lights_;
     std::unordered_map<std::string, UI::Canvas> canvases_;
     Camera camera_;
     Shader framebufferShader_;
@@ -31,7 +32,6 @@ private:
     glm::ivec2 viewportSize_;
 public:
     std::unordered_map<int, GLuint> shaders;
-    std::vector<Light::Light*> lights;
     glm::vec3 skyboxColor = glm::vec3(0.0);
     bool highlightNormals = false;
     Renderer() { }
@@ -45,5 +45,7 @@ public:
     void Render();
     void UpdateCameraProjection(int, int);
     void AddMeshRenderer(MeshRenderer* mesh) { meshes_.push_back(mesh); }
+    void AddLight(Light::Light*);
+    void RemoveLight(Light::Light*);
     UI::Canvas& CreateCanvas(std::string);
 };

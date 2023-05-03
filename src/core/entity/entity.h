@@ -124,9 +124,14 @@ public:
     void OverrideComponentValues(const Entity& e) {
         for (auto c : e.components_) {
             IComponent* mc = GetComponent(c->typeHash);
-            for (auto&[k, v] : c->data.vars) {
-                v->CloneValuesTo(mc->data.vars[k]);
+            if (mc == nullptr)
+                mc = AddComponent(c->typeHash, c->data);
+            else {
+                for (auto&[k, v] : c->data.vars) {
+                    v->CloneValuesTo(mc->data.vars[k]);
+                }
             }
         }
+        Start();
     }
 };

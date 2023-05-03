@@ -9,7 +9,7 @@
 namespace Stage {
     struct Stage {
         std::string id;
-        std::vector<Entity> entities;
+        std::list<Entity> entities;
         std::unordered_set<size_t> instantiatedEntities;
     };
 

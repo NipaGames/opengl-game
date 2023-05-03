@@ -84,8 +84,8 @@ bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal)
     return false; 
 }
 
-std::vector<Entity> ParseEntities(const json& entities, bool autoEnabled, int* invalidEntities = nullptr) {
-    std::vector<Entity> parsedEntities;
+std::list<Entity> ParseEntities(const json& entities, bool autoEnabled, int* invalidEntities = nullptr) {
+    std::list<Entity> parsedEntities;
     for (const auto&[ek, ev] : entities.items()) {
         if (ev.is_object()) {
             Entity entity("");
@@ -98,6 +98,10 @@ std::vector<Entity> ParseEntities(const json& entities, bool autoEnabled, int* i
                 if (c == nullptr)
                     c = entity.AddComponent(ck);
                 
+                if (c == nullptr) {
+                    spdlog::warn("Cannot find component '" + ck + "'!");
+                    continue;
+                }
                 for (const auto&[k, v] : cv.items()) {
                     SetComponentValue(c, k, v);
                 }
@@ -105,7 +109,7 @@ std::vector<Entity> ParseEntities(const json& entities, bool autoEnabled, int* i
             parsedEntities.push_back(entity);
         }
         else if (ev.is_array()) {
-            std::vector<Entity> recursiveEntities = ParseEntities(ev, autoEnabled, invalidEntities);
+            std::list<Entity> recursiveEntities = ParseEntities(ev, autoEnabled, invalidEntities);
             parsedEntities.insert(parsedEntities.end(), recursiveEntities.begin(), recursiveEntities.end());
         }
         else if (invalidEntities != nullptr) {
@@ -174,6 +178,7 @@ bool Stage::LoadStage(const std::string& id) {
         if (e.id.empty()) {
             Entity& instantiated = game->GetEntityManager().AddEntity(e);
             s.instantiatedEntities.insert(instantiated.GetHash());
+            instantiated.Start();
         }
         else {
             bool hasEntityAlready = game->GetEntityManager().CountEntities(e.id) > 0;
@@ -181,8 +186,8 @@ bool Stage::LoadStage(const std::string& id) {
             entity.OverrideComponentValues(e);
             if (!hasEntityAlready) {
                 s.instantiatedEntities.insert(entity.GetHash());
-                entity.Start();
             }
+            entity.Start();
         }
     }
     loadedStages.insert(loadedStages.begin(), s.id);

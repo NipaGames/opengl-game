@@ -110,7 +110,7 @@ void Renderer::UpdateLighting() {
     for (const auto&[_, shader] : shaders) {
         glUseProgram(shader);
         Light::ResetIndices();
-        for (auto l : lights) {
+        for (auto l : lights_) {
             l->ApplyLight(shader);
         }
     }
@@ -176,6 +176,16 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     for (auto c : canvases_) {
         c.second.UpdateWindowSize();
     }
+}
+
+void Renderer::AddLight(Light::Light* light) {
+    lights_.push_back(light);
+    light->isAdded = true;
+}
+
+void Renderer::RemoveLight(Light::Light* light) {
+    if (lights_.size() == 0) return;
+    lights_.erase(std::remove(lights_.begin(), lights_.end(), light), lights_.end());
 }
 
 UI::Canvas& Renderer::CreateCanvas(std::string id) {
