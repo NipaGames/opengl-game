@@ -31,6 +31,7 @@ namespace Light {
     
     void PointLight::ApplyLight(GLuint shader) const {
         std::string lightUniform = "pointLights[" + std::to_string(POINT_LIGHTS_INDEX++) + "]";
+        glUniform1i(glGetUniformLocation(shader, std::string(lightUniform + ".enabled").c_str()), GL_TRUE);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".pos").c_str()), parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".range").c_str()), range);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".color").c_str()), color.x, color.y, color.z);
@@ -39,13 +40,15 @@ namespace Light {
 
     void DirectionalLight::ApplyLight(GLuint shader) const {
         std::string lightUniform = "directionalLights[" + std::to_string(DIRECTIONAL_LIGHTS_INDEX++) + "]";
+        glUniform1i(glGetUniformLocation(shader, std::string(lightUniform + ".enabled").c_str()), GL_TRUE);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".dir").c_str()), dir.x, dir.y, dir.z);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".color").c_str()), color.x, color.y, color.z);
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".intensity").c_str()), intensity);
     }
 
     void Spotlight::ApplyLight(GLuint shader) const {
-        std::string lightUniform = "spotlightsights[" + std::to_string(POINT_LIGHTS_INDEX++) + "]";
+        std::string lightUniform = "spotlights[" + std::to_string(POINT_LIGHTS_INDEX++) + "]";
+        glUniform1i(glGetUniformLocation(shader, std::string(lightUniform + ".enabled").c_str()), GL_TRUE);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform + ".pos").c_str()), parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".range").c_str()), range);
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform + ".cutOffMin").c_str()), cutOffMin);

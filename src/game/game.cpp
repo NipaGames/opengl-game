@@ -31,10 +31,6 @@ void MonkeyGame::Start() {
     frames_ = 0;
 
     Stage::AddStage(Stage::ReadStageFromFile("../res/stages/test.json"));
-
-    Light::DirectionalLight* light = entityManager_.CreateEntity("DirectionalLight1").AddComponent<Light::DirectionalLight>();
-    light->dir = glm::normalize(glm::vec3(1.0, 1.0, 0.0));
-    light->intensity = .1f;
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
@@ -131,6 +127,7 @@ void MonkeyGame::Start() {
             testText.transform->size.x = 1.0f;
             textComponent->SetText(std::to_string(i));
         }*/
+        Stage::LoadStage("teststage");
     }
 }
 
@@ -141,6 +138,10 @@ void MonkeyGame::Update() {
     if (Input::IsKeyPressedDown(GLFW_KEY_L)) {
         Stage::UnloadAllStages();
         Stage::LoadStage("teststage");
+    }
+
+    if (Input::IsKeyPressedDown(GLFW_KEY_U)) {
+        Stage::UnloadAllStages();
     }
     
     frames_++;

@@ -2,6 +2,7 @@
 out vec4 color;
 
 struct PointLight {
+  bool enabled;
   vec3 pos;
   vec3 color;
   float range;
@@ -9,12 +10,14 @@ struct PointLight {
 };
 
 struct DirectionalLight {
+  bool enabled;
   vec3 dir;
   vec3 color;
   float intensity;
 };
 
 struct Spotlight {
+  bool enabled;
   vec3 pos;
   vec3 dir;
   float cutOffMin;
@@ -84,13 +87,16 @@ void main() {
   vec3 col = vec3(0.0);
 
   for(int i = 0; i < pointLights.length(); i++) {
-    col += calcPointLight(pointLights[i], normal);
+    if (pointLights[i].enabled == true)
+      col += calcPointLight(pointLights[i], normal);
   }
   for(int i = 0; i < directionalLights.length(); i++) {
-    col += calcDirectionalLight(directionalLights[i], normal);
+    if (directionalLights[i].enabled == true)
+      col += calcDirectionalLight(directionalLights[i], normal);
   }
   for(int i = 0; i < spotlights.length(); i++) {
-    col += calcSpotlight(spotlights[i], normal);
+    if (spotlights[i].enabled == true)
+      col += calcSpotlight(spotlights[i], normal);
   }
   // more advanced ambient lighting (not necessary):
   // col += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;

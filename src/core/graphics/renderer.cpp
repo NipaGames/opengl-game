@@ -113,7 +113,25 @@ void Renderer::UpdateLighting() {
         for (auto l : lights_) {
             l->ApplyLight(shader);
         }
+        if (Light::POINT_LIGHTS_INDEX < maxRenderedPointLights_) {
+            for (int i = Light::POINT_LIGHTS_INDEX; i < maxRenderedPointLights_; i++) {
+                glUniform1i(glGetUniformLocation(shader, std::string("pointLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
+            }
+        }
+        if (Light::DIRECTIONAL_LIGHTS_INDEX < maxRenderedDirLights_) {
+            for (int i = Light::DIRECTIONAL_LIGHTS_INDEX; i < maxRenderedDirLights_; i++) {
+                glUniform1i(glGetUniformLocation(shader, std::string("directionalLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
+            }
+        }
+        if (Light::SPOTLIGHTS_INDEX < maxRenderedSpotlights_) {
+            for (int i = Light::SPOTLIGHTS_INDEX; i < maxRenderedSpotlights_; i++) {
+                glUniform1i(glGetUniformLocation(shader, std::string("spotlights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
+            }
+        }
     }
+    maxRenderedPointLights_ = std::max(Light::POINT_LIGHTS_INDEX, maxRenderedPointLights_);
+    maxRenderedDirLights_ = std::max(Light::DIRECTIONAL_LIGHTS_INDEX, maxRenderedDirLights_);
+    maxRenderedSpotlights_ = std::max(Light::SPOTLIGHTS_INDEX, maxRenderedSpotlights_);
 }
 
 void Renderer::Start() {

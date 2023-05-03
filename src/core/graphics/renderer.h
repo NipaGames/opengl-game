@@ -30,6 +30,9 @@ private:
     Shader framebufferShader_;
     Shader normalShader_;
     glm::ivec2 viewportSize_;
+    int maxRenderedPointLights_ = 0;
+    int maxRenderedDirLights_ = 0;
+    int maxRenderedSpotlights_ = 0;
 public:
     std::unordered_map<int, GLuint> shaders;
     glm::vec3 skyboxColor = glm::vec3(0.0);
