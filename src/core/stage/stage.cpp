@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <unordered_map>
-#include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
 #include "core/game.h"
@@ -13,44 +12,26 @@ using json = nlohmann::json;
 std::vector<Stage::Stage> stages;
 std::vector<std::string> loadedStages;
 
+std::vector<std::shared_ptr<Stage::IValueSerializer>> Stage::_COMPONENT_VAL_SERIALIZERS;
+
 #define STAGE_JSON_ENTITIES_KEY "entities"
 #define STAGE_JSON_ENTITIES_AUTO_KEY "entities-auto"
 
-// this is just messed up, sorry
-// may god have mercy on anyone who has chosen to read the following code
-// -----------------------------
-typedef std::function<bool(IComponent*, const std::string&, const json&)> ValueInitializer;
-typedef std::vector<std::pair<std::vector<size_t>, ValueInitializer>> InitializerTable;
-InitializerTable componentValInitializers;
-// must return something
-template<typename... C>
-void* AddInitializer(const ValueInitializer& init) {
-    std::vector<size_t> hashes;
-    ([&] {
-       hashes.push_back(typeid(C).hash_code());
-    } (), ...);
-    componentValInitializers.push_back({ hashes, init });
-    return nullptr;
-}
-
-// yeah, it would be a great idea to use the line number to create unique variable names
-#define INIT_TYPES_LN_(ln, f, ...) void* _init_ln##ln = AddInitializer<__VA_ARGS__>(f)
-#define INIT_TYPES_LN(ln, f, ...) INIT_TYPES_LN_(ln, f, __VA_ARGS__)
-#define INIT_TYPES(f, ...) INIT_TYPES_LN(__LINE__, f, __VA_ARGS__)
-
-INIT_TYPES([](IComponent* c, const std::string& k, const json& j) {
+STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
     if (!j.is_number())
         return false;
-    if (c->data.vars[k]->type->hash_code() == typeid(double).hash_code())
-        c->data.Set(k, (double) j);
-    else if (c->data.vars[k]->type->hash_code() == typeid(float).hash_code())
-        c->data.Set(k, (float) j);
-    else if (c->data.vars[k]->type->hash_code() == typeid(int).hash_code())
-        c->data.Set(k, (int) j);
+    data.Set(k, (int) j);
     return true;
-}, double, float, int);
+}, int);
 
-INIT_TYPES([](IComponent* c, const std::string& k, const json& j) {
+STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
+    if (!j.is_number())
+        return false;
+    data.Set(k, (float) j);
+    return true;
+}, float);
+
+STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
     glm::vec3 vec;
     if (j.is_number()) vec = glm::vec3(j);
     else if (j.is_array() && j.size() == 3) {
@@ -60,24 +41,59 @@ INIT_TYPES([](IComponent* c, const std::string& k, const json& j) {
         }
     }
     else return false;
-    c->data.Set(k, vec);
+    data.Set(k, vec);
     return true;
 }, glm::vec3, glm::ivec3);
 
+STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
+    glm::vec2 vec;
+    if (j.is_number()) vec = glm::vec3(j);
+    else if (j.is_array() && j.size() == 2) {
+        for (int i = 0; i < 2; i++) {
+            if (!j[i].is_number()) return false;
+            vec[i] = j[i];
+        }
+    }
+    else return false;
+    data.Set(k, vec);
+    return true;
+}, glm::vec2, glm::ivec2);
 // --------------------------
 // normal code continues here
 
 bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal) {
-    const type_info* type = c->data.GetType(k);
-    if (type == nullptr)
+    auto dataVal = c->data.GetComponentDataValue(k);
+    if (dataVal == nullptr)
         return false;
     
-    for (const auto& v : componentValInitializers) {
-        auto it = std::find(v.first.begin(), v.first.end(), type->hash_code());
-        if (it != v.first.end()) {
-            return (v.second)(c, k, jsonVal);
-        }        
+    switch (dataVal->componentType) {
+        case ComponentDataValueType::SINGLE:
+            for (const auto& v : Stage::_COMPONENT_VAL_SERIALIZERS) {
+                if (v->CompareType(c->data.GetComponentDataValue(k)))
+                    return (v->fn)(c->data, k, jsonVal);
+            }
+            break;
+        case ComponentDataValueType::VECTOR:
+            for (const auto& v : Stage::_COMPONENT_VAL_SERIALIZERS) {
+                if (v->CompareType(c->data.GetComponentDataValue(k))) {
+                    if (!jsonVal.is_array())
+                        return false;
+
+                    ComponentData arrayWrapper;
+                    bool hasAnyFailed = false;
+                    int i = 0;
+                    for (auto e : jsonVal) {
+                        std::string key = std::to_string(i++);
+                        if (!(v->fn)(arrayWrapper, key, e))
+                            hasAnyFailed = true;
+                    }
+                    dataVal->CopyValuesFromComponentDataArray(arrayWrapper);
+                    return !hasAnyFailed;
+                }
+            }
+            break;
     }
+
     return false; 
 }
 

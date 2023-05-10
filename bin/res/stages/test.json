@@ -3,7 +3,14 @@
         "entities": {
             "Player": {
                 "PlayerController": {
-                    "spawnPosition": [ 0, 5, -8 ]
+                    "spawnPosition": [ 0, 5, -8 ],
+                    "testNums": [
+                        1,
+                        2,
+                        3,
+                        69,
+                        420
+                    ]
                 }
             }
         },

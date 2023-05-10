@@ -15,6 +15,7 @@ public:
 
     DEFINE_COMPONENT_DATA_VALUE(int, speed, 10);
     DEFINE_COMPONENT_DATA_VALUE(glm::vec3, spawnPosition, glm::vec3(0.0f));
+    DEFINE_COMPONENT_DATA_VALUE_VECTOR(int, testNums);
     float mass = 4;
     glm::vec3 velocity;
 };
