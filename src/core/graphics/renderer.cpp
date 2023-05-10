@@ -206,6 +206,16 @@ void Renderer::RemoveLight(Light::Light* light) {
     lights_.erase(std::remove(lights_.begin(), lights_.end(), light), lights_.end());
 }
 
+void Renderer::AddMeshRenderer(MeshRenderer* mesh) {
+    meshes_.push_back(mesh);
+    mesh->isAdded = true;
+}
+
+void Renderer::RemoveMeshRenderer(MeshRenderer* mesh) {
+    if (meshes_.size() == 0) return;
+    meshes_.erase(std::remove(meshes_.begin(), meshes_.end(), mesh), meshes_.end());
+}
+
 UI::Canvas& Renderer::CreateCanvas(std::string id) {
     canvases_.insert({ id, UI::Canvas() });
     return canvases_.at(id);

@@ -9,10 +9,12 @@
 #include <memory.h>
 
 class MeshRenderer : public Component<MeshRenderer> {
+private:
 public:
-    virtual ~MeshRenderer() { }
+    bool isAdded = false;
+    DEFINE_COMPONENT_DATA_VALUE_DEFAULT(std::vector<std::shared_ptr<Mesh>>, meshes);
 
-    std::vector<std::shared_ptr<Mesh>> meshes;
+    virtual ~MeshRenderer();
 
     virtual void Start();
     virtual void Render(const glm::mat4&, const glm::mat4&, const Shader* = nullptr);

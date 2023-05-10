@@ -4,13 +4,14 @@
 using namespace Light;
 
 namespace Light {
-    void Light::Start() {
-        game->GetRenderer().AddLight(this);
-    }
-
     Light::~Light() {
         if (isAdded)
             game->GetRenderer().RemoveLight(this);
+    }
+
+    void Light::Start() {
+        if (!isAdded)
+            game->GetRenderer().AddLight(this);
     }
 
     IComponent* Light::Clone() const {

@@ -3,8 +3,14 @@
 #include "core/entity/entity.h"
 #include "core/game.h"
 
+MeshRenderer::~MeshRenderer() {
+    if (isAdded)
+        game->GetRenderer().RemoveMeshRenderer(this);
+}
+
 void MeshRenderer::Start() {
-    game->GetRenderer().AddMeshRenderer(this);
+    if (!isAdded)
+        game->GetRenderer().AddMeshRenderer(this);
 }
 
 void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix, const Shader* shader) {

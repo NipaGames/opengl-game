@@ -63,6 +63,7 @@ INIT_TYPES([](IComponent* c, const std::string& k, const json& j) {
     c->data.Set(k, vec);
     return true;
 }, glm::vec3, glm::ivec3);
+
 // --------------------------
 // normal code continues here
 
@@ -71,16 +72,12 @@ bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal)
     if (type == nullptr)
         return false;
     
-    const ValueInitializer* init = nullptr;
-    for (const auto& pair : componentValInitializers) {
-        auto it = std::find(pair.first.begin(), pair.first.end(), type->hash_code());
-        if (it != pair.first.end()) {
-            init = &pair.second;
-            break;
+    for (const auto& v : componentValInitializers) {
+        auto it = std::find(v.first.begin(), v.first.end(), type->hash_code());
+        if (it != v.first.end()) {
+            return (v.second)(c, k, jsonVal);
         }        
     }
-    if (init != nullptr)
-        return (*init)(c, k, jsonVal);
     return false; 
 }
 
@@ -103,11 +100,18 @@ std::list<Entity> ParseEntities(const json& entities, bool autoEnabled, int* inv
                 
                 if (c == nullptr) {
                     spdlog::warn("Cannot find component '" + ck + "'!");
+                    // yeah yeah the whole entity isn't necessarily invalid but this will do now
+                    (*invalidEntities)++;
                     continue;
                 }
                 for (const auto&[k, v] : cv.items()) {
-                    SetComponentValue(c, k, v);
-                    affectedValPtrs.push_back(c->data.vars.at(k));
+                    if (SetComponentValue(c, k, v)) {
+                        affectedValPtrs.push_back(c->data.vars.at(k));
+                    }
+                    else {
+                        spdlog::warn("Invalid or empty value for component '" + ck + "'!");
+                        (*invalidEntities)++;
+                    }
                 }
                 for (auto it = c->data.vars.cbegin(); it != c->data.vars.cend();) {
                     if (std::find(affectedValPtrs.begin(), affectedValPtrs.end(), it->second) == affectedValPtrs.end())
@@ -138,12 +142,12 @@ Stage::Stage Stage::ReadStageFromFile(const std::string& path) {
     }
     json data = json::parse(f);
     if (!data.is_object() || data.size() == 0) {
-        spdlog::error("Missing a root element! ('" + path + "')");
+        spdlog::error("[" + path + "] Missing a root element!");
         return s;
     }
     json& root = data.items().begin().value();
     if (!root.is_object()) {
-        spdlog::error("Root must be an object! ('" + path + "')");
+        spdlog::error("[" + path + "] Root must be an object!");
         return s;
     }
     s.id = data.items().begin().key();
@@ -153,7 +157,7 @@ Stage::Stage Stage::ReadStageFromFile(const std::string& path) {
         if (entities.is_object())
             s.entities = ParseEntities(entities, false, &invalidEntities);
         else
-            spdlog::warn("'" + std::string(STAGE_JSON_ENTITIES_KEY) + "' must be an object! ('" + path + "')");
+            spdlog::warn("[" + path + "] '" + std::string(STAGE_JSON_ENTITIES_KEY) + "' must be an object!");
     }
     if (root.contains(STAGE_JSON_ENTITIES_AUTO_KEY)) {
         json& autoEntities = root[STAGE_JSON_ENTITIES_AUTO_KEY];
@@ -162,10 +166,10 @@ Stage::Stage Stage::ReadStageFromFile(const std::string& path) {
             s.entities.insert(s.entities.end(), parsedEntities.begin(), parsedEntities.end());
         }
         else
-            spdlog::warn("'" + std::string(STAGE_JSON_ENTITIES_AUTO_KEY) + "' must be an array! ('" + path + "')");
+            spdlog::warn("[" + path + "] '" + std::string(STAGE_JSON_ENTITIES_AUTO_KEY) + "' must be an array!");
     }
     if (invalidEntities > 0) {
-        spdlog::warn(std::to_string(invalidEntities) + " invalid entities! ('" + path + "')");
+        spdlog::warn("[" + path + "] '" + std::to_string(invalidEntities) + " invalid entities!");
     }
 
     return s;

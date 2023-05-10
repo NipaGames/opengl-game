@@ -47,7 +47,8 @@ public:
     void Start();
     void Render();
     void UpdateCameraProjection(int, int);
-    void AddMeshRenderer(MeshRenderer* mesh) { meshes_.push_back(mesh); }
+    void AddMeshRenderer(MeshRenderer*);
+    void RemoveMeshRenderer(MeshRenderer*);
     void AddLight(Light::Light*);
     void RemoveLight(Light::Light*);
     UI::Canvas& CreateCanvas(std::string);
