@@ -113,7 +113,7 @@ bool GameWindow::Create(Renderer& renderer) {
         spdlog::info("GLEW init successful.");
     }
 
-    spdlog::info("OpenGL version: {}", (const char*) glGetString(GL_VERSION));
+    spdlog::info("OpenGL version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
     renderer.skyboxColor = glm::vec3(.5, .75, 1.0);
     renderer.SetWindow(window_);

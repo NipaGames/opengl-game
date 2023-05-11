@@ -10,6 +10,8 @@ namespace UI {
         glm::ivec2 offset_;
         std::multimap<int, UI::UIComponent*> components_;
     public:
+        bool isVisible = true;
+        
         Canvas();
         virtual ~Canvas();
         void Draw();

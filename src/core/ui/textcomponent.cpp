@@ -26,7 +26,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     shader_.Use();
     shader_.SetUniform("textColor", color);
     shader_.SetUniform("projection", projection);
-    glm::vec2 pos(parent->transform->position.x, parent->transform->position.y);
+    glm::vec2 pos(parent->transform->position.x, parent->transform->position.y + padding_[0] / 2);
     // janky ass way to determine the size
     float size = parent->transform->size.z;
 

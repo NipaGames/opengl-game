@@ -8,20 +8,14 @@
 #include "core/ui/textcomponent.h"
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
-
-
-#ifdef VERSION_MAJ
-#ifdef VERSION_MIN
-#define VERSION_SPECIFIED
-#endif
-#endif
+#include "game/components/debugoverlay.h"
 
 #define LOG_FN_(fn) spdlog::debug("[{} called]", fn)
 #define LOG_FN() LOG_FN_(__FUNCTION__)
 
 UI::TextComponent* fpsText = nullptr;
-std::optional<UI::Text::Font> font = std::nullopt;
-std::optional<UI::Text::Font> font2 = std::nullopt;
+UI::Text::FontID fontId = -1;
+UI::Text::FontID font2Id = -1;
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
@@ -34,15 +28,16 @@ bool MonkeyGame::InitWindow() {
 
 void MonkeyGame::PreLoad() {
     LOG_FN();
-    font = UI::Text::LoadFontFile("../res/fonts/Augusta.ttf", 96);
-    font2 = UI::Text::LoadFontFile("../res/fonts/SEGOEUI.ttf", 48);
+    auto font = UI::Text::LoadFontFile("../res/fonts/Augusta.ttf", 96);
+    auto font2 = UI::Text::LoadFontFile("../res/fonts/SEGOEUI.ttf", 48);
+    if (font != std::nullopt)
+        fontId = UI::Text::AssignFont(*font);
+    if (font != std::nullopt)
+        font2Id = UI::Text::AssignFont(*font2);
 }
 
 void MonkeyGame::Start() {
     LOG_FN();
-    lastTime_ = glfwGetTime();
-    frames_ = 0;
-
     Stage::AddStage(Stage::ReadStageFromFile("../res/stages/test.json"));
     
     Entity& player = entityManager_.CreateEntity("Player");
@@ -99,10 +94,13 @@ void MonkeyGame::Start() {
     terrain.transform->position.y = -.5f;
 
     UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
+    canvas.isVisible = false;
     
-    if (font != std::nullopt && font2 != std::nullopt) {
-        auto fontId = UI::Text::AssignFont(*font);
-        Entity& textEntity = entityManager_.CreateEntity();
+    if (fontId != -1 && font2Id != -1) {
+        auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
+        debugOverlay->fontId = font2Id;
+
+        /*Entity& textEntity = entityManager_.CreateEntity();
         fpsText = textEntity.AddComponent<UI::TextComponent>(&canvas);
         fpsText->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
         fpsText->color = glm::vec4(1.0f);
@@ -112,7 +110,6 @@ void MonkeyGame::Start() {
         textEntity.transform->position.y = 680;
         textEntity.transform->size.z = .5f;
 
-        auto font2Id = UI::Text::AssignFont(*font2);
         Entity& versionTextEntity = entityManager_.CreateEntity();
         UI::TextComponent* versionText = versionTextEntity.AddComponent<UI::TextComponent>(&canvas);
         versionText->font = font2Id;
@@ -125,7 +122,7 @@ void MonkeyGame::Start() {
         versionText->AddToCanvas();
         versionTextEntity.transform->position.x = 10;
         versionTextEntity.transform->position.y = 10;
-        versionTextEntity.transform->size.z = .4f;
+        versionTextEntity.transform->size.z = .4f;*/
 
         // super text rendering benchmark 9000
         /*for (int i = 0; i < 100; i++) {
@@ -153,13 +150,5 @@ void MonkeyGame::Update() {
 
     if (Input::IsKeyPressedDown(GLFW_KEY_U)) {
         Stage::UnloadAllStages();
-    }
-    
-    frames_++;
-    if (glfwGetTime() - lastTime_ >= 1.0) {
-        if (fpsText != nullptr)
-            fpsText->SetText(std::to_string(frames_) + " fps");
-        frames_ = 0;
-        lastTime_ += 1.0;
     }
 }

@@ -5,7 +5,12 @@
 #include "core/gamewindow.h"
 #include "core/graphics/renderer.h"
 #include "core/entity/entitymanager.h"
-#define IS_MAIN_CALLED 0;
+
+#ifdef VERSION_MAJ
+#ifdef VERSION_MIN
+#define VERSION_SPECIFIED
+#endif
+#endif
 
 class Game {
 protected:

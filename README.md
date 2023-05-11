@@ -59,5 +59,5 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 Builds only on Windows for now. ``build.bat`` should build everything. The executable can be found from ``bin/Release`` or ``bin/Debug`` depending on the build type. Build type can be changed in ``build.bat``.
 ## Requirements
 - MSVC build tools
-- C++17 or higher
+- C++20 or higher
 - CMake

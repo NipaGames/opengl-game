@@ -20,8 +20,12 @@ void EntityManager::RemoveEntity(size_t hash) {
     entities_.erase(std::remove_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->GetHash() == hash; }), entities_.end());
 }
 
-int EntityManager::CountEntities(const std::string& id) {
-    return (int) std::count_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->id == id; });
+size_t EntityManager::CountEntities(const std::string& id) {
+    return std::count_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->id == id; });
+}
+
+size_t EntityManager::CountEntities() {
+    return entities_.size();
 }
 
 bool EntityManager::HasEntity(size_t hash) {

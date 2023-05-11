@@ -30,12 +30,12 @@ namespace Stage {
     class IValueSerializer {
     public:
         SerializerFunction fn;
-        virtual bool CompareType(std::shared_ptr<IComponentDataValue>) = 0;
-        virtual bool HasType(const type_info*) = 0;
+        virtual bool CompareType(std::shared_ptr<IComponentDataValue>) const = 0;
+        virtual bool HasType(const type_info*) const = 0;
     };
     template<typename... T>
     class ValueSerializer : public IValueSerializer {
-        bool CompareType(std::shared_ptr<IComponentDataValue> d) override {
+        bool CompareType(std::shared_ptr<IComponentDataValue> d) const override {
             bool found = false;
             ([&] {
                 // dynamic_pointer_cast won't do here so we'll need this workaround
@@ -55,7 +55,7 @@ namespace Stage {
             }(), ...);
             return found;
         }
-        bool HasType(const type_info* t) {
+        bool HasType(const type_info* t) const override {
             bool found = false;
             ([&] {
                 if (t == &typeid(T)) {

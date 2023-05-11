@@ -2,7 +2,11 @@
 /build
 /bin/Debug/OpenGLProject.exe
 /bin/Release/OpenGLProject.exe
+/bin/Release/OpenGLProject.exp
+/bin/Release/OpenGLProject.lib
 /bin/Debug/OpenGLProject.pdb
+/bin/Debug/OpenGLProject.exp
+/bin/Debug/OpenGLProject.lib
 /status.bat
 /status.py
 /Poppins-Medium.ttf

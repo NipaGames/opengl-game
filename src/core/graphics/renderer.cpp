@@ -220,3 +220,7 @@ UI::Canvas& Renderer::CreateCanvas(std::string id) {
     canvases_.insert({ id, UI::Canvas() });
     return canvases_.at(id);
 }
+
+UI::Canvas& Renderer::GetCanvas(const std::string& id) {
+    return canvases_.at(id);
+}

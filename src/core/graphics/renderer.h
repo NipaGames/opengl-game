@@ -52,4 +52,5 @@ public:
     void AddLight(Light::Light*);
     void RemoveLight(Light::Light*);
     UI::Canvas& CreateCanvas(std::string);
+    UI::Canvas& GetCanvas(const std::string&);
 };

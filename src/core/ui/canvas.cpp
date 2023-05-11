@@ -12,6 +12,8 @@ UI::Canvas::~Canvas() {
 }
 
 void UI::Canvas::Draw() {
+    if (!isVisible)
+        return;
     auto proj = GetProjectionMatrix();
     for (auto it : components_) {
         it.second->Render(proj);

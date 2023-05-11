@@ -18,32 +18,30 @@ bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal)
     if (dataVal == nullptr)
         return false;
     
+    auto it = std::find_if(Stage::_COMPONENT_VAL_SERIALIZERS.begin(), Stage::_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
+        return s->CompareType(c->data.GetComponentDataValue(k));
+    });
+    if (it == Stage::_COMPONENT_VAL_SERIALIZERS.end())
+        return false;
+    
+    const auto& serializer = *it;
     switch (dataVal->componentType) {
         case ComponentDataValueType::SINGLE:
-            for (const auto& v : Stage::_COMPONENT_VAL_SERIALIZERS) {
-                if (v->CompareType(c->data.GetComponentDataValue(k)))
-                    return (v->fn)(c->data, k, jsonVal);
-            }
-            break;
+            return (serializer->fn)(c->data, k, jsonVal);
         case ComponentDataValueType::VECTOR:
-            for (const auto& v : Stage::_COMPONENT_VAL_SERIALIZERS) {
-                if (v->CompareType(c->data.GetComponentDataValue(k))) {
-                    if (!jsonVal.is_array())
-                        return false;
+            if (!jsonVal.is_array())
+                return false;
 
-                    ComponentData arrayWrapper;
-                    bool hasAnyFailed = false;
-                    int i = 0;
-                    for (auto e : jsonVal) {
-                        std::string key = std::to_string(i++);
-                        if (!(v->fn)(arrayWrapper, key, e))
-                            hasAnyFailed = true;
-                    }
-                    dataVal->CopyValuesFromComponentDataArray(arrayWrapper);
-                    return !hasAnyFailed;
-                }
+            ComponentData arrayWrapper;
+            bool hasAnyFailed = false;
+            int i = 0;
+            for (auto e : jsonVal) {
+                std::string key = std::to_string(i++);
+                if (!(serializer->fn)(arrayWrapper, key, e))
+                    hasAnyFailed = true;
             }
-            break;
+            dataVal->CopyValuesFromComponentDataArray(arrayWrapper);
+            return !hasAnyFailed;
     }
 
     return false; 
