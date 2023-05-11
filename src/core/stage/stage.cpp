@@ -58,8 +58,6 @@ STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& 
     data.Set(k, vec);
     return true;
 }, glm::vec2, glm::ivec2);
-// --------------------------
-// normal code continues here
 
 bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal) {
     auto dataVal = c->data.GetComponentDataValue(k);

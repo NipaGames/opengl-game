@@ -4,7 +4,6 @@
 #include "core/graphics/material.h"
 #include "core/graphics/mesh.h"
 #include "core/entity/component.h"
-#include "core/stage/stage.h"
 
 #include <opengl.h>
 #include <memory.h>
@@ -20,8 +19,3 @@ public:
     virtual void Start();
     virtual void Render(const glm::mat4&, const glm::mat4&, const Shader* = nullptr);
 };
-
-// just a placeholder for now
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
-    return true;
-}, std::shared_ptr<Mesh>);

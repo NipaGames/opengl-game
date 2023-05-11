@@ -2,6 +2,7 @@
 
 #include "core/entity/entity.h"
 #include "core/game.h"
+#include "core/stage/stage.h"
 
 MeshRenderer::~MeshRenderer() {
     if (isAdded)
@@ -44,3 +45,8 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
         glBindVertexArray(0);
     }
 }
+
+// just a placeholder for now
+STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
+    return true;
+}, std::shared_ptr<Mesh>);
