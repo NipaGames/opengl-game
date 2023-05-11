@@ -7,6 +7,9 @@
 
 int main() {
     spdlog::set_pattern("[%T] %-10l %v");
+    #ifdef _DEBUG
+        spdlog::set_level(spdlog::level::debug);
+    #endif
     srand(static_cast<unsigned int>(time(0)));    
     game = std::make_unique<MonkeyGame>();
     if(!game->InitWindow())

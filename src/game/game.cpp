@@ -16,11 +16,15 @@
 #endif
 #endif
 
+#define LOG_FN_(fn) spdlog::debug("[{} called]", fn)
+#define LOG_FN() LOG_FN_(__FUNCTION__)
+
 UI::TextComponent* fpsText = nullptr;
 std::optional<UI::Text::Font> font = std::nullopt;
 std::optional<UI::Text::Font> font2 = std::nullopt;
 
 bool MonkeyGame::InitWindow() {
+    LOG_FN();
     window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
     if(!window_.Create(renderer_)) {
         return false;
@@ -29,11 +33,13 @@ bool MonkeyGame::InitWindow() {
 }
 
 void MonkeyGame::PreLoad() {
+    LOG_FN();
     font = UI::Text::LoadFontFile("../res/fonts/Augusta.ttf", 96);
     font2 = UI::Text::LoadFontFile("../res/fonts/SEGOEUI.ttf", 48);
 }
 
 void MonkeyGame::Start() {
+    LOG_FN();
     lastTime_ = glfwGetTime();
     frames_ = 0;
 
@@ -151,7 +157,6 @@ void MonkeyGame::Update() {
     
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
-        spdlog::info("{} fps", double(frames_));
         if (fpsText != nullptr)
             fpsText->SetText(std::to_string(frames_) + " fps");
         frames_ = 0;
