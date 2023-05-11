@@ -127,8 +127,8 @@ void MonkeyGame::Start() {
             testText.transform->size.x = 1.0f;
             textComponent->SetText(std::to_string(i));
         }*/
-        Stage::LoadStage("teststage");
     }
+    Stage::LoadStage("teststage");
 }
 
 void MonkeyGame::Update() {
