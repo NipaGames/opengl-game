@@ -17,11 +17,17 @@ protected:
     double lastFrame_;
     double deltaTime_;
 public:
-    virtual bool Init();
+    virtual bool InitWindow();
     virtual void Run();
     virtual void GameThread();
-    virtual void Update() { }
+    
+    // Called before the window is shown
+    virtual void PreLoad() { }
+    // Called before the first update
     virtual void Start() { }
+    // Called every frame
+    virtual void Update() { }
+
     virtual const double& GetDeltaTime() { return deltaTime_; }
     virtual EntityManager& GetEntityManager() { return entityManager_; }
     virtual GameWindow& GetGameWindow() { return window_; }

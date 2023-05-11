@@ -4,7 +4,7 @@
 
 #include "core/input.h"
 
-bool Game::Init() {
+bool Game::InitWindow() {
     window_ = GameWindow("", BASE_WIDTH, BASE_HEIGHT);
     if(!window_.Create(renderer_)) {
         return false;
@@ -30,6 +30,8 @@ void Game::Run() {
 void Game::GameThread() {
     srand(static_cast<unsigned int>(time(0)));
     glfwMakeContextCurrent(window_.GetWindow());
+    PreLoad();
+    glfwShowWindow(game->GetGameWindow().GetWindow());
     Start();
     for (const auto& entity : entityManager_.entities_) {
         entity->Start();

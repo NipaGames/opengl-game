@@ -91,6 +91,7 @@ bool GameWindow::Create(Renderer& renderer) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
     window_ = glfwCreateWindow(baseWndSize_.x, baseWndSize_.y, title_.c_str(), NULL, NULL);
     if(!window_) {

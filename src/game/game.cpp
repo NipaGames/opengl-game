@@ -17,13 +17,20 @@
 #endif
 
 UI::TextComponent* fpsText = nullptr;
+std::optional<UI::Text::Font> font = std::nullopt;
+std::optional<UI::Text::Font> font2 = std::nullopt;
 
-bool MonkeyGame::Init() {
+bool MonkeyGame::InitWindow() {
     window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
     if(!window_.Create(renderer_)) {
         return false;
     }
     return true;
+}
+
+void MonkeyGame::PreLoad() {
+    font = UI::Text::LoadFontFile("../res/fonts/Augusta.ttf", 96);
+    font2 = UI::Text::LoadFontFile("../res/fonts/SEGOEUI.ttf", 48);
 }
 
 void MonkeyGame::Start() {
@@ -86,9 +93,7 @@ void MonkeyGame::Start() {
     terrain.transform->position.y = -.5f;
 
     UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
-
-    auto font = UI::Text::LoadFontFile("../res/fonts/Augusta.ttf", 96);
-    auto font2 = UI::Text::LoadFontFile("../res/fonts/SEGOEUI.ttf", 48);
+    
     if (font != std::nullopt && font2 != std::nullopt) {
         auto fontId = UI::Text::AssignFont(*font);
         Entity& textEntity = entityManager_.CreateEntity();

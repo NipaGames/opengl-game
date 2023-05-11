@@ -73,7 +73,7 @@ bool RenderGlyphs(Font& font) {
 std::optional<Font> UI::Text::LoadFontFile(const std::string& path, const glm::ivec2& size) {
     Font font;
     if (FT_New_Face(freeType, path.c_str(), 0, &font.fontFace)) {
-        spdlog::error("Font '{}' not loaded properly!", path);
+        spdlog::warn("Font '{}' not loaded properly!", path);
         return std::nullopt;
     }
     FT_Set_Pixel_Sizes(font.fontFace, size.x, size.y);

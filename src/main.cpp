@@ -9,9 +9,8 @@ int main() {
     spdlog::set_pattern("[%T] %-10l %v");
     srand(static_cast<unsigned int>(time(0)));    
     game = std::make_unique<MonkeyGame>();
-    if(!game->Init())
+    if(!game->InitWindow())
         return EXIT_FAILURE;
-
     game->Run();
     return EXIT_SUCCESS;
 }

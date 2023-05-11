@@ -13,10 +13,6 @@ using json = nlohmann::json;
 std::vector<Stage::Stage> stages;
 std::vector<std::string> loadedStages;
 
-#define STAGE_JSON_ENTITIES_KEY "entities"
-#define STAGE_JSON_ENTITIES_AUTO_KEY "entities-auto"
-
-
 bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal) {
     auto dataVal = c->data.GetComponentDataValue(k);
     if (dataVal == nullptr)
@@ -53,19 +49,21 @@ bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal)
     return false; 
 }
 
-std::list<Entity> ParseEntities(const json& entities, bool autoEnabled, int* invalidEntities = nullptr) {
+std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nullptr) {
     std::list<Entity> parsedEntities;
     for (const auto&[ek, ev] : entities.items()) {
         if (ev.is_object()) {
             Entity entity("");
             entity.RemoveComponent<Transform>();
             entity.transform = nullptr;
-            if (!autoEnabled)
-                entity.id = ek;
+            if (ev.contains("id")) {
+                if (ev["id"].is_string())
+                    entity.id = ev["id"];
+            }
             for (const auto&[ck, cv] : ev.items()) {
-                std::vector<std::shared_ptr<IComponentDataValue>> affectedValPtrs;
                 if (!cv.is_object())
                     continue;
+                std::vector<std::shared_ptr<IComponentDataValue>> affectedValPtrs;
                 IComponent* c = entity.GetComponent(ck);
                 if (c == nullptr)
                     c = entity.AddComponent(ck);
@@ -95,7 +93,7 @@ std::list<Entity> ParseEntities(const json& entities, bool autoEnabled, int* inv
             parsedEntities.push_back(entity);
         }
         else if (ev.is_array()) {
-            std::list<Entity> recursiveEntities = ParseEntities(ev, autoEnabled, invalidEntities);
+            std::list<Entity> recursiveEntities = ParseEntities(ev, invalidEntities);
             parsedEntities.insert(parsedEntities.end(), recursiveEntities.begin(), recursiveEntities.end());
         }
         else if (invalidEntities != nullptr) {
@@ -124,21 +122,13 @@ Stage::Stage Stage::ReadStageFromFile(const std::string& path) {
     }
     s.id = data.items().begin().key();
     int invalidEntities = 0;
-    if (root.contains(STAGE_JSON_ENTITIES_KEY)) {
-        json& entities = root[STAGE_JSON_ENTITIES_KEY];
-        if (entities.is_object())
-            s.entities = ParseEntities(entities, false, &invalidEntities);
-        else
-            spdlog::warn("[" + path + "] '" + std::string(STAGE_JSON_ENTITIES_KEY) + "' must be an object!");
-    }
-    if (root.contains(STAGE_JSON_ENTITIES_AUTO_KEY)) {
-        json& autoEntities = root[STAGE_JSON_ENTITIES_AUTO_KEY];
-        if (autoEntities.is_array()) {
-            auto& parsedEntities = ParseEntities(autoEntities, true, &invalidEntities);
-            s.entities.insert(s.entities.end(), parsedEntities.begin(), parsedEntities.end());
+    if (root.contains("entities")) {
+        json& entities = root["entities"];
+        if (entities.is_array()) {
+            s.entities = ParseEntities(entities, &invalidEntities);
         }
         else
-            spdlog::warn("[" + path + "] '" + std::string(STAGE_JSON_ENTITIES_AUTO_KEY) + "' must be an array!");
+            spdlog::warn("[" + path + "] 'entities' must be an array!");
     }
     if (invalidEntities > 0) {
         spdlog::warn("[" + path + "] '" + std::to_string(invalidEntities) + " invalid entities!");
