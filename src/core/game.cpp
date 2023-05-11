@@ -3,6 +3,7 @@
 #include <opengl.h>
 
 #include "core/input.h"
+#include "core/physics/physics.h"
 
 bool Game::InitWindow() {
     window_ = GameWindow("", BASE_WIDTH, BASE_HEIGHT);
@@ -32,6 +33,7 @@ void Game::GameThread() {
     glfwMakeContextCurrent(window_.GetWindow());
     PreLoad();
     glfwShowWindow(game->GetGameWindow().GetWindow());
+    Physics::Init();
     Start();
     for (const auto& entity : entityManager_.entities_) {
         entity->Start();
@@ -41,7 +43,7 @@ void Game::GameThread() {
     while (running_) {
         if (glfwWindowShouldClose(window_.GetWindow())) {
             running_ = false;
-            return;
+            break;
         }
         
         double currentTime = glfwGetTime();
@@ -78,4 +80,5 @@ void Game::GameThread() {
         renderer_.Render();
         Input::ClearKeysPressedDown();
     }
+    Physics::Destroy();
 }

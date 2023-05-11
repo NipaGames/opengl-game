@@ -2,12 +2,10 @@
 
 #include <chrono>
 #include <spdlog/spdlog.h>
-#include <bullet/btBulletDynamicsCommon.h>
 #include "core/game.h"
 #include "game/game.h"
 
 int main() {
-    btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
     spdlog::set_pattern("[%T] %-10l %v");
     #ifdef _DEBUG
         spdlog::set_level(spdlog::level::debug);
