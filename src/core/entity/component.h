@@ -180,12 +180,12 @@ class Component : public IComponent {
 protected:
     inline static bool _isRegistered = IComponent::RegisterComponent<Derived>();
 public:
-    virtual ~Component() { }
+    virtual ~Component() = default;
     virtual IComponent* Clone() const override {
-        return new Derived(static_cast<const Derived&>(*this));
+        return new Derived(dynamic_cast<const Derived&>(*this));
     }
-    void IStart() override { static_cast<Derived*>(this)->Start(); }
-    void IUpdate() override { static_cast<Derived*>(this)->Update(); }
+    void IStart() override { dynamic_cast<Derived*>(this)->Start(); }
+    void IUpdate() override { dynamic_cast<Derived*>(this)->Update(); }
 
     template<typename T>
     const T& GetValue(const std::string& key) {

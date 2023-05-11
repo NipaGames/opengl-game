@@ -66,7 +66,7 @@ namespace Stage {
             return found;
         }
     };
-    extern std::vector<std::shared_ptr<IValueSerializer>> _COMPONENT_VAL_SERIALIZERS;
+    inline std::vector<std::shared_ptr<IValueSerializer>> _COMPONENT_VAL_SERIALIZERS;
     // must return something
     template<typename... T>
     void* AddSerializer(const SerializerFunction& f) {
@@ -88,8 +88,3 @@ namespace Stage {
         return nullptr;
     }
 }
-
-#define _UNIQUE_VAR_NAME_CONCAT_(x, y) x##y
-#define _UNIQUE_VAR_NAME_CONCAT(x, y) _UNIQUE_VAR_NAME_CONCAT_(x, y)
-#define _UNIQUE_VAR_NAME(x) _UNIQUE_VAR_NAME_CONCAT(x, __COUNTER__)
-#define STAGE_SERIALIZE_TYPES(f, ...) inline static const void* _UNIQUE_VAR_NAME(_stage_serialization_init_val_) = Stage::AddSerializer<__VA_ARGS__>(f)

@@ -1,4 +1,5 @@
 #include "core/stage/stage.h"
+#include "core/stage/serializetypes.h"
 
 #include <fstream>
 #include <unordered_map>
@@ -12,52 +13,9 @@ using json = nlohmann::json;
 std::vector<Stage::Stage> stages;
 std::vector<std::string> loadedStages;
 
-std::vector<std::shared_ptr<Stage::IValueSerializer>> Stage::_COMPONENT_VAL_SERIALIZERS;
-
 #define STAGE_JSON_ENTITIES_KEY "entities"
 #define STAGE_JSON_ENTITIES_AUTO_KEY "entities-auto"
 
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
-    if (!j.is_number())
-        return false;
-    data.Set(k, (int) j);
-    return true;
-}, int);
-
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
-    if (!j.is_number())
-        return false;
-    data.Set(k, (float) j);
-    return true;
-}, float);
-
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
-    glm::vec3 vec;
-    if (j.is_number()) vec = glm::vec3(j);
-    else if (j.is_array() && j.size() == 3) {
-        for (int i = 0; i < 3; i++) {
-            if (!j[i].is_number()) return false;
-            vec[i] = j[i];
-        }
-    }
-    else return false;
-    data.Set(k, vec);
-    return true;
-}, glm::vec3, glm::ivec3);
-
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const json& j) {
-    glm::vec2 vec;
-    if (j.is_number()) vec = glm::vec3(j);
-    else if (j.is_array() && j.size() == 2) {
-        for (int i = 0; i < 2; i++) {
-            if (!j[i].is_number()) return false;
-            vec[i] = j[i];
-        }
-    }
-    else return false;
-    data.Set(k, vec);
-    return true;
-}, glm::vec2, glm::ivec2);
 
 bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal) {
     auto dataVal = c->data.GetComponentDataValue(k);

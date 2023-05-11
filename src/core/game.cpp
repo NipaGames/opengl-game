@@ -31,8 +31,8 @@ void Game::GameThread() {
     srand(static_cast<unsigned int>(time(0)));
     glfwMakeContextCurrent(window_.GetWindow());
     Start();
-    for (Entity& entity : entityManager_.entities_) {
-        entity.Start();
+    for (const auto& entity : entityManager_.entities_) {
+        entity->Start();
     }
     renderer_.Start();
     lastFrame_ = glfwGetTime();
@@ -62,8 +62,8 @@ void Game::GameThread() {
 
         window_.Update();
         Update();
-        for (Entity& entity : entityManager_.entities_) {
-            entity.Update();
+        for (const auto& entity : entityManager_.entities_) {
+            entity->Update();
         }
 
         Camera& cam = renderer_.GetCamera();

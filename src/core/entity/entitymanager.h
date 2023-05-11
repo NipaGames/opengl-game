@@ -6,7 +6,7 @@
 
 class EntityManager {
 private:
-    std::list<Entity> entities_;
+    std::list<std::unique_ptr<Entity>> entities_;
 public:
     Entity& CreateEntity(const std::string& = "");
     Entity& AddEntity(Entity);

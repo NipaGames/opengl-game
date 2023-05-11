@@ -22,7 +22,7 @@
                 },
                 "MeshRenderer": {
                     "meshes": [
-                        
+                        "mesh1"
                     ]
                 }
             },
