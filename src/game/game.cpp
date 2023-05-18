@@ -1,11 +1,11 @@
 #include "game/game.h"
 
 #include "core/input.h"
-#include "core/entity/component/meshrenderer.h"
 #include "core/graphics/model.h"
+#include "core/graphics/component/meshrenderer.h"
 #include "core/stage/stage.h"
 #include "core/terrain/plane.h"
-#include "core/ui/textcomponent.h"
+#include "core/ui/component/textcomponent.h"
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
 #include "game/components/debugoverlay.h"

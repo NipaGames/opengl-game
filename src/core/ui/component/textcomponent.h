@@ -2,10 +2,10 @@
 
 #include <opengl.h>
 #include "core/entity/component.h"
-#include "core/entity/component/meshrenderer.h"
+#include "core/graphics/component/meshrenderer.h"
 #include "core/graphics/shape.h"
 #include "core/ui/text.h"
-#include "core/ui/uicomponent.h"
+#include "core/ui/component/uicomponent.h"
 #include "core/ui/canvas.h"
 
 namespace UI {

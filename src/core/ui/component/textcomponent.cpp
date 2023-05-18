@@ -1,4 +1,4 @@
-#include "core/ui/textcomponent.h"
+#include "core/ui/component/textcomponent.h"
 
 #include <algorithm>
 #include "core/game.h"

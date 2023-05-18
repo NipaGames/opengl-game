@@ -8,7 +8,7 @@ class Component;
 
 #include "core/graphics/mesh.h"
 #include "core/entity/component.h"
-#include "core/entity/component/transform.h"
+#include "core/entity/transform.h"
 
 class Entity {
 private:

@@ -2,7 +2,7 @@
 
 #include "core/entity/component.h"
 #include "core/entity/entity.h"
-#include "core/ui/textcomponent.h"
+#include "core/ui/component/textcomponent.h"
 
 #include <opengl.h>
 #include <fmt/format.h>

@@ -5,14 +5,14 @@
 #include <unordered_map>
 
 #include "core/graphics/camera.h"
-#include "core/graphics/light.h"
+#include "core/graphics/component/light.h"
 #include "core/graphics/material.h"
 #include "core/graphics/mesh.h"
 #include "core/graphics/shader.h"
 #include "core/graphics/shaders.h"
 #include "core/ui/canvas.h"
 
-#include "core/entity/component/meshrenderer.h"
+#include "core/graphics/component/meshrenderer.h"
 
 class Renderer {
 private:

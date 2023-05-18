@@ -1,4 +1,4 @@
-#include "core/entity/component/meshrenderer.h"
+#include "core/graphics/component/meshrenderer.h"
 
 #include "core/entity/entity.h"
 #include "core/game.h"
