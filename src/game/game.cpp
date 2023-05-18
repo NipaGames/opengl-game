@@ -6,6 +6,7 @@
 #include "core/stage/stage.h"
 #include "core/terrain/plane.h"
 #include "core/ui/component/textcomponent.h"
+#include "core/physics/component/rigidbody.h"
 #include "game/components/playercontroller.h"
 #include "game/components/rotatecube.h"
 #include "game/components/debugoverlay.h"

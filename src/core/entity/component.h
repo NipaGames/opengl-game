@@ -129,7 +129,7 @@ std::vector<T> name; \
 std::shared_ptr<ComponentDataValue<std::vector<T>>> _valPtr_##name = ComponentDataValueVector<T>::Create(#name, &name, this->data.vars)
 
 struct ComponentType;
-
+class Entity;
 class IComponent {
 friend class Entity;
 private:

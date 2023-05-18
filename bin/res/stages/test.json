@@ -23,6 +23,9 @@
                     "meshes": [
                         "asdoijdsaoidahs"
                     ]
+                },
+                "Physics::RigidBody": {
+                    "mass": 2
                 }
             },
             {
