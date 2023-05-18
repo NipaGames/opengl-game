@@ -5,15 +5,7 @@
 
 #include <string>
 
-const std::string& DebugTextContainer::GetText(const std::string& id) {
-    return operator[](id).str;
-}
-
-DebugTextElement& DebugTextContainer::operator[](const std::string& id) {
-    return *std::find_if(texts.begin(), texts.end(), [&](const DebugTextElement& t) { return t.id == id; });
-}
-
-void DebugTextContainer::AppendElement(const std::string& id, const std::string& fmt, bool renderEveryFrame = false) {
+void DebugTextContainer::AppendElement(const std::string& fmt, const std::string& id, bool renderEveryFrame) {
     DebugTextElement e;
     e.id = id;
     e.format = fmt;
@@ -35,19 +27,22 @@ void DebugOverlay::Start() {
     textContainer_ = DebugTextContainer(canvasId, fontId);
     textContainer_.pos = { 10, 710 };
 
-    textContainer_.AppendElement("version", "build v{}.{}");
+    textContainer_.AppendElement("build v{}.{}", "version");
     #ifdef VERSION_SPECIFIED
     textContainer_.SetValue("version", VERSION_MAJ, VERSION_MIN);
     #endif
 
-    textContainer_.AppendElement("fps", "fps: {}");
+    textContainer_.AppendElement("fps: {}", "fps");
     lastTime_ = glfwGetTime();
     frames_ = 0;
     textContainer_.SetValue("fps", frames_);
 
-    textContainer_.AppendElement("pos", "pos: [ {:.2f}, {:.2f}, {:.2f} ]");
-    textContainer_.AppendElement("entities", "entities: {}");
-    textContainer_.AppendElement("stages", "stages: [ {} ]");
+    textContainer_.AppendElement("pos: [ {:.2f}, {:.2f}, {:.2f} ]", "pos");
+    textContainer_.AppendElement("entities: {}", "entities");
+    textContainer_.AppendElement("stages: [ {} ]", "stages");
+    textContainer_.AppendElement("");
+    textContainer_.AppendElement("normals shown: {}", "normalsShown");
+    textContainer_.AppendElement("hitboxes shown: {}", "hitboxesShown");
 }
 
 void DebugOverlay::Update() {
@@ -81,4 +76,7 @@ void DebugOverlay::FixedUpdate() {
         stagesStr = "empty";
     }
     textContainer_.SetValue("stages", stagesStr);
+
+    textContainer_.SetValue("normalsShown", game->GetRenderer().highlightNormals);
+    textContainer_.SetValue("hitboxesShown", game->GetRenderer().showHitboxes);
 }

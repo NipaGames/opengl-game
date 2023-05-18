@@ -4,7 +4,8 @@
 using namespace Physics;
 
 RigidBody::~RigidBody() {
-    
+    if (rigidBody != nullptr)
+        dynamicsWorld->removeRigidBody(rigidBody);
 }
 
 void RigidBody::Start() {

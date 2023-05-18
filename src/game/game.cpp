@@ -144,6 +144,9 @@ void MonkeyGame::Update() {
     if (Input::IsKeyPressedDown(GLFW_KEY_N))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
 
+    if (Input::IsKeyPressedDown(GLFW_KEY_H))
+        GetRenderer().showHitboxes = !GetRenderer().showHitboxes;
+
     if (Input::IsKeyPressedDown(GLFW_KEY_L)) {
         Stage::UnloadAllStages();
         Stage::LoadStage("teststage");

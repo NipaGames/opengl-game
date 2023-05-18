@@ -37,6 +37,7 @@ public:
     std::unordered_map<int, GLuint> shaders;
     glm::vec3 skyboxColor = glm::vec3(0.0);
     bool highlightNormals = false;
+    bool showHitboxes = false;
     Renderer() { }
     virtual ~Renderer();
     void UpdateLighting();

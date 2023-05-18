@@ -30,16 +30,17 @@ public:
     DebugTextContainer(const std::string& c, Text::FontID f) : canvasId(c), fontId(f) { }
     template<typename... Args>
     void SetValue(const std::string& id, Args... args) {
-        auto& textElement = operator[](id);
-        textElement.str = fmt::format(textElement.format, args...);
-        if (textElement.str != textElement.prevStr) {
-            textElement.textComponent->SetText(textElement.str);
-            textElement.prevStr = textElement.str;
+        for (auto& textElement : texts) {
+            if (textElement.id != id)
+                continue;
+            textElement.str = fmt::format(textElement.format, args...);
+            if (textElement.str != textElement.prevStr) {
+                textElement.textComponent->SetText(textElement.str);
+                textElement.prevStr = textElement.str;
+            }
         }
     }
-    const std::string& GetText(const std::string&);
-    DebugTextElement& operator[](const std::string&);
-    void AppendElement(const std::string&, const std::string&, bool);
+    void AppendElement(const std::string&, const std::string& = "", bool = false);
 };
 
 class DebugOverlay : public Component<DebugOverlay> {

@@ -2,6 +2,7 @@
 
 #include "core/gamewindow.h"
 #include "core/graphics/mesh.h"
+#include "core/physics/physics.h"
 
 #include <spdlog/spdlog.h>
 
@@ -97,9 +98,9 @@ bool Renderer::Init() {
     glBindBuffer(GL_ARRAY_BUFFER, quadVbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) (2 * sizeof(float)));
 
     glfwGetWindowSize(window_, &viewportSize_.x, &viewportSize_.y);
 
@@ -156,6 +157,8 @@ void Renderer::Render() {
             meshRenderer->Render(camera_.projectionMatrix, viewMatrix, &normalShader_);
         }
     }
+    if (showHitboxes)
+        Physics::dynamicsWorld->debugDrawWorld();
 
     // second pass (draw framebuffer onto screen)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, MSAAFbo_);
