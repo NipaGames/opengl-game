@@ -5,6 +5,7 @@
 #include "core/ui/textcomponent.h"
 
 #include <opengl.h>
+#include <fmt/format.h>
 
 using namespace UI;
 
@@ -30,7 +31,7 @@ public:
     template<typename... Args>
     void SetValue(const std::string& id, Args... args) {
         auto& textElement = operator[](id);
-        textElement.str = std::format(textElement.format, args...);
+        textElement.str = fmt::format(textElement.format, args...);
         if (textElement.str != textElement.prevStr) {
             textElement.textComponent->SetText(textElement.str);
             textElement.prevStr = textElement.str;

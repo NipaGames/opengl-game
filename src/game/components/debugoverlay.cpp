@@ -4,8 +4,6 @@
 #include "core/stage/stage.h"
 
 #include <string>
-#include <format>
-#include <numeric>
 
 const std::string& DebugTextContainer::GetText(const std::string& id) {
     return operator[](id).str;
