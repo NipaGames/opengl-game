@@ -3,7 +3,9 @@
 #include <string>
 #include <optional>
 #include <unordered_map>
-#include <freetype/freetype.h>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <opengl.h>
 
 #include "core/graphics/shader.h"
