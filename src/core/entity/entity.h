@@ -34,6 +34,7 @@ public:
 
     void Start();
     void Update();
+    void FixedUpdate();
     void CopyFrom(const Entity&);
     size_t GetHash() const { return hash_; }
     IComponent* const GetComponent(const type_info* type) const {

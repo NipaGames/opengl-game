@@ -45,21 +45,24 @@ void DebugOverlay::Start() {
     frames_ = 0;
     textContainer_.SetValue("fps", frames_);
 
-    textContainer_.AppendElement("pos", "pos: [ {:.2f}, {:.2f}, {:.2f} ]", true);
+    textContainer_.AppendElement("pos", "pos: [ {:.2f}, {:.2f}, {:.2f} ]");
     textContainer_.AppendElement("entities", "entities: {}");
     textContainer_.AppendElement("stages", "stages: [ {} ]");
 }
 
 void DebugOverlay::Update() {
-    Canvas& c = game->GetRenderer().CreateCanvas(canvasId);
-    if (Input::IsKeyPressedDown(GLFW_KEY_F3)) {
-        c.isVisible = !c.isVisible;
-    }
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
         textContainer_.SetValue("fps", frames_);
         frames_ = 0;
         lastTime_ += 1.0;
+    }
+}
+
+void DebugOverlay::FixedUpdate() {
+    Canvas& c = game->GetRenderer().CreateCanvas(canvasId);
+    if (Input::IsKeyPressedDown(GLFW_KEY_F3)) {
+        c.isVisible = !c.isVisible;
     }
     if (!c.isVisible)
         return;

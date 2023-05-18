@@ -39,7 +39,8 @@ void Game::GameThread() {
         entity->Start();
     }
     renderer_.Start();
-    lastFrame_ = glfwGetTime();
+    prevUpdate_ = glfwGetTime();
+    prevFixedUpdate_ = prevUpdate_;
     while (running_) {
         if (glfwWindowShouldClose(window_.GetWindow())) {
             running_ = false;
@@ -47,8 +48,10 @@ void Game::GameThread() {
         }
         
         double currentTime = glfwGetTime();
-        deltaTime_ = currentTime - lastFrame_;
-        lastFrame_ = currentTime;
+        if (limitFps_ > 0 && currentTime - prevUpdate_ < 1.0 / limitFps_)
+            continue;
+        deltaTime_ = currentTime - prevUpdate_;
+        prevUpdate_ = currentTime;
 
         if (Input::SET_FULLSCREEN_PENDING) {
             const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -64,12 +67,19 @@ void Game::GameThread() {
             Input::WINDOW_SIZE_CHANGE_PENDING = false;
         }
 
+        if (currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_) {
+            Input::PollKeysPressedDown();
+            prevFixedUpdate_ = currentTime;
+            Physics::Update(GetFixedDeltaTime());
+            for (const auto& entity : entityManager_.entities_) {
+                entity->FixedUpdate();
+            }
+        }
         window_.Update();
         Update();
         for (const auto& entity : entityManager_.entities_) {
             entity->Update();
         }
-
         Camera& cam = renderer_.GetCamera();
         glm::vec3 direction;
         direction.x = cos(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));

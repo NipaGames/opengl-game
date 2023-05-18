@@ -52,6 +52,12 @@ void Entity::Update() {
     }
 }
 
+void Entity::FixedUpdate() {
+    for (auto component : components_) {
+        component->IFixedUpdate();
+    }
+}
+
 std::unordered_set<size_t> usedHashes;
 size_t Entity::GenerateHash() {
     size_t hash;

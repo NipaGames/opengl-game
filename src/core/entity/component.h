@@ -143,6 +143,7 @@ public:
     virtual ~IComponent() = default;
     virtual void IStart() = 0;
     virtual void IUpdate() = 0;
+    virtual void IFixedUpdate() = 0;
     template<typename C>
     static IComponent* CreateInstance(const ComponentData& data) {
         IComponent* c = new C();
@@ -185,6 +186,7 @@ public:
     }
     void IStart() override { dynamic_cast<Derived*>(this)->Start(); }
     void IUpdate() override { dynamic_cast<Derived*>(this)->Update(); }
+    void IFixedUpdate() override { dynamic_cast<Derived*>(this)->FixedUpdate(); }
 
     template<typename T>
     const T& GetValue(const std::string& key) {
@@ -197,4 +199,5 @@ public:
 
     virtual void Start() { }
     virtual void Update() { }
+    virtual void FixedUpdate() { }
 };

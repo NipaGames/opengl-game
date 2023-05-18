@@ -51,5 +51,6 @@ public:
     std::string canvasId = "debugOverlay";
     Text::FontID fontId;
     void Start();
+    void FixedUpdate();
     void Update();
 };

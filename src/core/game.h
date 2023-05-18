@@ -19,8 +19,14 @@ protected:
     Renderer renderer_;
     
     bool running_ = false;
-    double lastFrame_;
+    double prevUpdate_;
+    double prevFixedUpdate_;
+    // time in seconds since the last frame
     double deltaTime_;
+    // 0 for unlimited
+    int limitFps_ = 0;
+    // fixed updates per second
+    int fixedUpdateRate_ = 60;
 public:
     virtual bool InitWindow();
     virtual void Run();
@@ -34,6 +40,7 @@ public:
     virtual void Update() { }
 
     virtual const double& GetDeltaTime() { return deltaTime_; }
+    virtual const double& GetFixedDeltaTime() { return std::max(1.0 / fixedUpdateRate_, deltaTime_); }
     virtual EntityManager& GetEntityManager() { return entityManager_; }
     virtual GameWindow& GetGameWindow() { return window_; }
     virtual Renderer& GetRenderer() { return renderer_; }

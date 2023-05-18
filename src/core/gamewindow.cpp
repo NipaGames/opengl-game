@@ -134,7 +134,6 @@ void GameWindow::Update() {
         glfwSwapInterval(useVsync_ ? 1 : 0);
         Input::VSYNC_POLL_RATE_CHANGE_PENDING = false;
     }
-    Input::PollKeysPressedDown();
 
     if(Input::MOUSE_MOVE_PENDING) {
         Input::MOUSE_MOVE_PENDING = false;
