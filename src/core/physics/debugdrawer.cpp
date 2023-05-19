@@ -8,13 +8,6 @@ using namespace Physics;
 
 DebugDrawer::DebugDrawer() {
     shader_ = Shader(SHADER_LINE);
-
-    float points[] = {
-        -0.5f,  0.5f, // top-left
-        0.5f,  0.5f, // top-right
-        0.5f, -0.5f, // bottom-right
-        -0.5f, -0.5f  // bottom-left
-    };
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
 }
@@ -38,9 +31,9 @@ void DebugDrawer::flushLines() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), &vertices_.front(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
     glDrawArrays(GL_POINTS, 0, (GLsizei) vertices_.size());
 }
 

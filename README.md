@@ -47,6 +47,9 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 ![Image of text rendering showcase](/images/screenshot10.png)
 *The words of wisdom* 16.3.2023
 
+![Image of text rendering showcase](/images/screenshot11.png)
+*Integrated Bullet physics library and introducing stage loading* 19.5.2023
+
 ### Current features:
 - [x] FPS controls
 - [x] Type-based entity component system (like in Unity)
@@ -59,5 +62,5 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 Builds only on Windows for now. ``build.bat`` should build everything. The executable can be found from ``bin/Release`` or ``bin/Debug`` depending on the build type. Build type can be changed in ``build.bat``.
 ## Requirements
 - MSVC build tools
-- C++20 or higher
+- C++17 or higher
 - CMake
