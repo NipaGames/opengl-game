@@ -5,11 +5,12 @@
 #include <unordered_map>
 
 #include "camera.h"
-#include "component/light.h"
 #include "material.h"
 #include "mesh.h"
 #include "shader.h"
 #include "shaders.h"
+#include "shape.h"
+#include "component/light.h"
 #include "component/meshrenderer.h"
 #include <core/ui/canvas.h>
 
@@ -22,7 +23,7 @@ private:
     GLuint textureColorBuffer_;
     GLuint MSAAFbo_;
     GLuint MSAATextureColorBuffer_;
-    GLuint quadVao_, quadVbo_;
+    Shape framebufferShape_;
     std::vector<MeshRenderer*> meshes_;
     std::vector<Light::Light*> lights_;
     std::unordered_map<std::string, UI::Canvas> canvases_;

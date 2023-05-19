@@ -2,23 +2,28 @@
 
 #include <opengl.h>
 #include <map>
+#include <core/graphics/shader.h>
+#include <core/graphics/shape.h>
 
 namespace UI {
     class UIComponent;
     class Canvas {
     private:
-        glm::ivec2 offset_;
         std::multimap<int, UI::UIComponent*> components_;
+        Shader bgShader_;
+        Shape bgShape_;
     public:
         bool isVisible = true;
-        
+        glm::ivec2 offset;
+        glm::vec4 bgColor = glm::vec4(0.0f);
+        glm::vec2 bgSize = glm::vec2(1280.0f, 720.0f);
+
         Canvas();
         virtual ~Canvas();
         void Draw();
-        void SetOffset(const glm::ivec2&);
         void AddUIComponent(UI::UIComponent*, int = 0);
         void RemoveUIComponent(UI::UIComponent*);
         void UpdateWindowSize();
-        glm::mat4 GetProjectionMatrix();
+        glm::mat4 GetProjectionMatrix() const;
     };
 };

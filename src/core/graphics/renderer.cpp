@@ -21,9 +21,6 @@ Renderer::~Renderer() {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
         glDeleteFramebuffers(1, &MSAAFbo_);
 
-    glDeleteBuffers(1, &quadVao_);
-    glDeleteBuffers(1, &quadVbo_);
-
     shaders.clear();
 }
 
@@ -81,6 +78,8 @@ bool Renderer::Init() {
     // yeah this is really janky but i can't be bothered to write a shape interface for 2d objects right now
 
     // also, this is straight from https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/5.1.framebuffers/framebuffers.cpp
+    framebufferShape_.GenerateVAO();
+    framebufferShape_.Bind();
     float quadVertices[] = {
         // positions   // texCoords
         -1.0f,  1.0f,  0.0f, 1.0f,
@@ -92,13 +91,7 @@ bool Renderer::Init() {
          1.0f,  1.0f,  1.0f, 1.0f
     };
 
-    glGenVertexArrays(1, &quadVao_);
-    glGenBuffers(1, &quadVbo_);
-    glBindVertexArray(quadVao_);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
 
@@ -170,11 +163,11 @@ void Renderer::Render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     framebufferShader_.Use();
-    glBindVertexArray(quadVao_);
+    framebufferShape_.Bind();
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    for (auto c : canvases_) {
+    for (auto& c : canvases_) {
         c.second.Draw();
     }
 
@@ -194,7 +187,7 @@ void Renderer::UpdateCameraProjection(int width, int height) {
 
     camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), (float) width / (float) height, 0.1f, 500.0f);
     
-    for (auto c : canvases_) {
+    for (auto& c : canvases_) {
         c.second.UpdateWindowSize();
     }
 }

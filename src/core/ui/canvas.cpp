@@ -3,7 +3,9 @@
 #include <core/game.h>
 
 UI::Canvas::Canvas() {
-    offset_ = glm::ivec2(0, 0);
+    offset = glm::ivec2(0, 0);
+    bgShader_ = Shader(SHADER_UI_SHAPE);
+    bgShape_.GenerateVAO();
 }
 
 UI::Canvas::~Canvas() {
@@ -15,20 +17,35 @@ void UI::Canvas::Draw() {
     if (!isVisible)
         return;
     auto proj = GetProjectionMatrix();
+    if (bgColor != glm::vec4(0.0f)) {
+        bgShader_.Use();
+        bgShader_.SetUniform("projection", proj);
+        bgShader_.SetUniform("shapeColor", bgColor);
+        bgShape_.Bind();
+        float w = bgSize.x;
+        float h = bgSize.y;
+        float vertices[6][4] = {
+            { 0,  0,  0.0f, 1.0f },            
+            { 0, -h,  0.0f, 0.0f },
+            { w, -h,  1.0f, 0.0f },
+            { 0,  0,  0.0f, 1.0f },
+            { w, -h,  1.0f, 0.0f },
+            { w,  0,  1.0f, 1.0f }   
+        };
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
     for (auto it : components_) {
         it.second->Render(proj);
     }
 }
 
-void UI::Canvas::SetOffset(const glm::ivec2& o) {
-    offset_ = o;
-}
-
-glm::mat4 UI::Canvas::GetProjectionMatrix() {
-    glm::mat4 proj = glm::ortho((float) -offset_.x,
-                                (float) 1280 + offset_.x,
-                                (float) -offset_.y,
-                                (float) 720 + offset_.y);
+glm::mat4 UI::Canvas::GetProjectionMatrix() const {
+    glm::mat4 proj = glm::ortho((float) offset.x,
+                                (float) 1280 + offset.x,
+                                (float) -offset.y,
+                                (float) 720 - offset.y);
     return proj;
 }
 

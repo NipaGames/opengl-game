@@ -42,6 +42,7 @@ public:
     }
     void AppendElement(const std::string&, const std::string& vars);
     void AppendNewline();
+    int GetWidth();
 };
 
 class DebugOverlay : public Component<DebugOverlay> {

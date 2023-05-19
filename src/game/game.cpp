@@ -33,7 +33,7 @@ void MonkeyGame::PreLoad() {
     LOG_FN();
     using namespace UI::Text;
     fontId = AssignFont(LoadFontFile("../res/fonts/Augusta.ttf", 96));
-    font2Id = AssignFont(LoadFontFile("../res/fonts/SEGOEUI.ttf", 48));
+    font2Id = AssignFont(LoadFontFile("../res/fonts/FiraCode-Regular.ttf", 48));
 }
 
 void MonkeyGame::Start() {

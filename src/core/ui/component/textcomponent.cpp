@@ -14,6 +14,10 @@ void UI::TextComponent::Start() {
     shader_ = Shader(SHADER_UI_TEXT);
     renderingMethod_ = renderingMethod;
     shape_.GenerateVAO();
+    shape_.Bind();
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+
     hasStarted_ = true;
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         glGenFramebuffers(1, &fbo_);
@@ -40,6 +44,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         float w = textSize_.x * size * modifier;
         float h = textSize_.y * size;
+        actualTextSize_ = { w, h };
         glActiveTexture(GL_TEXTURE0);
         shape_.Bind();
         float vertices[6][4] = {
@@ -94,8 +99,12 @@ void UI::TextComponent::SetText(const std::string& t) {
     }
 }
 
-const std::string& UI::TextComponent::GetText() {
+const std::string& UI::TextComponent::GetText() const {
     return text_;
+}
+
+const glm::ivec2& UI::TextComponent::GetTextSize() const {
+    return actualTextSize_;
 }
 
 void UI::TextComponent::UpdateWindowSize() {

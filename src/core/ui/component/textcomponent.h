@@ -22,6 +22,7 @@ namespace UI {
         GLuint fbo_ = NULL;
         GLuint texture_ = NULL;
         glm::ivec2 textSize_ = glm::vec2(0.0f);
+        glm::ivec2 actualTextSize_ = glm::vec2(0.0f);
         glm::ivec2 padding_ = glm::vec2(0.0f);
         TextRenderingMethod renderingMethod_;
         bool hasStarted_ = false;
@@ -40,7 +41,8 @@ namespace UI {
         void Render(const glm::mat4&);
         void UpdateWindowSize();
         void SetText(const std::string&);
-        const std::string& GetText();
+        const std::string& GetText() const;
+        const glm::ivec2& GetTextSize() const;
     };
     REGISTER_COMPONENT(TextComponent);
 };

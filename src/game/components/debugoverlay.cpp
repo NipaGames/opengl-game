@@ -34,11 +34,19 @@ void DebugTextContainer::AppendNewline() {
     lines++;
 }
 
+int DebugTextContainer::GetWidth() {
+    return std::max_element(texts.begin(), texts.end(), [] (const DebugTextElement& lhs, const DebugTextElement& rhs) {
+        return lhs.textComponent->GetTextSize().x < rhs.textComponent->GetTextSize().x;
+    })->textComponent->GetTextSize().x;
+}
+
 void DebugOverlay::Start() {
     Canvas& c = game->GetRenderer().CreateCanvas(canvasId);
     c.isVisible = false;
+    c.bgColor = glm::vec4(.5f);
+    c.offset = { 0, 720 };
     textContainer_ = DebugTextContainer(canvasId, fontId);
-    textContainer_.pos = { 10, 710 };
+    textContainer_.pos = { 10, -10 };
 
     textContainer_.AppendElement("build v{}.{}", "version");
     #ifdef VERSION_SPECIFIED
@@ -56,7 +64,7 @@ void DebugOverlay::Start() {
     frames_ = 0;
     textContainer_.SetValue("fps", frames_);
     #ifdef LOG_SYSTEM_RESOURCES
-    textContainer_.AppendElement("RAM usage: {} MB", "ram");
+    textContainer_.AppendElement("RAM usage: {:.2f} MB", "ram");
     //textContainer_.AppendElement("CPU %: {0:f}{0:%}", "res");
     #endif
     textContainer_.AppendNewline();
@@ -75,7 +83,7 @@ void DebugOverlay::Update() {
 }
 
 void DebugOverlay::FixedUpdate() {
-    Canvas& c = game->GetRenderer().CreateCanvas(canvasId);
+    Canvas& c = game->GetRenderer().GetCanvas(canvasId);
     if (Input::IsKeyPressedDown(GLFW_KEY_F3)) {
         c.isVisible = !c.isVisible;
     }
@@ -103,6 +111,7 @@ void DebugOverlay::FixedUpdate() {
     #ifdef LOG_SYSTEM_RESOURCES_WIN32
     PROCESS_MEMORY_COUNTERS pmc;
     GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-    textContainer_.SetValue("ram", pmc.WorkingSetSize / 0x100000);
+    textContainer_.SetValue("ram", (float) pmc.WorkingSetSize / 0x100000);
     #endif
+    c.bgSize = glm::vec2(textContainer_.GetWidth() + textContainer_.pos.x * 2, textContainer_.lines * textContainer_.spacing + textContainer_.pos.x);
 }
