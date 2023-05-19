@@ -89,8 +89,10 @@ const Font& UI::Text::GetFont(FontID id) {
     return fonts.at(id);
 }
 
-FontID UI::Text::AssignFont(Font& font) {
-    fonts[currentFontPtr] = font;
+FontID UI::Text::AssignFont(const std::optional<Font>& font) {
+    if (font == std::nullopt)
+        return FONT_NONE;
+    fonts[currentFontPtr] = *font;
     return currentFontPtr++;
 }
 

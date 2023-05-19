@@ -5,20 +5,33 @@
 
 #include <string>
 
-void DebugTextContainer::AppendElement(const std::string& fmt, const std::string& id, bool renderEveryFrame) {
+#define LOG_SYSTEM_RESOURCES
+#ifdef LOG_SYSTEM_RESOURCES
+#ifdef _WIN32
+// apparently glfw messes with APIENTRY, will need to change this if things suddenly stop working
+#undef APIENTRY
+#include <windows.h>
+#include <psapi.h>
+#define LOG_SYSTEM_RESOURCES_WIN32
+#endif
+#endif
+
+void DebugTextContainer::AppendElement(const std::string& fmt, const std::string& var) {
     DebugTextElement e;
-    e.id = id;
+    e.var = var;
     e.format = fmt;
     Entity& textEntity = game->GetEntityManager().CreateEntity();
     e.textComponent = textEntity.AddComponent<UI::TextComponent>(&game->GetRenderer().GetCanvas(canvasId));
     e.textComponent->font = fontId;
     e.textComponent->AddToCanvas();
-    if (renderEveryFrame)
-        e.textComponent->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
     textEntity.transform->position.x = pos.x;
-    textEntity.transform->position.y = pos.y - spacing / 2 - texts.size() * spacing;
+    textEntity.transform->position.y = pos.y - spacing / 2 - lines++ * spacing;
     textEntity.transform->size.z = .5f;
     texts.push_back(e);
+}
+
+void DebugTextContainer::AppendNewline() {
+    lines++;
 }
 
 void DebugOverlay::Start() {
@@ -31,16 +44,23 @@ void DebugOverlay::Start() {
     #ifdef VERSION_SPECIFIED
     textContainer_.SetValue("version", VERSION_MAJ, VERSION_MIN);
     #endif
+    textContainer_.AppendNewline();
+
+    textContainer_.AppendElement("pos: [ {:.2f}, {:.2f}, {:.2f} ]", "pos");
+    textContainer_.AppendElement("entities: {}", "entities");
+    textContainer_.AppendElement("stages: [ {} ]", "stages");
+    textContainer_.AppendNewline();
 
     textContainer_.AppendElement("fps: {}", "fps");
     lastTime_ = glfwGetTime();
     frames_ = 0;
     textContainer_.SetValue("fps", frames_);
+    #ifdef LOG_SYSTEM_RESOURCES
+    textContainer_.AppendElement("RAM usage: {} MB", "ram");
+    //textContainer_.AppendElement("CPU %: {0:f}{0:%}", "res");
+    #endif
+    textContainer_.AppendNewline();
 
-    textContainer_.AppendElement("pos: [ {:.2f}, {:.2f}, {:.2f} ]", "pos");
-    textContainer_.AppendElement("entities: {}", "entities");
-    textContainer_.AppendElement("stages: [ {} ]", "stages");
-    textContainer_.AppendElement("");
     textContainer_.AppendElement("normals shown: {}", "normalsShown");
     textContainer_.AppendElement("hitboxes shown: {}", "hitboxesShown");
 }
@@ -79,4 +99,10 @@ void DebugOverlay::FixedUpdate() {
 
     textContainer_.SetValue("normalsShown", game->GetRenderer().highlightNormals);
     textContainer_.SetValue("hitboxesShown", game->GetRenderer().showHitboxes);
+
+    #ifdef LOG_SYSTEM_RESOURCES_WIN32
+    PROCESS_MEMORY_COUNTERS pmc;
+    GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+    textContainer_.SetValue("ram", pmc.WorkingSetSize / 0x100000);
+    #endif
 }

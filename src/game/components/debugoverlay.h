@@ -10,9 +10,8 @@
 using namespace UI;
 
 struct DebugTextElement {
-    std::string id;
+    std::string var;
     std::string format;
-    std::vector<std::string> var;
     std::string str = "";
     std::string prevStr = str;
     TextComponent* textComponent = nullptr;
@@ -25,13 +24,14 @@ public:
     Text::FontID fontId;
     glm::vec2 pos = glm::vec2(0);
     std::vector<DebugTextElement> texts;
+    int lines = 0;
 
     DebugTextContainer() { }
     DebugTextContainer(const std::string& c, Text::FontID f) : canvasId(c), fontId(f) { }
     template<typename... Args>
-    void SetValue(const std::string& id, Args... args) {
+    void SetValue(const std::string& var, Args... args) {
         for (auto& textElement : texts) {
-            if (textElement.id != id)
+            if (textElement.var != var)
                 continue;
             textElement.str = fmt::format(textElement.format, args...);
             if (textElement.str != textElement.prevStr) {
@@ -40,7 +40,8 @@ public:
             }
         }
     }
-    void AppendElement(const std::string&, const std::string& = "", bool = false);
+    void AppendElement(const std::string&, const std::string& vars);
+    void AppendNewline();
 };
 
 class DebugOverlay : public Component<DebugOverlay> {

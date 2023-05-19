@@ -17,8 +17,8 @@
 #define LOG_FN() LOG_FN_(__FUNCTION__)
 
 UI::TextComponent* fpsText = nullptr;
-UI::Text::FontID fontId = -1;
-UI::Text::FontID font2Id = -1;
+UI::Text::FontID fontId = FONT_NONE;
+UI::Text::FontID font2Id = FONT_NONE;
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
@@ -31,12 +31,9 @@ bool MonkeyGame::InitWindow() {
 
 void MonkeyGame::PreLoad() {
     LOG_FN();
-    auto font = UI::Text::LoadFontFile("../res/fonts/Augusta.ttf", 96);
-    auto font2 = UI::Text::LoadFontFile("../res/fonts/SEGOEUI.ttf", 48);
-    if (font != std::nullopt)
-        fontId = UI::Text::AssignFont(*font);
-    if (font != std::nullopt)
-        font2Id = UI::Text::AssignFont(*font2);
+    using namespace UI::Text;
+    fontId = AssignFont(LoadFontFile("../res/fonts/Augusta.ttf", 96));
+    font2Id = AssignFont(LoadFontFile("../res/fonts/SEGOEUI.ttf", 48));
 }
 
 void MonkeyGame::Start() {
@@ -102,33 +99,9 @@ void MonkeyGame::Start() {
     UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
     canvas.isVisible = false;
     
-    if (fontId != -1 && font2Id != -1) {
+    if (fontId != FONT_NONE && font2Id != FONT_NONE) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
         debugOverlay->fontId = font2Id;
-
-        /*Entity& textEntity = entityManager_.CreateEntity();
-        fpsText = textEntity.AddComponent<UI::TextComponent>(&canvas);
-        fpsText->renderingMethod = UI::TextRenderingMethod::RENDER_EVERY_FRAME;
-        fpsText->color = glm::vec4(1.0f);
-        fpsText->font = fontId;
-        fpsText->AddToCanvas();
-        textEntity.transform->position.x = 25;
-        textEntity.transform->position.y = 680;
-        textEntity.transform->size.z = .5f;
-
-        Entity& versionTextEntity = entityManager_.CreateEntity();
-        UI::TextComponent* versionText = versionTextEntity.AddComponent<UI::TextComponent>(&canvas);
-        versionText->font = font2Id;
-        #ifdef VERSION_SPECIFIED
-        versionText->SetText("v" + std::to_string(VERSION_MAJ) + "." + std::to_string(VERSION_MIN));
-        #else
-        versionText->SetText("[invalid version]");
-        #endif
-        versionText->color = glm::vec4(glm::vec3(1.0f), .75f);
-        versionText->AddToCanvas();
-        versionTextEntity.transform->position.x = 10;
-        versionTextEntity.transform->position.y = 10;
-        versionTextEntity.transform->size.z = .4f;*/
 
         // super text rendering benchmark 9000
         /*for (int i = 0; i < 100; i++) {
