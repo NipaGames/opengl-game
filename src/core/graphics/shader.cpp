@@ -1,11 +1,11 @@
-#include "core/graphics/shader.h"
-
-#include "core/game.h"
+#include "shader.h"
 
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
 #include <spdlog/spdlog.h>
+
+#include <core/game.h>
 
 using namespace Shaders;
 

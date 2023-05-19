@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include "core/entity/entity.h"
+#include "entity.h"
 
 class EntityManager {
 private:

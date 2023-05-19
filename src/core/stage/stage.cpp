@@ -1,12 +1,12 @@
-#include "core/stage/stage.h"
-#include "core/stage/serializetypes.h"
+#include "stage.h"
+#include "serializetypes.h"
 
 #include <fstream>
 #include <unordered_map>
 #include <spdlog/spdlog.h>
 
-#include "core/game.h"
-#include "core/entity/entitymanager.h"
+#include <core/game.h>
+#include <core/entity/entitymanager.h>
 
 using json = nlohmann::json;
 

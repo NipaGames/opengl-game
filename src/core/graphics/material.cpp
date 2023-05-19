@@ -1,4 +1,4 @@
-#include "core/graphics/material.h"
+#include "material.h"
 
 void Material::RestoreDefaultUniforms() {
     SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f));

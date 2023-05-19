@@ -8,8 +8,8 @@
 #include FT_FREETYPE_H
 #include <opengl.h>
 
-#include "core/graphics/shader.h"
-#include "core/wchar.h"
+#include <core/graphics/shader.h>
+#include <core/wchar.h>
 
 namespace UI::Text {
     struct Character {

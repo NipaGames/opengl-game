@@ -1,8 +1,8 @@
-#include "game/components/playercontroller.h"
+#include "playercontroller.h"
 
-#include "core/event.h"
-#include "core/game.h"
-#include "core/input.h"
+#include <core/event.h>
+#include <core/game.h>
+#include <core/input.h>
 
 #define GRAVITY 9.81f
 #define MAX_FALL_VELOCITY -53

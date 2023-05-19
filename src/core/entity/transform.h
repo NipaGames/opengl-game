@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/entity/component.h"
+#include "component.h"
 
 #include <opengl.h>
 

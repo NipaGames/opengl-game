@@ -1,7 +1,7 @@
 #pragma once
 
 #include <opengl.h>
-#include "core/entity/component.h"
+#include <core/entity/component.h>
 
 class PlayerController : public Component<PlayerController> {
 private:

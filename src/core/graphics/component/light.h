@@ -1,8 +1,8 @@
 #pragma once
 
 #include <opengl.h>
-#include "core/entity/component.h"
-#include "core/entity/entity.h"
+#include <core/entity/component.h>
+#include <core/entity/entity.h>
 
 namespace Light {
     inline int POINT_LIGHTS_INDEX = 0;

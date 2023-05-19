@@ -6,9 +6,9 @@ class IComponent;
 template<class C>
 class Component;
 
-#include "core/graphics/mesh.h"
-#include "core/entity/component.h"
-#include "core/entity/transform.h"
+#include "component.h"
+#include "transform.h"
+#include <core/graphics/mesh.h>
 
 class Entity {
 private:

@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "core/graphics/material.h"
-#include "core/graphics/shader.h"
+#include "material.h"
+#include "shader.h"
 
 class Mesh {
 public:
@@ -44,14 +44,14 @@ namespace Meshes {
     static Mesh CUBE(
         "cube",
         {
-            -1.0f,  1.0f,  1.0f,
-            -1.0f, -1.0f,  1.0f,
-            1.0f,  1.0f,  1.0f,
-            1.0f, -1.0f,  1.0f,
-            -1.0f,  1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            1.0f,  1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f
+            -.5f,    .5f,    .5f,
+            -.5f,   -.5f,    .5f,
+             .5f,    .5f,    .5f,
+             .5f,   -.5f,    .5f,
+            -.5f,    .5f,   -.5f,
+            -.5f,   -.5f,   -.5f,
+             .5f,    .5f,   -.5f,
+             .5f,   -.5f,   -.5f
         },
         {
             3, 2, 0, 1, 3, 0,

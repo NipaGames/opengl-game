@@ -1,7 +1,7 @@
-#include "core/ui/component/textcomponent.h"
+#include "textcomponent.h"
 
 #include <algorithm>
-#include "core/game.h"
+#include <core/game.h>
 
 UI::TextComponent::~TextComponent() {
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {

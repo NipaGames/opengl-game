@@ -6,7 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <opengl.h>
 
-#include "core/entity/entity.h"
+#include <core/entity/entity.h>
 
 namespace Stage {
     struct Stage {

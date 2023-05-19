@@ -1,9 +1,9 @@
-#include "core/game.h"
+#include "game.h"
 
 #include <opengl.h>
 
-#include "core/input.h"
-#include "core/physics/physics.h"
+#include "input.h"
+#include <core/physics/physics.h>
 
 bool Game::InitWindow() {
     window_ = GameWindow("", BASE_WIDTH, BASE_HEIGHT);

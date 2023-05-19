@@ -1,15 +1,17 @@
 #include "game/game.h"
 
-#include "core/input.h"
-#include "core/graphics/model.h"
-#include "core/graphics/component/meshrenderer.h"
-#include "core/stage/stage.h"
-#include "core/terrain/plane.h"
-#include "core/ui/component/textcomponent.h"
-#include "core/physics/component/rigidbody.h"
-#include "game/components/playercontroller.h"
-#include "game/components/rotatecube.h"
-#include "game/components/debugoverlay.h"
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
+
+#include <core/input.h>
+#include <core/graphics/model.h>
+#include <core/graphics/component/meshrenderer.h>
+#include <core/stage/stage.h>
+#include <core/terrain/plane.h>
+#include <core/ui/component/textcomponent.h>
+#include <core/physics/component/rigidbody.h>
+#include "components/playercontroller.h"
+#include "components/rotatecube.h"
+#include "components/debugoverlay.h"
 
 #define LOG_FN_(fn) spdlog::debug("[{} called]", fn)
 #define LOG_FN() LOG_FN_(__FUNCTION__)
@@ -82,7 +84,7 @@ void MonkeyGame::Start() {
     mogus.transform->size = glm::vec3(.5f);
 
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
-    plane->heightVariation = .25f;
+    plane->heightVariation = 1.0f;
     plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
     plane->GenerateVAO();
@@ -91,8 +93,11 @@ void MonkeyGame::Start() {
     plane->material->SetShaderUniform<float>("specularStrength", 0);
     Entity& terrain = entityManager_.CreateEntity();
     terrain.AddComponent<MeshRenderer>()->meshes.push_back(plane);
-    terrain.transform->size = glm::vec3(100, 2, 100);
+    terrain.transform->size = glm::vec3(50, .5f, 50);
     terrain.transform->position.y = -.5f;
+    auto terrainRb = terrain.AddComponent<Physics::RigidBody>();
+    terrainRb->mass = 0.0f;
+    //terrainRb->collider = new btHeightfieldTerrainShape(1.0f, 1.0f, );
 
     UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
     canvas.isVisible = false;

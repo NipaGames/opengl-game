@@ -6,7 +6,7 @@
 #define STAGE_SERIALIZE_TYPES(f, ...) inline const void* _UNIQUE_VAR_NAME(_stage_serialization_init_val_) = Stage::AddSerializer<__VA_ARGS__>(f)
 
 #ifndef STAGE_DEFAULT_SERIALIZATIONS
-#include "core/stage/stage.h"
+#include "stage.h"
 STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
     if (!j.is_number())
         return false;

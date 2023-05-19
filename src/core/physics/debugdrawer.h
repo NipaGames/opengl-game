@@ -1,9 +1,9 @@
 #pragma once
 
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 #include <vector>
 
-#include "core/graphics/shader.h"
+#include <core/graphics/shader.h>
 
 namespace Physics {
     class DebugDrawer : public btIDebugDraw {

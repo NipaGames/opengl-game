@@ -1,4 +1,4 @@
-#include "core/terrain/plane.h"
+#include "plane.h"
 
 void Plane::GenerateVertices() {
     if (tiling_.length == 0)
@@ -16,11 +16,11 @@ void Plane::GenerateVertices() {
 
             if (variation > 0) {
                 if (y > 0 && y < tiling_.y) {
-                    v.x = (float) rand() / (RAND_MAX) - .5f;
+                    v.x = ((float) rand() / (RAND_MAX)) - .5f;
                     v.x *= variation;
                 }
                 if (x > 0 && x < tiling_.x) {
-                    v.y = (float) rand() / (RAND_MAX) - .5f;
+                    v.y = ((float) rand() / (RAND_MAX)) - .5f;
                     v.y *= variation;
                 }
             }
@@ -28,7 +28,7 @@ void Plane::GenerateVertices() {
             pos.x = static_cast<float>(y) * tileSize.x - .5f + v.x * tileSize.x;
             pos.y = static_cast<float>(x) * tileSize.y - .5f + v.y * tileSize.y;
             vertices.push_back(pos.x);
-            float height = ((float) rand() / (RAND_MAX)) * heightVariation;
+            float height = (((float) rand() / (RAND_MAX)) - .5f) * heightVariation;
             heightGrid_[y][x] = height;
             vertices.push_back(height);
             vertices.push_back(pos.y);

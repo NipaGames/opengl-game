@@ -1,5 +1,6 @@
-#include "core/graphics/component/light.h"
-#include "core/game.h"
+#include "light.h"
+
+#include <core/game.h>
 
 using namespace Light;
 

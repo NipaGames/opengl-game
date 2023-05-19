@@ -23,6 +23,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/include)
+FILE(GLOB ThirdPartySources LIST_DIRECTORIES true ${CMAKE_SOURCE_DIR}/include/*)
+foreach(Dir ${ThirdPartySources})
+    if(IS_DIRECTORY ${Dir})
+        include_directories(${Dir})
+    endif()
+endforeach()
+
 link_directories(${CMAKE_SOURCE_DIR}/bin)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")

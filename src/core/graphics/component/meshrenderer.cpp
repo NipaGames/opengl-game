@@ -1,8 +1,8 @@
-#include "core/graphics/component/meshrenderer.h"
+#include "meshrenderer.h"
 
-#include "core/entity/entity.h"
-#include "core/game.h"
-#include "core/stage/serializetypes.h"
+#include <core/entity/entity.h>
+#include <core/game.h>
+#include <core/stage/serializetypes.h>
 
 MeshRenderer::~MeshRenderer() {
     if (isAdded)

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <opengl.h>
-#include "core/ui/canvas.h"
-#include "core/entity/component.h"
+
+#include "../canvas.h"
+#include <core/entity/component.h>
 
 namespace UI {
     class UIComponent : public Component<UIComponent> {

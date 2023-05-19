@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "core/gamewindow.h"
-#include "core/graphics/renderer.h"
-#include "core/entity/entitymanager.h"
+#include "gamewindow.h"
+#include "graphics/renderer.h"
+#include "entity/entitymanager.h"
 
 #ifdef VERSION_MAJ
 #ifdef VERSION_MIN

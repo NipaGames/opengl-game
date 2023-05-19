@@ -1,4 +1,4 @@
-#include "core/graphics/shape.h"
+#include "shape.h"
 
 void Shape::GenerateVAO() {
     glGenVertexArrays(1, &vao);

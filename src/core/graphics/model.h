@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "core/graphics/mesh.h"
+#include "mesh.h"
 
 class Model {
 private:

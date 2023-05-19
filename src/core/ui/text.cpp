@@ -1,10 +1,10 @@
-#include "core/ui/text.h"
+#include "text.h"
 
 #include <spdlog/spdlog.h>
 #include <unordered_map>
 #include <iostream>
 
-#include "core/graphics/shape.h"
+#include <core/graphics/shape.h>
 
 using namespace UI::Text;
 

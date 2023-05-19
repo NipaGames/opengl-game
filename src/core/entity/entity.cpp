@@ -1,8 +1,8 @@
-#include "core/entity/entity.h"
+#include "entity.h"
 
 #include <unordered_set>
-#include "core/gamewindow.h"
-#include "core/graphics/renderer.h"
+#include <core/gamewindow.h>
+#include <core/graphics/renderer.h>
 
 Entity::Entity(const Entity& e) {
     hash_ = GenerateHash();

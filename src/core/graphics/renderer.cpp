@@ -1,8 +1,8 @@
-#include "core/graphics/renderer.h"
+#include "renderer.h"
 
-#include "core/gamewindow.h"
-#include "core/graphics/mesh.h"
-#include "core/physics/physics.h"
+#include "mesh.h"
+#include <core/gamewindow.h>
+#include <core/physics/physics.h>
 
 #include <spdlog/spdlog.h>
 

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <opengl.h>
-#include "core/entity/component.h"
-#include "core/graphics/component/meshrenderer.h"
-#include "core/graphics/shape.h"
-#include "core/ui/text.h"
-#include "core/ui/component/uicomponent.h"
-#include "core/ui/canvas.h"
+
+#include "uicomponent.h"
+#include "../text.h"
+#include "../canvas.h"
+#include <core/entity/component.h>
+#include <core/graphics/component/meshrenderer.h>
+#include <core/graphics/shape.h>
 
 namespace UI {
     enum class TextRenderingMethod {

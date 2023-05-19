@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/game.h"
+#include <core/game.h>
 
 class MonkeyGame : public Game {
 public:

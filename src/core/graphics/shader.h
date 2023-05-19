@@ -4,7 +4,7 @@
 #include <string>
 #include <typeinfo>
 
-#include "core/graphics/shaders.h"
+#include "shaders.h"
 
 namespace Shaders {
 typedef int ShaderID;

@@ -4,15 +4,15 @@
 #include <vector>
 #include <unordered_map>
 
-#include "core/graphics/camera.h"
-#include "core/graphics/component/light.h"
-#include "core/graphics/material.h"
-#include "core/graphics/mesh.h"
-#include "core/graphics/shader.h"
-#include "core/graphics/shaders.h"
-#include "core/ui/canvas.h"
+#include "camera.h"
+#include "component/light.h"
+#include "material.h"
+#include "mesh.h"
+#include "shader.h"
+#include "shaders.h"
+#include "component/meshrenderer.h"
+#include <core/ui/canvas.h>
 
-#include "core/graphics/component/meshrenderer.h"
 
 class Renderer {
 private:

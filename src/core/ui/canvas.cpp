@@ -1,6 +1,6 @@
-#include "core/ui/canvas.h"
-#include "core/ui/uicomponent.h"
-#include "core/game.h"
+#include "canvas.h"
+#include "component/uicomponent.h"
+#include <core/game.h>
 
 UI::Canvas::Canvas() {
     offset_ = glm::ivec2(0, 0);

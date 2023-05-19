@@ -29,6 +29,20 @@
                 }
             },
             {
+                "Transform": {
+                    "position": [ 19, 12, 20 ],
+                    "size": 1
+                },
+                "MeshRenderer": {
+                    "meshes": [
+                        "asdoijdsaoidahs"
+                    ]
+                },
+                "Physics::RigidBody": {
+                    "mass": 1
+                }
+            },
+            {
                 "Light::DirectionalLight": {
                     "dir": [ 0.7071, 0.7071, 0.0 ]
                 }

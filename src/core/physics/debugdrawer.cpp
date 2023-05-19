@@ -1,8 +1,8 @@
-#include "core/physics/debugdrawer.h"
+#include "debugdrawer.h"
 
 #include <spdlog/spdlog.h>
-#include "opengl.h"
-#include "core/game.h"
+#include <opengl.h>
+#include <core/game.h>
 
 using namespace Physics;
 

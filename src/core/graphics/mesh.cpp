@@ -1,9 +1,9 @@
-#include "core/graphics/mesh.h"
+#include "mesh.h"
 
 #include <iostream>
 #include <spdlog/spdlog.h>
 
-#include "core/graphics/texture.h"
+#include "texture.h"
 
 void Mesh::GenerateVAO() {
     glGenVertexArrays(1, &vao);

@@ -1,5 +1,5 @@
-#include "core/physics/physics.h"
-#include "core/game.h"
+#include "physics.h"
+#include <core/game.h>
 
 void Physics::Init() {
     collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -12,9 +12,6 @@ void Physics::Init() {
     debugDrawer = new DebugDrawer();
     debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     dynamicsWorld->setDebugDrawer(debugDrawer);
-
-    btCollisionShape* colShape = new btSphereShape(btScalar(1.));
-    collisionShapes.push_back(colShape);
 }
 
 void Physics::Update(double dt) {
@@ -28,5 +25,4 @@ void Physics::Destroy() {
     delete dispatcher;
     delete collisionConfiguration;
     delete debugDrawer;
-    collisionShapes.clear();
 }

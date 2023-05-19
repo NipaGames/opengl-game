@@ -1,10 +1,10 @@
-#include "core/gamewindow.h"
+#include "gamewindow.h"
 
-#include "core/graphics/shader.h"
-#include "core/graphics/shaders.h"
-#include "core/ui/text.h"
-#include "core/input.h"
-#include "core/game.h"
+#include "graphics/shader.h"
+#include "graphics/shaders.h"
+#include "ui/text.h"
+#include "input.h"
+#include "game.h"
 
 #include <atomic>
 #include <glm/glm.hpp>
