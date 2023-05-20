@@ -13,10 +13,9 @@ UI::TextComponent::~TextComponent() {
 void UI::TextComponent::Start() {
     shader_ = Shader(SHADER_UI_TEXT);
     renderingMethod_ = renderingMethod;
+    shape_.numVertexAttributes = 4;
+    shape_.stride = 4;
     shape_.GenerateVAO();
-    shape_.Bind();
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
 
     hasStarted_ = true;
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
@@ -46,19 +45,19 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         float h = textSize_.y * size;
         actualTextSize_ = { w, h };
         glActiveTexture(GL_TEXTURE0);
-        shape_.Bind();
-        float vertices[6][4] = {
-            { pos.x,     pos.y - padding_[0] + h,   0.0f, 1.0f },            
-            { pos.x,     pos.y - padding_[0],       0.0f, 0.0f },
-            { pos.x + w, pos.y - padding_[0],       1.0f, 0.0f },
+        float vertices[] = {
+            pos.x,     pos.y - padding_[0] + h,   0.0f, 1.0f,          
+            pos.x,     pos.y - padding_[0],       0.0f, 0.0f,
+            pos.x + w, pos.y - padding_[0],       1.0f, 0.0f,
 
-            { pos.x,     pos.y - padding_[0] + h,   0.0f, 1.0f },
-            { pos.x + w, pos.y - padding_[0],       1.0f, 0.0f },
-            { pos.x + w, pos.y - padding_[0] + h,   1.0f, 1.0f }   
+            pos.x,     pos.y - padding_[0] + h,   0.0f, 1.0f,
+            pos.x + w, pos.y - padding_[0],       1.0f, 0.0f,
+            pos.x + w, pos.y - padding_[0] + h,   1.0f, 1.0f
         };
+        shape_.SetVertexData(vertices);
+        shape_.Bind();
 
         glBindTexture(GL_TEXTURE_2D, texture_);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);

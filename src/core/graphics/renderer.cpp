@@ -74,10 +74,7 @@ bool Renderer::Init() {
     framebufferShader_ = Shader(SHADER_FRAMEBUFFER);
     normalShader_ = Shader(SHADER_HIGHLIGHT_NORMALS);
 
-    // create a quad for the framebuffer
-    // yeah this is really janky but i can't be bothered to write a shape interface for 2d objects right now
-
-    // also, this is straight from https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/5.1.framebuffers/framebuffers.cpp
+    framebufferShape_.numVertexAttributes = 4;
     framebufferShape_.GenerateVAO();
     framebufferShape_.Bind();
     float quadVertices[] = {
@@ -90,10 +87,7 @@ bool Renderer::Init() {
          1.0f, -1.0f,  1.0f, 0.0f,
          1.0f,  1.0f,  1.0f, 1.0f
     };
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+    framebufferShape_.SetVertexData(quadVertices);
 
     glfwGetWindowSize(window_, &viewportSize_.x, &viewportSize_.y);
 
@@ -213,8 +207,8 @@ void Renderer::RemoveMeshRenderer(MeshRenderer* mesh) {
 }
 
 UI::Canvas& Renderer::CreateCanvas(std::string id) {
-    canvases_.insert({ id, UI::Canvas() });
-    return canvases_.at(id);
+    auto [ it, inserted ] = canvases_.insert({ id, UI::Canvas() });
+    return it->second;
 }
 
 UI::Canvas& Renderer::GetCanvas(const std::string& id) {

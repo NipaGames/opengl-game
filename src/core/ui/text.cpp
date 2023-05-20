@@ -20,6 +20,8 @@ bool UI::Text::Init() {
         return false;
     }
     spdlog::info("FreeType init successful.");
+    charShape.numVertexAttributes = 4;
+    charShape.stride = 4;
     charShape.GenerateVAO();
 
     return true;

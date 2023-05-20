@@ -5,6 +5,7 @@
 UI::Canvas::Canvas() {
     offset = glm::ivec2(0, 0);
     bgShader_ = Shader(SHADER_UI_SHAPE);
+    bgShape_.numVertexAttributes = 2;
     bgShape_.GenerateVAO();
 }
 
@@ -21,18 +22,18 @@ void UI::Canvas::Draw() {
         bgShader_.Use();
         bgShader_.SetUniform("projection", proj);
         bgShader_.SetUniform("shapeColor", bgColor);
-        bgShape_.Bind();
         float w = bgSize.x;
         float h = bgSize.y;
-        float vertices[6][4] = {
-            { 0,  0,  0.0f, 1.0f },            
-            { 0, -h,  0.0f, 0.0f },
-            { w, -h,  1.0f, 0.0f },
-            { 0,  0,  0.0f, 1.0f },
-            { w, -h,  1.0f, 0.0f },
-            { w,  0,  1.0f, 1.0f }   
+        float vertices[] = {
+            0,  0,
+            0, -h,
+            w, -h,
+            0,  0,
+            w, -h,
+            w,  0
         };
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+        bgShape_.SetVertexData(vertices);
+        bgShape_.Bind();
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 

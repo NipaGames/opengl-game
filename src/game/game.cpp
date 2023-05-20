@@ -95,16 +95,14 @@ void MonkeyGame::Start() {
     auto terrainRb = terrain.AddComponent<Physics::RigidBody>();
     terrainRb->mass = 0.0f;
     //terrainRb->collider = new btHeightfieldTerrainShape(1.0f, 1.0f, );
-
-    UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
-    canvas.isVisible = false;
     
     if (fontId != FONT_NONE && font2Id != FONT_NONE) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
         debugOverlay->fontId = font2Id;
 
         // super text rendering benchmark 9000
-        /*for (int i = 0; i < 100; i++) {
+        /*UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
+        for (int i = 0; i < 100; i++) {
             Entity& testText = entityManager_.CreateEntity();
             auto textComponent = testText.AddComponent<UI::TextComponent>(&canvas);
             textComponent->AddToCanvas();
