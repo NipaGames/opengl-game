@@ -39,8 +39,8 @@ public:
     // Called every frame
     virtual void Update() { }
 
-    virtual const double& GetDeltaTime() { return deltaTime_; }
-    virtual const double& GetFixedDeltaTime() { return std::max(1.0 / fixedUpdateRate_, deltaTime_); }
+    virtual double GetDeltaTime() { return deltaTime_; }
+    virtual double GetFixedDeltaTime() { return std::max(1.0 / (double) fixedUpdateRate_, deltaTime_); }
     virtual EntityManager& GetEntityManager() { return entityManager_; }
     virtual GameWindow& GetGameWindow() { return window_; }
     virtual Renderer& GetRenderer() { return renderer_; }

@@ -14,7 +14,7 @@ void Physics::Init() {
 }
 
 void Physics::Update(double dt) {
-    dynamicsWorld->stepSimulation(btScalar(dt));
+    dynamicsWorld->stepSimulation(btScalar(dt), 10);
 }
 
 void Physics::Destroy() {
