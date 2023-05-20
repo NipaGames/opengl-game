@@ -14,7 +14,7 @@ namespace UI {
         Shape bgShape_;
     public:
         bool isVisible = true;
-        glm::ivec2 offset;
+        glm::ivec2 offset = glm::ivec2(0, 0);
         glm::vec4 bgColor = glm::vec4(0.0f);
         glm::vec2 bgSize = glm::vec2(1280.0f, 720.0f);
 
@@ -22,7 +22,7 @@ namespace UI {
         virtual ~Canvas();
         void Draw();
         void AddUIComponent(UI::UIComponent*, int = 0);
-        void RemoveUIComponent(UI::UIComponent*);
+        void RemoveUIComponent(const UI::UIComponent*);
         void UpdateWindowSize();
         glm::mat4 GetProjectionMatrix() const;
     };

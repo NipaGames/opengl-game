@@ -6,8 +6,7 @@
 
 using namespace Physics;
 
-DebugDrawer::DebugDrawer() {
-    shader_ = Shader(SHADER_LINE);
+DebugDrawer::DebugDrawer() : shader_(SHADER_LINE) {
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
 }

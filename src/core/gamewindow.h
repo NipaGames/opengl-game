@@ -21,7 +21,7 @@ class GameWindow {
 private:
     GLFWwindow* window_ = nullptr;
     std::string title_;
-    double lastMouseX_, lastMouseY_;
+    glm::vec2 prevCursorPos_ = glm::vec2(0.0f);
     bool isFullscreen_ = false;
     glm::ivec2 prevWndPos_;
     glm::ivec2 prevWndSize_;

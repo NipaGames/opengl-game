@@ -9,11 +9,12 @@ Entity::Entity(const Entity& e) {
     CopyFrom(e);
 }
 
-Entity::Entity(Entity&& e) {
-    hash_ = e.hash_;
-    id = e.id;
-    components_ = e.components_;
-    transform = e.transform;
+Entity::Entity(Entity&& e) : 
+    hash_(e.hash_),
+    id(e.id),
+    components_(e.components_), 
+    transform(e.transform)
+{
     for (auto c : components_) {
         c->parent = this;
     }

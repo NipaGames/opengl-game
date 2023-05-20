@@ -10,7 +10,6 @@ void Physics::Init() {
     dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
     debugDrawer = new DebugDrawer();
-    debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     dynamicsWorld->setDebugDrawer(debugDrawer);
 }
 

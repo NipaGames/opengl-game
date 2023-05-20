@@ -2,9 +2,7 @@
 #include "component/uicomponent.h"
 #include <core/game.h>
 
-UI::Canvas::Canvas() {
-    offset = glm::ivec2(0, 0);
-    bgShader_ = Shader(SHADER_UI_SHAPE);
+UI::Canvas::Canvas() : bgShader_(SHADER_UI_SHAPE) {
     bgShape_.numVertexAttributes = 2;
     bgShape_.GenerateVAO();
 }
@@ -43,10 +41,11 @@ void UI::Canvas::Draw() {
 }
 
 glm::mat4 UI::Canvas::GetProjectionMatrix() const {
-    glm::mat4 proj = glm::ortho((float) offset.x,
-                                (float) 1280 + offset.x,
-                                (float) -offset.y,
-                                (float) 720 - offset.y);
+    glm::mat4 proj = glm::ortho(
+        (float) offset.x,
+        (float) 1280 + offset.x,
+        (float) -offset.y,
+        (float) 720 - offset.y);
     return proj;
 }
 
@@ -61,7 +60,7 @@ void UI::Canvas::UpdateWindowSize() {
     }
 }
 
-void UI::Canvas::RemoveUIComponent(UI::UIComponent* c) {
+void UI::Canvas::RemoveUIComponent(const UI::UIComponent* c) {
     for (auto it = components_.begin(); it != components_.end(); it++) {
         if (it->second == c) {
             components_.erase(it);

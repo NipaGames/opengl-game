@@ -175,7 +175,7 @@ bool Stage::UnloadStage(const std::string& id) {
     if (idIt == loadedStages.end())
         return false;
     auto sIt = std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
-    Stage& s = *sIt;
+    const Stage& s = *sIt;
     for (size_t hash : s.instantiatedEntities) {
         game->GetEntityManager().RemoveEntity(hash);
     }

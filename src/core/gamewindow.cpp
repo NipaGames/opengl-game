@@ -72,11 +72,11 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
-GameWindow::GameWindow(const std::string& title, int w, int h, bool useVsync) {
-    title_ = title;
-    baseWndSize_ = glm::ivec2(w, h);
-    useVsync_ = useVsync;
-}
+GameWindow::GameWindow(const std::string& title, int w, int h, bool useVsync) :
+    title_(title),
+    baseWndSize_(glm::ivec2(w, h)),
+    useVsync_(useVsync)
+{ }
 
 bool GameWindow::Create(Renderer& renderer) {
     if(!glfwInit()) {
@@ -142,16 +142,14 @@ void GameWindow::Update() {
             glfwGetCursorPos(window_, &xPos, &yPos);
 
             if (Input::FIRST_MOUSE) {
-                lastMouseX_ = xPos;
-                lastMouseY_ = yPos;
+                prevCursorPos_ = { xPos, yPos };
                 Input::FIRST_MOUSE = false;
             }
 
-            Input::MOUSE_MOVE_X = xPos - lastMouseX_;
-            Input::MOUSE_MOVE_Y = lastMouseY_ - yPos;
+            Input::MOUSE_MOVE_X = xPos - prevCursorPos_.x;
+            Input::MOUSE_MOVE_Y = prevCursorPos_.y - yPos;
 
-            lastMouseX_ = xPos;
-            lastMouseY_ = yPos;
+            prevCursorPos_ = { xPos, yPos };
 
             DispatchEvent(EventType::MOUSE_MOVE);
         }

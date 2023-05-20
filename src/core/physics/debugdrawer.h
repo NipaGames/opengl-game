@@ -8,7 +8,7 @@
 namespace Physics {
     class DebugDrawer : public btIDebugDraw {
     private:
-        int debugMode_;
+        int debugMode_ = btIDebugDraw::DBG_DrawWireframe;
         Shader shader_;
         GLuint vao_;
         GLuint vbo_;

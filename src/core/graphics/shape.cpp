@@ -21,22 +21,23 @@ void Shape::Bind() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }
 
-Shape::Shape(const Shape& s) {
-    numVertexAttributes = s.numVertexAttributes;
-    numVertices = s.numVertices;
+Shape::Shape(const Shape& s) : 
+    numVertexAttributes(s.numVertexAttributes),
+    numVertices(s.numVertices)
+{
     if (s.vao != NULL)
         GenerateVAO();
     if (s.vertexData != nullptr)
         SetVertexData(s.vertexData);
 }
 
-Shape::Shape(Shape&& s) {
-    numVertexAttributes = s.numVertexAttributes;
-    numVertices = s.numVertices;
-    vao = s.vao;
-    vbo = s.vbo;
-    vertexData = s.vertexData;
-    
+Shape::Shape(Shape&& s) :
+    numVertexAttributes(s.numVertexAttributes),
+    numVertices(s.numVertices),
+    vao(s.vao),
+    vbo(s.vbo),
+    vertexData(s.vertexData)
+{
     s.vertexData = nullptr;
     s.vao = NULL;
     s.vbo = NULL;
@@ -56,7 +57,7 @@ void Shape::SetVertexData(const float* f) {
     if (vertexData != nullptr)
         delete[] vertexData;
     vertexData = new float[s];
-    std::memcpy(vertexData, f, s);
+    memcpy_s(vertexData, s, f, s);
     Bind();
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertices * numVertexAttributes, f, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
