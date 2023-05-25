@@ -47,3 +47,22 @@ void RigidBody::FixedUpdate() {
 
     //rigidBody->getCollisionShape()->setLocalScaling(btVector3(t->size.x, t->size.y, t->size.z));
 }
+
+void RigidBody::SetPos(const glm::vec3& pos) {
+    btTransform transform;
+    btMotionState* ms = rigidBody->getMotionState();
+    ms->getWorldTransform(transform);
+    transform.setOrigin(btVector3(pos.x, pos.y, pos.z));
+    ms->setWorldTransform(transform);
+    rigidBody->setMotionState(ms);
+    parent->transform->position = pos;
+}
+
+bool RigidBody::IsGrounded(float dist) {
+    btVector3 rayFrom(parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
+    btVector3 rayTo = rayFrom;
+    rayTo.setY(rayTo.getY() - dist);
+    btCollisionWorld::ClosestRayResultCallback res(rayFrom, rayTo);
+    Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
+    return res.hasHit();
+}

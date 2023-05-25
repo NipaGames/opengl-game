@@ -4,9 +4,6 @@
 #include <core/game.h>
 #include <core/input.h>
 
-#define GRAVITY 9.81f
-#define MAX_FALL_VELOCITY -53
-
 void PlayerController::OnMouseMove() {
     float sensitivity = 0.1f;
     auto& cam = game->GetRenderer().GetCamera();
@@ -25,6 +22,12 @@ void PlayerController::Spawn() {
 }
 
 void PlayerController::Start() {
+    rigidBody_ = parent->GetComponent<Physics::RigidBody>();
+    if (rigidBody_ == nullptr) {
+        rigidBody_ = parent->AddComponent<Physics::RigidBody>();
+        rigidBody_->collider = new btCapsuleShape(.5f, 2.0f);
+        rigidBody_->Start();
+    }
     game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
@@ -33,34 +36,36 @@ void PlayerController::Start() {
 
 void PlayerController::Update() {
     auto& cam = game->GetRenderer().GetCamera();
-    const float moveSpeed = speed * static_cast<float>(game->GetDeltaTime());
     glm::vec3 front = cam.front;
     front.y = 0.0f;
     front = glm::normalize(front);
 
     if (Input::IS_MOUSE_LOCKED) {
-        glm::vec3 horizontalVelocity(0.0f);
+        glm::vec3 velocity(0.0f);
         if (Input::IsKeyDown(GLFW_KEY_W))
-            horizontalVelocity += front;
+            velocity += front;
         if (Input::IsKeyDown(GLFW_KEY_S))
-            horizontalVelocity -= front;
+            velocity -= front;
         if (Input::IsKeyDown(GLFW_KEY_A))
-            horizontalVelocity -= glm::normalize(glm::cross(front, cam.up));
+            velocity -= glm::normalize(glm::cross(front, cam.up));
         if (Input::IsKeyDown(GLFW_KEY_D))
-            horizontalVelocity += glm::normalize(glm::cross(front, cam.up));
+            velocity += glm::normalize(glm::cross(front, cam.up));
             
-        if (horizontalVelocity != glm::vec3(0.0f))
-            horizontalVelocity = glm::normalize(horizontalVelocity);
+        if (velocity != glm::vec3(0.0f))
+            velocity = glm::normalize(velocity);
 
         if (Input::IsKeyPressedDown(GLFW_KEY_F)) {
             isFlying_ = !isFlying_;
         }
-
-        parent->transform->position += horizontalVelocity * moveSpeed;
-        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && parent->transform->position.y < .1)
-            velocity.y = 10;
+        velocity *= speed;
+        btVector3 v = rigidBody_->rigidBody->getLinearVelocity();
+        v.setX(velocity.x);
+        v.setZ(velocity.z);
+        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && rigidBody_->IsGrounded(2.0f))
+            v.setY(5);
         
-         if (isFlying_) {
+        rigidBody_->rigidBody->setLinearVelocity(v);
+        if (isFlying_) {
             if (Input::IsKeyDown(GLFW_KEY_SPACE))
                 parent->transform->position.y += speed * static_cast<float>(game->GetDeltaTime());
             if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
@@ -68,21 +73,16 @@ void PlayerController::Update() {
          }
     }
 
-    if (velocity.y > MAX_FALL_VELOCITY)
-        velocity.y -= GRAVITY * mass * static_cast<float>(game->GetDeltaTime());
-
     if (!isFlying_ && parent->transform->position.y <= 0.0f && velocity.y < 0.0f) {
         velocity.y = 0;
         parent->transform->position.y = 0.0f;
     }
 
-    if (!isFlying_)
-        parent->transform->position += velocity * static_cast<float>(game->GetDeltaTime());
-    else
-        velocity = glm::vec3(0.0f);
+    rigidBody_->rigidBody->setAngularFactor(btVector3(0.0f, 0.0f, 0.0f));
+    rigidBody_->rigidBody->activate(true);
 
     cam.pos.x = parent->transform->position.x;
     cam.pos.z = parent->transform->position.z;
 
-    cam.pos.y = parent->transform->position.y + 2.0f;
+    cam.pos.y = parent->transform->position.y + 1.0f;
 }

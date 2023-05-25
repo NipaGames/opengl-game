@@ -2,11 +2,13 @@
 
 #include <opengl.h>
 #include <core/entity/component.h>
+#include <core/physics/component/rigidbody.h>
 
 class PlayerController : public Component<PlayerController> {
 private:
     void OnMouseMove();
     bool isFlying_ = false;
+    Physics::RigidBody* rigidBody_ = nullptr;
 public:
     void Spawn();
 

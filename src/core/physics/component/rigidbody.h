@@ -12,5 +12,7 @@ namespace Physics {
         ~RigidBody();
         void Start();
         void FixedUpdate();
+        void SetPos(const glm::vec3&);
+        bool IsGrounded(float = .05f);
     };
 };
