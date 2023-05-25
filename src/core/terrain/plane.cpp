@@ -60,7 +60,7 @@ void Plane::GenerateVertices() {
     // ripped from https://stackoverflow.com/a/44250149
     // don't know if this is realistic at all but looks alright
     for (int y = 0; y < heightGrid_.size(); y++) {
-        for (int x = 0; x < heightGrid_[y].size(); x++) {
+        for (int x = 0; x < heightGrid_.at(y).size(); x++) {
             float hn, hnw, he, hse, hs, hsw, hw, hne;
 
             if (x <= 0) hw = 0;
@@ -100,4 +100,18 @@ void Plane::GenerateVertices() {
             normals.push_back(normal.z);
         }
     }
+}
+
+btHeightfieldTerrainShape* Plane::CreateBtCollider() const {
+    size_t w = (tiling_.x + 1);
+    size_t h = (tiling_.y + 1);
+    float* map = new float[w * h];
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            map[y * w + x] = heightGrid_.at(x).at(y);
+        }
+    }
+    auto* c = new btHeightfieldTerrainShape((int) w, (int) h, map, 0, -.5f * variation, .5f * variation, 1, PHY_ScalarType::PHY_FLOAT, false);
+    c->setLocalScaling(btVector3(1.0f / (float) tiling_.x, 1.0f, 1.0f / (float) tiling_.y));
+    return c;
 }

@@ -1,7 +1,5 @@
 #include "game/game.h"
 
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
-
 #include <core/input.h>
 #include <core/graphics/model.h>
 #include <core/graphics/component/meshrenderer.h>
@@ -94,7 +92,7 @@ void MonkeyGame::Start() {
     terrain.transform->position.y = -.5f;
     auto terrainRb = terrain.AddComponent<Physics::RigidBody>();
     terrainRb->mass = 0.0f;
-    //terrainRb->collider = new btHeightfieldTerrainShape(1.0f, 1.0f, );
+    terrainRb->collider = plane->CreateBtCollider();
     
     if (fontId != FONT_NONE && font2Id != FONT_NONE) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();

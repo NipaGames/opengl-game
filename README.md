@@ -35,15 +35,11 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 *Cube rendering test* 30.9.2022 (DD-MM-YYYY)
 
-<br><br>
-
   
 
 ![Image also showing the game](/images/screenshot2.png)
 
 *Model loading* 4.10.2022
-
-<br><br>
 
   
 
@@ -51,23 +47,17 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 *Happy monkey circle* 5.10.2022
 
-<br><br>
-
   
 
 ![Image showing the lighting](/images/screenshot4.png)
 
 *Dark monkey cult and dramatic lighting* 7.10.2022
 
-<br><br>
-
   
 
 ![Image showing amogus](/images/screenshot5.png)
 
 *Sussy situation* 8.10.2022
-
-<br><br>
 
   
 
@@ -135,7 +125,7 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 Builds only on Windows for now. ``build.bat`` should build everything. The executable can be found from ``bin/Release`` or ``bin/Debug`` depending on the build type. Build type can be changed in ``build.bat``.
 
-##  Requirements
+###  Requirements
 
 - MSVC build tools
 

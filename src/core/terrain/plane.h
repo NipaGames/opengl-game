@@ -2,6 +2,7 @@
 
 #include <opengl.h>
 #include <core/graphics/mesh.h>
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 class Plane : public Mesh {
 private:
@@ -14,5 +15,5 @@ public:
     Plane() : tiling_(1, 1) { }
     Plane(const glm::ivec2& t) : tiling_(t) { }
     void GenerateVertices();
-    const float* GetHeightMap() {}
+    btHeightfieldTerrainShape* CreateBtCollider() const;
 };

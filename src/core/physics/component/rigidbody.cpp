@@ -14,9 +14,9 @@ void RigidBody::Start() {
     Transform* t = parent->transform;
 
     if (collider == nullptr) {
-        collider = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
-        collider->setLocalScaling(btVector3(t->size.x / 2.0f, t->size.y / 2.0f, t->size.z / 2.0f));
+        collider = new btBoxShape(btVector3(.5f, .5f, .5f));
     }
+    collider->setLocalScaling(collider->getLocalScaling() * btVector3(t->size.x, t->size.y, t->size.z));
     btVector3 localInertia(0, 0, 0);
     if (mass != 0.0f)
         collider->calculateLocalInertia(mass, localInertia);
