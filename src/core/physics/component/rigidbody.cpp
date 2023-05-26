@@ -29,9 +29,11 @@ void RigidBody::Start() {
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collider, localInertia);
     rigidBody = new btRigidBody(rbInfo);
     dynamicsWorld->addRigidBody(rigidBody);
+    EnableDebugVisualization(enableDebugVisualization_);
+    EnableRotation(enableRotation_);
 }
 
-void RigidBody::FixedUpdate() {
+void RigidBody::UpdateTransform() {
     Transform* t = parent->transform;
     btTransform transform;
     rigidBody->getMotionState()->getWorldTransform(transform);
@@ -44,7 +46,16 @@ void RigidBody::FixedUpdate() {
     t->rotation.y = transform.getRotation().getY();
     t->rotation.z = transform.getRotation().getZ();
     t->rotation.w = transform.getRotation().getW();
+}
 
+void RigidBody::Update() {
+    if (interpolate)
+        UpdateTransform();
+}
+
+void RigidBody::FixedUpdate() {
+    if (!interpolate)
+        UpdateTransform();
     //rigidBody->getCollisionShape()->setLocalScaling(btVector3(t->size.x, t->size.y, t->size.z));
 }
 
@@ -65,4 +76,22 @@ bool RigidBody::IsGrounded(float dist) {
     btCollisionWorld::ClosestRayResultCallback res(rayFrom, rayTo);
     Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
     return res.hasHit();
+}
+
+void RigidBody::EnableDebugVisualization(bool enabled) {
+    enableDebugVisualization_ = enabled;
+    if (rigidBody == nullptr)
+        return;
+    
+    if (enableDebugVisualization_)
+        rigidBody->setCollisionFlags(rigidBody->getCollisionFlags() & ~btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+    else
+        rigidBody->setCollisionFlags(rigidBody->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+}
+
+void RigidBody::EnableRotation(bool enabled) {
+    enableRotation_ = enabled;
+    if (rigidBody == nullptr)
+        return;
+    rigidBody->setAngularFactor(btVector3(1.0f, 1.0f, 1.0f) * enableRotation_);
 }

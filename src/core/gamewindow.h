@@ -26,7 +26,7 @@ private:
     glm::ivec2 prevWndPos_;
     glm::ivec2 prevWndSize_;
     glm::ivec2 baseWndSize_;
-    bool useVsync_;
+    bool useVsync_ = true;
     std::multimap<EventType, std::function<void()>> events_;
 
     void DispatchEvent(EventType);

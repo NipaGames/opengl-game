@@ -67,10 +67,10 @@ void Game::GameThread() {
             Input::WINDOW_SIZE_CHANGE_PENDING = false;
         }
 
+        Physics::Update(deltaTime_);
         if (currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_) {
             Input::PollKeysPressedDown();
             prevFixedUpdate_ = currentTime;
-            Physics::Update(GetFixedDeltaTime());
             for (const auto& entity : entityManager_.entities_) {
                 entity->FixedUpdate();
             }

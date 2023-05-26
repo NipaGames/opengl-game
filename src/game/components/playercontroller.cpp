@@ -26,7 +26,9 @@ void PlayerController::Start() {
     if (rigidBody_ == nullptr) {
         rigidBody_ = parent->AddComponent<Physics::RigidBody>();
         rigidBody_->collider = new btCapsuleShape(.5f, 2.0f);
-        rigidBody_->Start();
+        rigidBody_->EnableDebugVisualization(false);
+        rigidBody_->EnableRotation(false);
+        rigidBody_->interpolate = true;
     }
     game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
@@ -78,7 +80,13 @@ void PlayerController::Update() {
         parent->transform->position.y = 0.0f;
     }
 
-    rigidBody_->rigidBody->setAngularFactor(btVector3(0.0f, 0.0f, 0.0f));
+    // whacky ahh way to make falling a bit more effective
+    if (rigidBody_->IsGrounded(2.0f))
+        rigidBody_->rigidBody->setLinearFactor(btVector3(1.0f, 0.5f, 1.0f));
+    else if (rigidBody_->rigidBody->getLinearVelocity().getY() < 0.0f)
+        rigidBody_->rigidBody->setLinearFactor(btVector3(1.0f, 1.5f, 1.0f));
+    else
+        rigidBody_->rigidBody->setLinearFactor(btVector3(1.0f, 1.0f, 1.0f));
     rigidBody_->rigidBody->activate(true);
 
     cam.pos.x = parent->transform->position.x;
