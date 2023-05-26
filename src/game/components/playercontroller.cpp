@@ -29,6 +29,8 @@ void PlayerController::Start() {
         rigidBody_->EnableDebugVisualization(false);
         rigidBody_->EnableRotation(false);
         rigidBody_->interpolate = true;
+        rigidBody_->doesMassAffectGravity = true;
+        rigidBody_->mass = 2.0f;
     }
     game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
@@ -42,8 +44,11 @@ void PlayerController::Update() {
     front.y = 0.0f;
     front = glm::normalize(front);
 
+    glm::vec3 dPos = (parent->transform->position - prevPos) / (float) game->GetDeltaTime();
+    prevPos = parent->transform->position;
+
+    glm::vec3 velocity(0.0f);
     if (Input::IS_MOUSE_LOCKED) {
-        glm::vec3 velocity(0.0f);
         if (Input::IsKeyDown(GLFW_KEY_W))
             velocity += front;
         if (Input::IsKeyDown(GLFW_KEY_S))
@@ -55,39 +60,45 @@ void PlayerController::Update() {
             
         if (velocity != glm::vec3(0.0f))
             velocity = glm::normalize(velocity);
+        else
+            movementSpeed_ = 0.0f;
 
         if (Input::IsKeyPressedDown(GLFW_KEY_F)) {
             isFlying_ = !isFlying_;
         }
-        velocity *= speed;
+        movementSpeed_ += (float) game->GetDeltaTime() * speed * accelerationSpeed_;
+        movementSpeed_ = std::min(movementSpeed_, speed);
+        velocity *= movementSpeed_;
         btVector3 v = rigidBody_->rigidBody->getLinearVelocity();
         v.setX(velocity.x);
         v.setZ(velocity.z);
-        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && rigidBody_->IsGrounded(2.0f))
-            v.setY(5);
-        
+        bool grounded = rigidBody_->IsGrounded(2.0f);
+        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && grounded)
+            v.setY(8);
+        if (!grounded && glm::length(glm::vec2(v.getX(), v.getZ())) > 5.0f && (abs(velocity.x) > abs(dPos.x) * 100.0f || abs(velocity.z) * game->GetDeltaTime() > abs(dPos.z) * 100.0f)) {
+            wallHugTimer_ += game->GetDeltaTime();
+            if (wallHugTimer_ >= .025f) {
+                v = btVector3(0.0f, v.getY(), 0.0f);
+            }
+        }
+        else if (wallHugTimer_ != 0.0f) {
+            wallHugTimer_ = 0.0f;
+        }
         rigidBody_->rigidBody->setLinearVelocity(v);
         if (isFlying_) {
             if (Input::IsKeyDown(GLFW_KEY_SPACE))
                 parent->transform->position.y += speed * static_cast<float>(game->GetDeltaTime());
             if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
                 parent->transform->position.y -= speed * static_cast<float>(game->GetDeltaTime());
-         }
+        }
     }
+
+    rigidBody_->rigidBody->activate(true);
 
     if (!isFlying_ && parent->transform->position.y <= 0.0f && velocity.y < 0.0f) {
         velocity.y = 0;
         parent->transform->position.y = 0.0f;
     }
-
-    // whacky ahh way to make falling a bit more effective
-    if (rigidBody_->IsGrounded(2.0f))
-        rigidBody_->rigidBody->setLinearFactor(btVector3(1.0f, 0.5f, 1.0f));
-    else if (rigidBody_->rigidBody->getLinearVelocity().getY() < 0.0f)
-        rigidBody_->rigidBody->setLinearFactor(btVector3(1.0f, 1.5f, 1.0f));
-    else
-        rigidBody_->rigidBody->setLinearFactor(btVector3(1.0f, 1.0f, 1.0f));
-    rigidBody_->rigidBody->activate(true);
 
     cam.pos.x = parent->transform->position.x;
     cam.pos.z = parent->transform->position.z;

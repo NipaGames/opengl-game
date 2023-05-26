@@ -27,10 +27,15 @@ void RigidBody::Start() {
 
     btDefaultMotionState* motionState = new btDefaultMotionState(transform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collider, localInertia);
+    rbInfo.m_restitution = 0.0f;
     rigidBody = new btRigidBody(rbInfo);
     dynamicsWorld->addRigidBody(rigidBody);
     EnableDebugVisualization(enableDebugVisualization_);
     EnableRotation(enableRotation_);
+    rigidBody->setRestitution(0.0f);
+    rigidBody->setDamping(0.0f, 1.0f);
+    if (doesMassAffectGravity)
+        rigidBody->setGravity(rigidBody->getGravity() * mass);
 }
 
 void RigidBody::UpdateTransform() {
@@ -93,5 +98,5 @@ void RigidBody::EnableRotation(bool enabled) {
     enableRotation_ = enabled;
     if (rigidBody == nullptr)
         return;
-    rigidBody->setAngularFactor(btVector3(1.0f, 1.0f, 1.0f) * enableRotation_);
+    rigidBody->setAngularFactor(1.0f * enableRotation_);
 }

@@ -43,8 +43,50 @@
                 }
             },
             {
-                "Light::DirectionalLight": {
+            "Light::DirectionalLight": {
                     "dir": [ 0.7071, 0.7071, 0.0 ]
+                }
+            },
+            {
+                "Transform": {
+                    "position": [ -10, 1.5, 0 ],
+                    "size": [ 1, 5, 10 ]
+                },
+                "MeshRenderer": {
+                    "meshes": [
+                        "asdoijdsaoidahs"
+                    ]
+                },
+                "Physics::RigidBody": {
+                    "mass": 0
+                }
+            },
+            {
+                "Transform": {
+                    "position": [ -5, 0.5, 5 ],
+                    "size": [ 2, 1, 2 ]
+                },
+                "MeshRenderer": {
+                    "meshes": [
+                        "asdoijdsaoidahs"
+                    ]
+                },
+                "Physics::RigidBody": {
+                    "mass": 0
+                }
+            },
+            {
+                "Transform": {
+                    "position": [ -7, 2, 10 ],
+                    "size": [ 2, 1, 2 ]
+                },
+                "MeshRenderer": {
+                    "meshes": [
+                        "asdoijdsaoidahs"
+                    ]
+                },
+                "Physics::RigidBody": {
+                    "mass": 0
                 }
             }
         ]

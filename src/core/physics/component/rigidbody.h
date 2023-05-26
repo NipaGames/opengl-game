@@ -13,6 +13,7 @@ namespace Physics {
         btRigidBody* rigidBody = nullptr;
         DEFINE_COMPONENT_DATA_VALUE(float, mass, 1.0f);
         DEFINE_COMPONENT_DATA_VALUE(bool, interpolate, false);
+        DEFINE_COMPONENT_DATA_VALUE(bool, doesMassAffectGravity, false);
         ~RigidBody();
         void Start();
         void Update();
