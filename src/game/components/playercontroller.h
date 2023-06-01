@@ -12,7 +12,8 @@ private:
     bool isFlying_ = false;
     btKinematicCharacterController* characterController_ = nullptr;
     btPairCachingGhostObject* ghostObject_ = nullptr;
-   float stepHeight_ = 0.2f;
+    float stepHeight_ = 0.2f;
+    float gravity_ = -10.0f;
 public:
     ~PlayerController();
     void Spawn();

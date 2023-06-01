@@ -20,7 +20,6 @@ namespace Physics {
         void FixedUpdate();
         void SetPos(const glm::vec3&);
         void UpdateTransform();
-        bool IsGrounded(float = .05f);
         void EnableDebugVisualization(bool);
         void EnableRotation(bool);
     };

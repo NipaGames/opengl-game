@@ -74,15 +74,6 @@ void RigidBody::SetPos(const glm::vec3& pos) {
     parent->transform->position = pos;
 }
 
-bool RigidBody::IsGrounded(float dist) {
-    btVector3 rayFrom(parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
-    btVector3 rayTo = rayFrom;
-    rayTo.setY(rayTo.getY() - dist);
-    btCollisionWorld::ClosestRayResultCallback res(rayFrom, rayTo);
-    Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
-    return res.hasHit();
-}
-
 void RigidBody::EnableDebugVisualization(bool enabled) {
     enableDebugVisualization_ = enabled;
     if (rigidBody == nullptr)

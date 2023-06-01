@@ -37,7 +37,7 @@ void PlayerController::Start() {
     ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
     characterController_ = new btKinematicCharacterController(ghostObject_, capsuleCollider, stepHeight_, btVector3(0.0f, 1.0f, 0.0f));
     characterController_->setMaxPenetrationDepth(.2f);
-    characterController_->setGravity(btVector3(0.0f, -10.0f, 0.0f));
+    characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
     characterController_->setJumpSpeed(btScalar(6.0f));
     Physics::dynamicsWorld->addCollisionObject(ghostObject_, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
     Physics::dynamicsWorld->addAction(characterController_);
@@ -52,6 +52,12 @@ void PlayerController::Update() {
     glm::vec3 front = cam.front;
     front.y = 0.0f;
     front = glm::normalize(front);
+
+    btVector3 rayFrom(parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
+    btVector3 rayTo(rayFrom.getX(), rayFrom.getY() - 2.0f, rayFrom.getZ());
+    btCollisionWorld::ClosestRayResultCallback res(rayFrom, rayTo);
+    Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
+    bool isOnGround = res.hasHit() || characterController_->onGround();
 
     glm::vec3 velocity(0.0f);
     if (Input::IS_MOUSE_LOCKED) {
@@ -69,14 +75,30 @@ void PlayerController::Update() {
 
         if (Input::IsKeyPressedDown(GLFW_KEY_F)) {
             isFlying_ = !isFlying_;
+            if (isFlying_) {
+                characterController_->setGravity(btVector3(0.0f, 0.0f, 0.0f));
+                characterController_->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+                ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+            }
+            else {
+                characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
+                ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+            }
         }
-        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && characterController_->canJump()) {
+        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && isOnGround && !isFlying_) {
             characterController_->jump();
+        }
+
+        if (isFlying_) {
+            if (Input::IsKeyDown(GLFW_KEY_SPACE))
+                velocity.y += 1.0f;
+            if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+                velocity.y -= 1.0f;
         }
     }
     velocity *= speed * game->GetDeltaTime();
     characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z));
-    characterController_->updateAction(Physics::dynamicsWorld, game->GetDeltaTime());
+    characterController_->updateAction(Physics::dynamicsWorld, btScalar(game->GetDeltaTime()));
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
     
     cam.pos.x = parent->transform->position.x;
