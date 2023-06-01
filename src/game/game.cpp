@@ -88,7 +88,7 @@ void MonkeyGame::Start() {
     plane->material->SetShaderUniform<float>("specularStrength", 0);
     Entity& terrain = entityManager_.CreateEntity();
     terrain.AddComponent<MeshRenderer>()->meshes.push_back(plane);
-    terrain.transform->size = glm::vec3(50, .5f, 50);
+    terrain.transform->size = glm::vec3(50, .25f, 50);
     terrain.transform->position.y = -.5f;
     auto terrainRb = terrain.AddComponent<Physics::RigidBody>();
     terrainRb->mass = 0.0f;
