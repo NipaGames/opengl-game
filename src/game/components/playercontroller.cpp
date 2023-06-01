@@ -37,6 +37,8 @@ void PlayerController::Start() {
     ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
     characterController_ = new btKinematicCharacterController(ghostObject_, capsuleCollider, stepHeight_, btVector3(0.0f, 1.0f, 0.0f));
     characterController_->setMaxPenetrationDepth(.2f);
+    characterController_->setGravity(btVector3(0.0f, -10.0f, 0.0f));
+    characterController_->setJumpSpeed(btScalar(6.0f));
     Physics::dynamicsWorld->addCollisionObject(ghostObject_, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
     Physics::dynamicsWorld->addAction(characterController_);
     game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
@@ -72,8 +74,9 @@ void PlayerController::Update() {
             characterController_->jump();
         }
     }
-    velocity *= speed;
+    velocity *= speed * game->GetDeltaTime();
     characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z));
+    characterController_->updateAction(Physics::dynamicsWorld, game->GetDeltaTime());
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
     
     cam.pos.x = parent->transform->position.x;

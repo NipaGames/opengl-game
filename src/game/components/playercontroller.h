@@ -20,7 +20,7 @@ public:
     void Start();
     void Update();
 
-    DEFINE_COMPONENT_DATA_VALUE(float, speed, .2f);
+    DEFINE_COMPONENT_DATA_VALUE(float, speed, 10.0f);
     DEFINE_COMPONENT_DATA_VALUE(glm::vec3, spawnPosition, glm::vec3(0.0f));
     DEFINE_COMPONENT_DATA_VALUE_VECTOR(int, testNums);
     float mass = 4;
