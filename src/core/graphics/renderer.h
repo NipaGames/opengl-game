@@ -35,7 +35,7 @@ private:
     int maxRenderedDirLights_ = 0;
     int maxRenderedSpotlights_ = 0;
 public:
-    std::unordered_map<int, GLuint> shaders;
+    std::unordered_map<Shaders::ShaderID, GLuint> shaders;
     glm::vec3 skyboxColor = glm::vec3(0.0);
     bool highlightNormals = false;
     bool showHitboxes = false;

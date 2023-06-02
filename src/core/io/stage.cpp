@@ -1,4 +1,5 @@
 #include "stage.h"
+#include "serializer.h"
 #include "serializetypes.h"
 
 #include <fstream>
@@ -18,10 +19,10 @@ bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal)
     if (dataVal == nullptr)
         return false;
     
-    auto it = std::find_if(Stage::_COMPONENT_VAL_SERIALIZERS.begin(), Stage::_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
+    auto it = std::find_if(Serializer::JSON_COMPONENT_VAL_SERIALIZERS.begin(), Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
         return s->CompareType(c->data.GetComponentDataValue(k));
     });
-    if (it == Stage::_COMPONENT_VAL_SERIALIZERS.end())
+    if (it == Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end())
         return false;
     
     const auto& serializer = *it;

@@ -7,8 +7,6 @@
 #include "shaders.h"
 
 namespace Shaders {
-typedef int ShaderID;
-
 GLuint LoadShaders(ShaderID, const std::string&, const std::string&, const std::string& geometryPath = "");
 void AttachGeometryShader(ShaderID, const std::string&);
 void LoadAllShaders();
@@ -19,7 +17,7 @@ class Shader {
 private:
     Shaders::ShaderID id_;
 public:
-    Shader() : id_(SHADER_LIT) { }
+    Shader() : id_(Shaders::ShaderID::UNLIT) { }
     Shader(Shaders::ShaderID id) : id_(id) { }
     void Use() const;
     Shaders::ShaderID GetId() const { return id_; }

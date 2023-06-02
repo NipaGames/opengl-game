@@ -2,7 +2,7 @@
 
 #include <core/entity/entity.h>
 #include <core/game.h>
-#include <core/stage/serializetypes.h>
+#include <core/io/serializetypes.h>
 
 MeshRenderer::~MeshRenderer() {
     if (isAdded)
@@ -49,9 +49,9 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
 }
 
 // just a placeholder for now
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
+JSON_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
     auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-    mesh->material = std::make_shared<Material>(SHADER_LIT);
+    mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
     data.Set(k, mesh);
     return true;
 }, std::shared_ptr<Mesh>);

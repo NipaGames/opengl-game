@@ -3,25 +3,25 @@
 #define _UNIQUE_VAR_NAME_CONCAT_(x, y) x##y
 #define _UNIQUE_VAR_NAME_CONCAT(x, y) _UNIQUE_VAR_NAME_CONCAT_(x, y)
 #define _UNIQUE_VAR_NAME(x) _UNIQUE_VAR_NAME_CONCAT(x, __COUNTER__)
-#define STAGE_SERIALIZE_TYPES(f, ...) inline const void* _UNIQUE_VAR_NAME(_stage_serialization_init_val_) = Stage::AddSerializer<__VA_ARGS__>(f)
+#define JSON_SERIALIZE_TYPES(f, ...) inline const void* _UNIQUE_VAR_NAME(_json_serialization_init_val_) = Serializer::AddJSONSerializer<__VA_ARGS__>(f)
 
-#ifndef STAGE_DEFAULT_SERIALIZATIONS
-#include "stage.h"
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
+#ifndef JSON_DEFAULT_SERIALIZATIONS
+#include "serializer.h"
+JSON_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
     if (!j.is_number())
         return false;
     data.Set(k, (int) j);
     return true;
 }, int);
 
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
+JSON_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
     if (!j.is_number())
         return false;
     data.Set(k, (float) j);
     return true;
 }, float);
 
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
+JSON_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
     glm::vec3 vec;
     if (j.is_number()) vec = glm::vec3(j);
     else if (j.is_array() && j.size() == 3) {
@@ -35,7 +35,7 @@ STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohma
     return true;
 }, glm::vec3, glm::ivec3);
 
-STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
+JSON_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
     glm::vec2 vec;
     if (j.is_number()) vec = glm::vec3(j);
     else if (j.is_array() && j.size() == 2) {
@@ -48,5 +48,5 @@ STAGE_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohma
     data.Set(k, vec);
     return true;
 }, glm::vec2, glm::ivec2);
-#define STAGE_DEFAULT_SERIALIZATIONS
+#define JSON_DEFAULT_SERIALIZATIONS
 #endif

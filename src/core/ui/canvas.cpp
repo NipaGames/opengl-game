@@ -2,7 +2,7 @@
 #include "component/uicomponent.h"
 #include <core/game.h>
 
-UI::Canvas::Canvas() : bgShader_(SHADER_UI_SHAPE) {
+UI::Canvas::Canvas() : bgShader_(Shaders::ShaderID::UI_SHAPE) {
     bgShape_.numVertexAttributes = 2;
     bgShape_.GenerateVAO();
 }

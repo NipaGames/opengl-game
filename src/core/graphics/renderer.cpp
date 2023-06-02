@@ -71,8 +71,8 @@ bool Renderer::Init() {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer_, 0);
 
 
-    framebufferShader_ = Shader(SHADER_FRAMEBUFFER);
-    normalShader_ = Shader(SHADER_HIGHLIGHT_NORMALS);
+    framebufferShader_ = Shader(Shaders::ShaderID::FRAMEBUFFER);
+    normalShader_ = Shader(Shaders::ShaderID::HIGHLIGHT_NORMALS);
 
     framebufferShape_.numVertexAttributes = 4;
     framebufferShape_.GenerateVAO();

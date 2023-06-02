@@ -1,7 +1,7 @@
 #include "debugoverlay.h"
 #include <core/game.h>
 #include <core/input.h>
-#include <core/stage/stage.h>
+#include <core/io/stage.h>
 
 #include <string>
 

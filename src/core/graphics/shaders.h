@@ -1,9 +1,13 @@
 #pragma once
 
-#define SHADER_UNLIT 1
-#define SHADER_LIT 2
-#define SHADER_FRAMEBUFFER 3
-#define SHADER_HIGHLIGHT_NORMALS 4
-#define SHADER_UI_TEXT 5
-#define SHADER_UI_SHAPE 6
-#define SHADER_LINE 7
+namespace Shaders {
+    enum class ShaderID {
+        UNLIT,
+        LIT,
+        FRAMEBUFFER,
+        HIGHLIGHT_NORMALS,
+        UI_TEXT,
+        UI_SHAPE,
+        LINE,
+    };
+};

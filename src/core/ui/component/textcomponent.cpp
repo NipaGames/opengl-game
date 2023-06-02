@@ -11,7 +11,7 @@ UI::TextComponent::~TextComponent() {
 }
 
 void UI::TextComponent::Start() {
-    shader_ = Shader(SHADER_UI_TEXT);
+    shader_ = Shader(Shaders::ShaderID::UI_TEXT);
     renderingMethod_ = renderingMethod;
     shape_.numVertexAttributes = 4;
     shape_.stride = 4;

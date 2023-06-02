@@ -3,7 +3,7 @@
 #include <core/input.h>
 #include <core/graphics/model.h>
 #include <core/graphics/component/meshrenderer.h>
-#include <core/stage/stage.h>
+#include <core/io/stage.h>
 #include <core/terrain/plane.h>
 #include <core/ui/component/textcomponent.h>
 #include <core/physics/component/rigidbody.h>
@@ -47,7 +47,7 @@ void MonkeyGame::Start() {
     monkeyModel.LoadModel("../res/objects/chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_LIT);
+        mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
         mesh->material->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(.1f));
@@ -67,7 +67,7 @@ void MonkeyGame::Start() {
     mogusModel.LoadModel("../res/objects/mog.obj");
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(SHADER_UNLIT);
+        mesh->material = std::make_shared<Material>(Shaders::ShaderID::UNLIT);
         mesh->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.0f, 0.0f, 0.0f));
     }
     mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));
@@ -83,7 +83,7 @@ void MonkeyGame::Start() {
     plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
     plane->GenerateVAO();
-    plane->material = std::make_shared<Material>(SHADER_LIT, Texture::LoadTexture("../res/textures/ground.jpg"));
+    plane->material = std::make_shared<Material>(Shaders::ShaderID::LIT, Texture::LoadTexture("../res/textures/ground.jpg"));
     plane->material->SetShaderUniform<int>("specularHighlight", 8);
     plane->material->SetShaderUniform<float>("specularStrength", 0);
     Entity& terrain = entityManager_.CreateEntity();

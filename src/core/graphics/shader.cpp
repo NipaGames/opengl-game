@@ -100,13 +100,13 @@ GLuint Shaders::LoadShaders(ShaderID id, const std::string& vertexPath, const st
 }
 
 void Shaders::LoadAllShaders() {
-    LoadShaders(SHADER_UNLIT, "../res/shaders/unlit.vert", "../res/shaders/unlit.frag");
-    LoadShaders(SHADER_LIT, "../res/shaders/lit.vert", "../res/shaders/lit.frag");
-    LoadShaders(SHADER_FRAMEBUFFER, "../res/shaders/framebuffer.vert", "../res/shaders/framebuffer.frag");
-    LoadShaders(SHADER_HIGHLIGHT_NORMALS, "../res/shaders/normals.vert", "../res/shaders/normals.frag", "../res/shaders/normals.geom");
-    LoadShaders(SHADER_UI_TEXT, "../res/shaders/text.vert", "../res/shaders/text.frag");
-    LoadShaders(SHADER_UI_SHAPE, "../res/shaders/uishape.vert", "../res/shaders/uishape.frag");
-    LoadShaders(SHADER_LINE, "../res/shaders/line.vert", "../res/shaders/line.frag", "../res/shaders/line.geom");
+    LoadShaders(ShaderID::UNLIT, "../res/shaders/unlit.vert", "../res/shaders/unlit.frag");
+    LoadShaders(ShaderID::LIT, "../res/shaders/lit.vert", "../res/shaders/lit.frag");
+    LoadShaders(ShaderID::FRAMEBUFFER, "../res/shaders/framebuffer.vert", "../res/shaders/framebuffer.frag");
+    LoadShaders(ShaderID::HIGHLIGHT_NORMALS, "../res/shaders/normals.vert", "../res/shaders/normals.frag", "../res/shaders/normals.geom");
+    LoadShaders(ShaderID::UI_TEXT, "../res/shaders/text.vert", "../res/shaders/text.frag");
+    LoadShaders(ShaderID::UI_SHAPE, "../res/shaders/uishape.vert", "../res/shaders/uishape.frag");
+    LoadShaders(ShaderID::LINE, "../res/shaders/line.vert", "../res/shaders/line.frag", "../res/shaders/line.geom");
 }
 
 GLuint Shaders::GetShaderProgram(ShaderID id) {
