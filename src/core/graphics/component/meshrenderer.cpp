@@ -49,9 +49,9 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
 }
 
 // just a placeholder for now
-JSON_SERIALIZE_TYPES([](ComponentData& data, const std::string& k, const nlohmann::json& j) {
+JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
     auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
     mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
-    data.Set(k, mesh);
+    args.Return(mesh);
     return true;
 }, std::shared_ptr<Mesh>);

@@ -14,40 +14,6 @@ using json = nlohmann::json;
 std::vector<Stage::Stage> stages;
 std::vector<std::string> loadedStages;
 
-bool SetComponentValue(IComponent* c, const std::string& k, const json& jsonVal) {
-    auto dataVal = c->data.GetComponentDataValue(k);
-    if (dataVal == nullptr)
-        return false;
-    
-    auto it = std::find_if(Serializer::JSON_COMPONENT_VAL_SERIALIZERS.begin(), Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
-        return s->CompareType(c->data.GetComponentDataValue(k));
-    });
-    if (it == Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end())
-        return false;
-    
-    const auto& serializer = *it;
-    switch (dataVal->componentType) {
-        case ComponentDataValueType::SINGLE:
-            return (serializer->fn)(c->data, k, jsonVal);
-        case ComponentDataValueType::VECTOR:
-            if (!jsonVal.is_array())
-                return false;
-
-            ComponentData arrayWrapper;
-            bool hasAnyFailed = false;
-            int i = 0;
-            for (auto e : jsonVal) {
-                std::string key = std::to_string(i++);
-                if (!(serializer->fn)(arrayWrapper, key, e))
-                    hasAnyFailed = true;
-            }
-            dataVal->CopyValuesFromComponentDataArray(arrayWrapper);
-            return !hasAnyFailed;
-    }
-
-    return false; 
-}
-
 std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nullptr) {
     std::list<Entity> parsedEntities;
     for (const auto&[ek, ev] : entities.items()) {
@@ -74,7 +40,7 @@ std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nul
                     continue;
                 }
                 for (const auto&[k, v] : cv.items()) {
-                    if (SetComponentValue(c, k, v)) {
+                    if (Serializer::SetJSONComponentValue(c, k, v)) {
                         affectedValPtrs.push_back(c->data.vars.at(k));
                     }
                     else {

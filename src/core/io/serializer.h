@@ -33,7 +33,10 @@
     more file formats (XML, custom binary formats, etc.).
 */
 namespace Serializer {
-    typedef std::function<bool(ComponentData&, const std::string&, const nlohmann::json&)> JSONSerializerFunction;
+    bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&);
+
+    class SerializationArgs;
+    typedef std::function<bool(SerializationArgs&, const nlohmann::json&)> JSONSerializerFunction;
 
     class IValueSerializer {
     public:
@@ -117,5 +120,26 @@ namespace Serializer {
 
     class JSONFileSerializer : public IFileSerializer {
 
+    };
+
+    enum class SerializerType {
+        COMPONENT_DATA
+    };
+    class SerializationArgs {
+    public:
+        SerializerType type;
+
+        // ComponentData
+        ComponentData* ctData = nullptr;
+        std::string ctK;
+
+        template<typename T>
+        void Return(const T& val) {
+            switch (type) {
+                case SerializerType::COMPONENT_DATA:
+                    ctData->Set(ctK, val);
+                    break;
+            }
+        }
     };
 };
