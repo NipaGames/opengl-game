@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 #include <string>
 #include <nlohmann/json.hpp>
 #include <core/entity/component.h>
@@ -122,14 +123,18 @@ namespace Serializer {
     }
 
     class IFileSerializer {
+    protected:
+        std::string path_;
+        virtual void ReadFile(std::ifstream&) = 0;
     public:
-        virtual void Serialize(const std::string&) = 0;
+        virtual void Serialize(const std::string&);
     };
 
     class JSONFileSerializer : public IFileSerializer {
     protected:
-        nlohmann::json root;
-
+        nlohmann::json jsonData_;
+        virtual void ParseJSON() = 0;
+        void ReadFile(std::ifstream&) override;
     };
 
     enum class SerializerType {

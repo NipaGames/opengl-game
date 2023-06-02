@@ -1,9 +1,9 @@
 #include "game/game.h"
 
+#include <core/stagemanager.h>
 #include <core/input.h>
 #include <core/graphics/model.h>
 #include <core/graphics/component/meshrenderer.h>
-#include <core/io/stage.h>
 #include <core/terrain/plane.h>
 #include <core/ui/component/textcomponent.h>
 #include <core/physics/component/rigidbody.h>
@@ -36,7 +36,7 @@ void MonkeyGame::PreLoad() {
 
 void MonkeyGame::Start() {
     LOG_FN();
-    Stage::AddStage(Stage::ReadStageFromFile("../res/stages/test.json"));
+    Stage::AddStageFromFile("../res/stages/test.json");
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();

@@ -39,3 +39,22 @@ bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, cons
     }
     return false; 
 }
+
+void IFileSerializer::Serialize(const std::string& p) {
+    path_ = p;
+    std::ifstream f(path_);
+    if (f.fail()) {
+        spdlog::error("Cannot read file '" + path_ + "'!");
+        return;
+    }
+    ReadFile(f);
+}
+
+void JSONFileSerializer::ReadFile(std::ifstream& f) {
+    jsonData_ = nlohmann::json::parse(f);
+    if (!jsonData_.is_object() || jsonData_.size() == 0) {
+        spdlog::error("[" + path_ + "] Missing a root element!");
+        return;
+    }
+    ParseJSON();
+}

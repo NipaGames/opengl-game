@@ -1,8 +1,9 @@
 #include "debugoverlay.h"
 #include <core/game.h>
 #include <core/input.h>
-#include <core/io/stage.h>
+#include <core/stagemanager.h>
 
+#include <algorithm>
 #include <string>
 
 #define LOG_SYSTEM_RESOURCES
