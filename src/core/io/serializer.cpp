@@ -14,8 +14,7 @@ bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, cons
         return false;
     
     const auto& serializer = *it;
-    SerializationArgs args;
-    args.type = SerializerType::COMPONENT_DATA;
+    SerializationArgs args(SerializerType::COMPONENT_DATA);
     switch (dataVal->componentType) {
         case ComponentDataValueType::SINGLE:
             args.ctData = &c->data;

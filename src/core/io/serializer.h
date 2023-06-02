@@ -36,7 +36,10 @@ namespace Serializer {
     bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&);
 
     class SerializationArgs;
-    typedef std::function<bool(SerializationArgs&, const nlohmann::json&)> JSONSerializerFunction;
+    
+    template<typename T>
+    using SerializerFunction = std::function<bool(SerializationArgs&, T)>;
+    typedef SerializerFunction<const nlohmann::json&> JSONSerializerFunction;
 
     class IValueSerializer {
     public:
@@ -93,9 +96,9 @@ namespace Serializer {
     
     inline std::vector<std::shared_ptr<IJSONValueSerializer>> JSON_COMPONENT_VAL_SERIALIZERS;
     // must return something
-    template<typename... T>
-    void* AddJSONSerializer(const JSONSerializerFunction& f) {
-        auto count = std::count_if(JSON_COMPONENT_VAL_SERIALIZERS.begin(), JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
+    template<typename S, typename I, typename F,  typename... T>
+    void* AddSerializer(std::vector<std::shared_ptr<I>>& s, const F& f) {
+        auto count = std::count_if(s.begin(), s.end(), [&](const auto& s) {
             bool found = false;
             ([&] {
                 if (s->HasType(&typeid(T))) {
@@ -106,11 +109,16 @@ namespace Serializer {
             return found;
         });
         if (count == 0) {
-            auto v = std::make_shared<JSONValueSerializer<T...>>();
+            auto v = std::make_shared<S>();
             v->fn = f;
-            JSON_COMPONENT_VAL_SERIALIZERS.push_back(v);
+            s.push_back(v);
         }
         return nullptr;
+    }
+
+    template<typename... T>
+    void* AddJSONSerializer(const JSONSerializerFunction& f) {
+        return AddSerializer<JSONValueSerializer<T...>, IJSONValueSerializer, JSONSerializerFunction, T...>(JSON_COMPONENT_VAL_SERIALIZERS, f);
     }
 
     class IFileSerializer {
@@ -119,25 +127,36 @@ namespace Serializer {
     };
 
     class JSONFileSerializer : public IFileSerializer {
+    protected:
+        nlohmann::json root;
 
     };
 
     enum class SerializerType {
-        COMPONENT_DATA
+        COMPONENT_DATA,
+        ANY_POINTER
     };
     class SerializationArgs {
     public:
         SerializerType type;
 
-        // ComponentData
+        // SerializerType::COMPONENT_DATA
         ComponentData* ctData = nullptr;
         std::string ctK;
+
+        // SerializerType::ANY_POINTER
+        void* ptr;
+
+        SerializationArgs(const SerializerType& t) : type(t) { }
 
         template<typename T>
         void Return(const T& val) {
             switch (type) {
                 case SerializerType::COMPONENT_DATA:
                     ctData->Set(ctK, val);
+                    break;
+                case SerializerType::ANY_POINTER:
+                    *static_cast<T*>(ptr) = val;
                     break;
             }
         }
