@@ -96,10 +96,24 @@ void PlayerController::Update() {
                 velocity.y -= 1.0f;
         }
     }
-    velocity *= speed * game->GetDeltaTime();
-    characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z));
+    velocity *= speed;
+    characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * btScalar(game->GetDeltaTime()));
     characterController_->updateAction(Physics::dynamicsWorld, btScalar(game->GetDeltaTime()));
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
+    if (pushRigidBodies_) {
+        if (glm::length(velocity) > 0.0f) {
+            for (int i = 0; i < ghostObject_->getNumOverlappingObjects(); i++) {
+                btCollisionObject* obj = ghostObject_->getOverlappingObject(i);
+                btRigidBody* rb = static_cast<btRigidBody*>(obj);
+                if (rb == nullptr)
+                    continue;
+                if (rb->getMass() == 0.0f)
+                    continue;
+                rb->setLinearVelocity(btVector3(velocity.x, rb->getLinearVelocity().getY(), velocity.z));
+                rb->applyCentralForce(btVector3(velocity.x, velocity.y, velocity.z));
+            }
+        }
+    }
     
     cam.pos.x = parent->transform->position.x;
     cam.pos.z = parent->transform->position.z;
