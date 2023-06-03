@@ -4,22 +4,21 @@
 #include <unordered_map>
 #include <spdlog/spdlog.h>
 
-#include <core/game.h>
-#include <core/entity/entitymanager.h>
-#include <core/io/files/stage.h>
+#include "game.h"
+#include "entity/entitymanager.h"
+#include "io/files/stage.h"
 
 std::vector<Stage::Stage> stages;
 std::vector<std::string> loadedStages;
 
 void Stage::AddStageFromFile(const std::string& path) {
-    Serializer::StageSerializer serializer;
-    serializer.Serialize(path);
+    Serializer::StageSerializer serializer(path);
     AddStage(serializer.GetStage());
 }
 
 void Stage::AddStage(Stage& stage) {
     if (!stage.id.empty())
-        stages.push_back(std::move(stage));
+        stages.emplace_back(stage);
 }
 
 bool Stage::LoadStage(const std::string& id) {

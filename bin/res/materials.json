@@ -1,9 +1,0 @@
-[
-    {
-        "id": "MAT_DEFAULT",
-        "shader": "UNLIT",
-        "uniforms": {
-            "color": [ 0.0, 1.0, 0.0 ]
-        }
-    }
-]

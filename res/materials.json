@@ -1,0 +1,14 @@
+[
+    {
+        "id": "MAT_GRASS",
+        "shader": "LIT",
+        "texture": {
+            "path": "grass.jpg"
+        },
+        "uniforms": {
+            "color": 0.75,
+            "specularHighlight": 8,
+            "specularStrength": 0
+        }
+    }
+]

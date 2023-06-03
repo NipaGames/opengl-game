@@ -34,8 +34,6 @@
     more file formats (XML, custom binary formats, etc.).
 */
 namespace Serializer {
-    bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&);
-
     class SerializationArgs;
     
     template<typename T>
@@ -44,14 +42,14 @@ namespace Serializer {
 
     class IValueSerializer {
     public:
-        virtual bool CompareType(std::shared_ptr<IComponentDataValue>) const = 0;
+        virtual bool CompareToComponentType(std::shared_ptr<IComponentDataValue>) const = 0;
         virtual bool HasType(const type_info*) const = 0;
     };
 
     template<typename... T>
     class ValueSerializer : public IValueSerializer {
     public:
-        bool CompareType(std::shared_ptr<IComponentDataValue> d) const override {
+        bool CompareToComponentType(std::shared_ptr<IComponentDataValue> d) const override {
             bool found = false;
             ([&] {
                 // dynamic_pointer_cast won't do here so we'll need this workaround
@@ -91,15 +89,15 @@ namespace Serializer {
     template<typename... T>
     class JSONValueSerializer : public IJSONValueSerializer, public ValueSerializer<T...> {
     public:
-        virtual bool CompareType(std::shared_ptr<IComponentDataValue> v) const { return ValueSerializer<T...>::CompareType(v); }
+        virtual bool CompareToComponentType(std::shared_ptr<IComponentDataValue> v) const { return ValueSerializer<T...>::CompareToComponentType(v); }
         virtual bool HasType(const type_info* t) const { return ValueSerializer<T...>::HasType(t); }
     };
     
     inline std::vector<std::shared_ptr<IJSONValueSerializer>> JSON_COMPONENT_VAL_SERIALIZERS;
     // must return something
     template<typename S, typename I, typename F,  typename... T>
-    void* AddSerializer(std::vector<std::shared_ptr<I>>& s, const F& f) {
-        auto count = std::count_if(s.begin(), s.end(), [&](const auto& s) {
+    void* AddSerializer(std::vector<std::shared_ptr<I>>& vec, const F& f) {
+        auto count = std::count_if(vec.begin(), vec.end(), [&](const auto& s) {
             bool found = false;
             ([&] {
                 if (s->HasType(&typeid(T))) {
@@ -112,7 +110,7 @@ namespace Serializer {
         if (count == 0) {
             auto v = std::make_shared<S>();
             v->fn = f;
-            s.push_back(v);
+            vec.push_back(v);
         }
         return nullptr;
     }
@@ -121,6 +119,21 @@ namespace Serializer {
     void* AddJSONSerializer(const JSONSerializerFunction& f) {
         return AddSerializer<JSONValueSerializer<T...>, IJSONValueSerializer, JSONSerializerFunction, T...>(JSON_COMPONENT_VAL_SERIALIZERS, f);
     }
+
+    bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&);
+    template<typename T>
+    bool SetJSONPointerValue(T* ptr, const nlohmann::json& jsonVal) {
+        auto it = std::find_if(Serializer::JSON_COMPONENT_VAL_SERIALIZERS.begin(), Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
+            return s->HasType(&typeid(T));
+        });
+        if (it == Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end())
+            return false;
+        const auto& serializer = *it;
+        SerializationArgs args(SerializerType::ANY_POINTER);
+        args.ptr = ptr;
+        return (serializer->fn)(args, jsonVal);
+    }
+
 
     class IFileSerializer {
     protected:
@@ -134,7 +147,7 @@ namespace Serializer {
     protected:
         nlohmann::json jsonData_;
         virtual void ParseJSON() = 0;
-        void ReadFile(std::ifstream&) override;
+        virtual void ReadFile(std::ifstream&) override;
     };
 
     enum class SerializerType {

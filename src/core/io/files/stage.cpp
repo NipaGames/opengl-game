@@ -25,7 +25,8 @@ std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nul
                 if (c == nullptr) {
                     spdlog::warn("Cannot find component '" + ck + "'!");
                     // yeah yeah the whole entity isn't necessarily invalid but this will do now
-                    (*invalidEntities)++;
+                    if (invalidEntities != nullptr)
+                        (*invalidEntities)++;
                     continue;
                 }
                 for (const auto&[k, v] : cv.items()) {
@@ -34,7 +35,8 @@ std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nul
                     }
                     else {
                         spdlog::warn("Invalid or empty value for component '" + ck + "'!");
-                        (*invalidEntities)++;
+                        if (invalidEntities != nullptr)
+                            (*invalidEntities)++;
                     }
                 }
                 for (auto it = c->data.vars.cbegin(); it != c->data.vars.cend();) {
@@ -58,15 +60,14 @@ std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nul
 }
 
 void StageSerializer::ParseJSON() {
-    json& root = jsonData_.items().begin().value();
-    if (!root.is_object()) {
-        spdlog::error("[" + path_ + "] Root must be an object!");
+    if (!jsonData_.contains("id")|| !jsonData_["id"].is_string()) {
+        spdlog::error("[" + path_ + "] Missing 'id'!");
         return;
     }
-    stage_.id = jsonData_.items().begin().key();
+    stage_.id = jsonData_["id"];
     int invalidEntities = 0;
-    if (root.contains("entities")) {
-        json& entities = root["entities"];
+    if (jsonData_.contains("entities")) {
+        json& entities = jsonData_["entities"];
         if (entities.is_array()) {
             stage_.entities = ParseEntities(entities, &invalidEntities);
         }
@@ -74,7 +75,7 @@ void StageSerializer::ParseJSON() {
             spdlog::warn("[" + path_ + "] 'entities' must be an array!");
     }
     if (invalidEntities > 0) {
-        spdlog::warn("[" + path_ + "] '" + std::to_string(invalidEntities) + " invalid entities!");
+        spdlog::warn("[" + path_ + "] " + std::to_string(invalidEntities) + " invalid entities!");
     }
 }
 

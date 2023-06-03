@@ -2,11 +2,14 @@
 
 #include <core/stagemanager.h>
 #include <core/input.h>
+#include <core/io/files/materials.h>
+#include <core/io/paths.h>
 #include <core/graphics/model.h>
 #include <core/graphics/component/meshrenderer.h>
 #include <core/terrain/plane.h>
 #include <core/ui/component/textcomponent.h>
 #include <core/physics/component/rigidbody.h>
+
 #include "components/playercontroller.h"
 #include "components/rotatecube.h"
 #include "components/debugoverlay.h"
@@ -30,13 +33,16 @@ bool MonkeyGame::InitWindow() {
 void MonkeyGame::PreLoad() {
     LOG_FN();
     using namespace UI::Text;
-    fontId = AssignFont(LoadFontFile("../res/fonts/Augusta.ttf", 96));
-    font2Id = AssignFont(LoadFontFile("../res/fonts/FiraCode-Regular.ttf", 48));
+    fontId = AssignFont(LoadFontFile(Paths::Path(Paths::FONTS_DIR, "Augusta.ttf"), 96));
+    font2Id = AssignFont(LoadFontFile(Paths::Path(Paths::FONTS_DIR, "FiraCode-Regular.ttf"), 48));
 }
 
 void MonkeyGame::Start() {
     LOG_FN();
-    Stage::AddStageFromFile("../res/stages/test.json");
+    Texture::LoadAllTexturesFromTextureDir();
+    Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
+    Serializer::MaterialSerializer serializer(Paths::MATERIALS_PATH.string());
+    serializer.AddMaterials();
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
@@ -44,7 +50,7 @@ void MonkeyGame::Start() {
     float range = 4.0f;
     int monkeyCount = 6;
     Model monkeyModel;
-    monkeyModel.LoadModel("../res/objects/chimp.fbx");
+    monkeyModel.LoadModel(Paths::Path(Paths::OBJECTS_DIR, "chimp.fbx"));
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
@@ -64,7 +70,7 @@ void MonkeyGame::Start() {
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
     Model mogusModel;
-    mogusModel.LoadModel("../res/objects/mog.obj");
+    mogusModel.LoadModel(Paths::Path(Paths::OBJECTS_DIR, "mog.obj"));
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(Shaders::ShaderID::UNLIT);
@@ -83,9 +89,7 @@ void MonkeyGame::Start() {
     plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
     plane->GenerateVAO();
-    plane->material = std::make_shared<Material>(Shaders::ShaderID::LIT, Texture::LoadTexture("../res/textures/ground.jpg"));
-    plane->material->SetShaderUniform<int>("specularHighlight", 8);
-    plane->material->SetShaderUniform<float>("specularStrength", 0);
+    plane->material = renderer_.materials.at("MAT_GRASS");
     Entity& terrain = entityManager_.CreateEntity();
     terrain.AddComponent<MeshRenderer>()->meshes.push_back(plane);
     terrain.transform->size = glm::vec3(50, .25f, 50);
@@ -105,8 +109,8 @@ void MonkeyGame::Start() {
             auto textComponent = testText.AddComponent<UI::TextComponent>(&canvas);
             textComponent->AddToCanvas();
             textComponent->font = fontId;
-            testText.transform->position.x = (i / 10) % 1280 * 128;
-            testText.transform->position.y = (i % 10) * 72;
+            testText.transform->position.x = (float) ((i / 10) % 1280 * 128);
+            testText.transform->position.y = (float) (720 - 72 - (i % 10) * 72);
             testText.transform->size.x = 1.0f;
             textComponent->SetText(std::to_string(i));
         }*/

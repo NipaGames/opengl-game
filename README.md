@@ -21,6 +21,8 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 ###  Version history:
 
+-  **v0.5:** more serialization (for example materials.json and objects.json)
+
 -  **v0.4:** bullet physics engine
 
 -  **v0.3:** stage loading basics

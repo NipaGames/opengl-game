@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <iostream>
 
+#include <core/io/paths.h>
+
 using namespace Texture;
 
 std::unordered_map<std::string, TextureID> textures_;
@@ -16,12 +18,14 @@ TextureID Texture::LoadTexture(const std::string& pathStr) {
 
     if (!std::filesystem::exists(path)) {
         spdlog::warn("Texture '" + pathStr + "' does not exist!");
-        return -1;
+        return TEXTURE_NONE;
     }
 
-    std::string absPath = std::filesystem::absolute(path).string();
-    if (textures_.count(absPath)) {
-        return textures_[absPath];
+    auto fPath = std::filesystem::absolute(path);
+    std::string absPath = fPath.string();
+    std::string fileName = fPath.filename().string();
+    if (textures_.count(fileName)) {
+        spdlog::warn("Overwriting texture '" + fileName + "'!");
     }
 
     TextureID texture;
@@ -45,7 +49,18 @@ TextureID Texture::LoadTexture(const std::string& pathStr) {
     stbi_image_free(data);
 
     spdlog::info("Loaded texture '" + pathStr + "'!");
-    textures_[absPath] = texture;
+    textures_[fileName] = texture;
 
     return texture;
+}
+
+TextureID Texture::GetTexture(const std::string& pathStr) {
+    if (textures_.count(pathStr) == 0)
+        return TEXTURE_NONE;
+    return textures_.at(pathStr);
+}
+
+void Texture::LoadAllTexturesFromTextureDir() {
+    for (const auto & f : std::filesystem::directory_iterator(Paths::TEXTURES_DIR))
+        LoadTexture(f.path().string());
 }

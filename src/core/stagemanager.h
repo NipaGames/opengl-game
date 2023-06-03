@@ -5,7 +5,7 @@
 #include <vector>
 #include <opengl.h>
 
-#include <core/entity/entity.h>
+#include "entity/entity.h"
 
 namespace Stage {
     struct Stage {

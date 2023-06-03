@@ -10,5 +10,9 @@ namespace Serializer {
         void ParseJSON() override;
     public:
         Stage::Stage& GetStage();
+        StageSerializer(const std::string& p) {
+            Serialize(p);
+        }
+        StageSerializer() { }
     };
 };

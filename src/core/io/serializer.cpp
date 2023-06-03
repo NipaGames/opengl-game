@@ -8,7 +8,7 @@ bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, cons
         return false;
     
     auto it = std::find_if(Serializer::JSON_COMPONENT_VAL_SERIALIZERS.begin(), Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
-        return s->CompareType(c->data.GetComponentDataValue(k));
+        return s->CompareToComponentType(c->data.GetComponentDataValue(k));
     });
     if (it == Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end())
         return false;
@@ -51,9 +51,12 @@ void IFileSerializer::Serialize(const std::string& p) {
 }
 
 void JSONFileSerializer::ReadFile(std::ifstream& f) {
-    jsonData_ = nlohmann::json::parse(f);
-    if (!jsonData_.is_object() || jsonData_.size() == 0) {
-        spdlog::error("[" + path_ + "] Missing a root element!");
+    try {
+        jsonData_ = nlohmann::json::parse(f);
+    }
+    catch (std::exception& e) {
+        spdlog::error("[" + path_ + "] Invalid JSON syntax!");
+        spdlog::debug(e.what());
         return;
     }
     ParseJSON();

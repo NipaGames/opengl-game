@@ -20,13 +20,21 @@ private:
     std::unordered_map<std::string, glm::vec3> vec3Uniforms_;
 
     Shader shader_;
-    Texture::TextureID texture_ = -1;
+    Texture::TextureID texture_ = TEXTURE_NONE;
 public:
     Material() { RestoreDefaultUniforms(); }
     Material(Shaders::ShaderID shaderId) : shader_(shaderId) { RestoreDefaultUniforms(); }
     Material(Shaders::ShaderID shaderId, Texture::TextureID textureId) : shader_(shaderId), texture_(textureId) { RestoreDefaultUniforms(); }
     void RestoreDefaultUniforms();
     void Use();
+    void SetShader(Shaders::ShaderID s) {
+        shader_ = Shader(s);
+        shader_.Use();
+    }
+    void SetTexture(Texture::TextureID t) {
+        texture_ = t;
+        shader_.Use();
+    }
     const Shader& GetShader() { return shader_; }
     Texture::TextureID GetTexture() { return texture_; }
 
