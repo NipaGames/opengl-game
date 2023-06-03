@@ -121,7 +121,6 @@ GLuint& Resources::ShaderManager::Get(ShaderID shader) {
 
 GLuint Resources::ShaderManager::LoadResource(const std::fs::path&) {
     throw "not implemented yet";
-    return -1;
 }
 
 GLuint Shaders::GetShaderProgram(ShaderID shader) {

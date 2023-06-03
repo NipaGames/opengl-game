@@ -15,7 +15,6 @@ Texture::TextureID Resources::TextureManager::LoadResource(const std::fs::path& 
 
     auto fPath = std::filesystem::absolute(path);
     std::string absPath = fPath.string();
-    std::string fileName = fPath.filename().string();
 
     TextureID texture;
     glGenTextures(1, &texture);
