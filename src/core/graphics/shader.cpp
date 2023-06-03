@@ -89,7 +89,7 @@ void Resources::ShaderManager::LoadShader(GLuint program, const std::string& pat
     }
     GLuint shader = glCreateShader(shaderType);
     std::string p = Paths::Path(path_, path + ext);
-    spdlog::info("Loading shader '" + std::fs::proximate(p, path_.parent_path()).generic_string() + "'");
+    spdlog::info("Compiling shader '" + std::fs::proximate(p, path_.parent_path()).generic_string() + "'");
     LoadShaderFromFile(shader, p);
     glAttachShader(program, shader);
     glDeleteShader(shader);

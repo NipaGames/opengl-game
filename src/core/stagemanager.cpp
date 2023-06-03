@@ -28,6 +28,8 @@ bool Stage::LoadStage(const std::string& id) {
     if (sIt == stages.end())
         return false;
     Stage& s = *sIt;
+    s.instantiatedEntities.clear();
+    std::cout << s.instantiatedEntities.size() << std::endl;
 
     for (const Entity& e : s.entities) {
         if (e.id.empty()) {
