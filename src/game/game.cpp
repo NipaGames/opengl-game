@@ -4,6 +4,7 @@
 #include <core/input.h>
 #include <core/io/files/materials.h>
 #include <core/io/paths.h>
+#include <core/io/resourcemanager.h>
 #include <core/graphics/model.h>
 #include <core/graphics/component/meshrenderer.h>
 #include <core/terrain/plane.h>
@@ -39,7 +40,6 @@ void MonkeyGame::PreLoad() {
 
 void MonkeyGame::Start() {
     LOG_FN();
-    Texture::LoadAllTexturesFromTextureDir();
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
     Serializer::MaterialSerializer serializer(Paths::MATERIALS_PATH.string());
     serializer.AddMaterials();

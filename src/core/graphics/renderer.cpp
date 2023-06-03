@@ -1,6 +1,7 @@
 #include "renderer.h"
 
 #include "mesh.h"
+#include <core/game.h>
 #include <core/gamewindow.h>
 #include <core/physics/physics.h>
 
@@ -11,8 +12,8 @@ Renderer::Renderer(GLFWwindow* window) {
 }
 
 Renderer::~Renderer() {
-    for (auto[k, v] : shaders)
-        glDeleteProgram(v);
+    for (GLuint s : shaders_)
+        glDeleteProgram(s);
 
     glBindRenderbuffer(GL_RENDERBUFFER, fbo_);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
@@ -21,7 +22,7 @@ Renderer::~Renderer() {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
         glDeleteFramebuffers(1, &MSAAFbo_);
 
-    shaders.clear();
+    shaders_.clear();
 }
 
 bool Renderer::Init() {
@@ -95,7 +96,7 @@ bool Renderer::Init() {
 }
 
 void Renderer::UpdateLighting() {
-    for (const auto&[_, shader] : shaders) {
+    for (GLuint shader : shaders_) {
         glUseProgram(shader);
         Light::ResetIndices();
         for (auto l : lights_) {
@@ -122,7 +123,14 @@ void Renderer::UpdateLighting() {
     maxRenderedSpotlights_ = std::max(Light::SPOTLIGHTS_INDEX, maxRenderedSpotlights_);
 }
 
+void Renderer::CopyShadersFromResources() {
+    const auto& shaderMap = game->resources.shaderManager.GetAll();
+    shaders_.clear();
+    std::transform(shaderMap.begin(), shaderMap.end(), std::back_inserter(shaders_), [](const auto& s) { return s.second; });
+}
+
 void Renderer::Start() {
+    CopyShadersFromResources();
     UpdateLighting();
 }
 

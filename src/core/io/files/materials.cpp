@@ -61,7 +61,7 @@ std::pair<std::string, std::shared_ptr<Material>> ParseMaterial(const json& mate
         const json& textureJson = materialJson["texture"];
         if (!textureJson.is_object() || !textureJson.contains("path") || !textureJson["path"].is_string())
             return ParsingException(invalidMaterials);
-        m->SetTexture(Texture::GetTexture(textureJson["path"]));
+        m->SetTexture(game->resources.textureManager.Get(textureJson["path"]));
     }
     
     if (materialJson.contains("uniforms")) {

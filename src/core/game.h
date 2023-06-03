@@ -5,6 +5,7 @@
 #include "gamewindow.h"
 #include "graphics/renderer.h"
 #include "entity/entitymanager.h"
+#include "io/resourcemanager.h"
 
 #ifdef VERSION_MAJ
 #ifdef VERSION_MIN
@@ -15,6 +16,7 @@
 class Game {
 protected:
     EntityManager entityManager_;
+
     GameWindow window_;
     Renderer renderer_;
     
@@ -28,6 +30,7 @@ protected:
     // fixed updates per second
     int fixedUpdateRate_ = 60;
 public:
+    Resources resources;
     virtual bool InitWindow();
     virtual void Run();
     virtual void GameThread();

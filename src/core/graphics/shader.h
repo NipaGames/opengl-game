@@ -7,17 +7,14 @@
 #include "shaders.h"
 
 namespace Shaders {
-enum class ShaderType {
-    VERT_FRAG,
-    VERT_FRAG_GEOM
-};
-GLuint LoadShaders(ShaderID, const std::string&, const std::string&, const std::string& = "");
-GLuint LoadShaders(ShaderID, const std::string&, const ShaderType&);
-GLuint LoadShadersFromShaderDir(ShaderID, std::string, std::string, std::string = "");
-GLuint LoadShadersFromShaderDir(ShaderID, std::string, const ShaderType&);
-void AttachGeometryShader(ShaderID, const std::string&);
-void LoadAllShaders();
-GLuint GetShaderProgram(ShaderID);
+    enum class ShaderType {
+        VERT,
+        FRAG,
+        GEOM,
+        VERT_FRAG,
+        VERT_FRAG_GEOM
+    };
+    GLuint GetShaderProgram(ShaderID);
 };
 
 class Shader {

@@ -3,7 +3,7 @@
 #include <opengl.h>
 
 #include "input.h"
-#include <core/physics/physics.h>
+#include "physics/physics.h"
 
 bool Game::InitWindow() {
     window_ = GameWindow("", BASE_WIDTH, BASE_HEIGHT);
@@ -34,6 +34,7 @@ void Game::GameThread() {
     PreLoad();
     glfwShowWindow(game->GetGameWindow().GetWindow());
     Physics::Init();
+    resources.LoadAll();
     Start();
     for (const auto& entity : entityManager_.entities_) {
         entity->Start();
