@@ -9,7 +9,7 @@ struct ShaderUniform {
     GLenum type;
 };
 
-std::vector<ShaderUniform> ListMaterialUniforms(Shaders::ShaderID s) {
+std::vector<ShaderUniform> ListMaterialUniforms(const std::string& s) {
     GLint size; // size of the variable
     GLenum type; // type of the variable (float, vec3 or mat4, etc)
 
@@ -44,17 +44,15 @@ std::pair<std::string, std::shared_ptr<Material>> ParseMaterial(const json& mate
         return ParsingException(invalidMaterials);
     
     std::shared_ptr<Material> m = std::make_shared<Material>();
+    
     if (!materialJson.contains("id") || !materialJson["id"].is_string())
         return ParsingException(invalidMaterials);
-    
     std::string id = materialJson["id"];
-    if (!materialJson.contains("shader"))
-        return ParsingException(invalidMaterials);
     
-    Shaders::ShaderID shader;
-    if(!SetJSONPointerValue(&shader, materialJson["shader"]))
+    if (!materialJson.contains("shader") || !materialJson["shader"].is_string())
         return ParsingException(invalidMaterials);
-    
+    std::string shader = materialJson["shader"];
+
     m->SetShader(shader);
 
     if (materialJson.contains("texture")) {

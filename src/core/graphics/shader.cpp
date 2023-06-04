@@ -127,10 +127,25 @@ GLuint Shaders::GetShaderProgram(ShaderID shader) {
     return game->resources.shaderManager.Get(shader);
 }
 
+GLuint Shaders::GetShaderProgram(const std::string& shader) {
+    return game->resources.shaderManager.Get(shader);
+}
+
 GLuint Shader::GetProgram() const {
     if (_program == GL_NONE)
-        _program = Shaders::GetShaderProgram(id_);
+        _program = GetShaderProgram(GetIDString());
     return _program;
+}
+
+ShaderID Shader::GetID() const {
+    return std::get<ShaderID>(id_);
+}
+
+std::string Shader::GetIDString() const {
+    if (std::holds_alternative<std::string>(id_))
+        return std::get<std::string>(id_);
+    else
+        return (std::string) magic_enum::enum_name(std::get<ShaderID>(id_));
 }
 
 void Shader::Use() const {

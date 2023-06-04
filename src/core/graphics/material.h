@@ -28,7 +28,8 @@ public:
     Material(Shaders::ShaderID shaderId, Texture::TextureID textureId) : shader_(shaderId), texture_(textureId) { RestoreDefaultUniforms(); }
     void RestoreDefaultUniforms();
     void Use();
-    void SetShader(Shaders::ShaderID s) {
+    template<typename T>
+    void SetShader(T s) {
         shader_ = Shader(s);
         shader_.Use();
     }

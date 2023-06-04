@@ -3,6 +3,7 @@
 #include <opengl.h>
 #include <string>
 #include <typeinfo>
+#include <variant>
 
 #include "shaders.h"
 
@@ -15,19 +16,22 @@ namespace Shaders {
         VERT_FRAG_GEOM
     };
     GLuint GetShaderProgram(ShaderID);
+    GLuint GetShaderProgram(const std::string&);
 };
 
 class Shader {
 private:
-    Shaders::ShaderID id_;
+    std::variant<std::string, Shaders::ShaderID> id_;
     // cache shader program
     mutable GLuint _program = GL_NONE;
 public:
-    Shader() : id_(Shaders::ShaderID::UNLIT) { }
+    Shader() { }
     Shader(Shaders::ShaderID id) : id_(id) { }
+    Shader(const std::string& id) : id_(id) { }
     void Use() const;
     GLuint GetProgram() const;
-    Shaders::ShaderID GetId() const { return id_; }
+    Shaders::ShaderID GetID() const;
+    std::string GetIDString() const;
 
     // this implementation sucks ass, maybe i'll come with something better later
     // it will do well enough for now

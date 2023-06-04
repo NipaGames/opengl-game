@@ -86,6 +86,7 @@ public:
         ShaderManager() : ResourceManager<GLuint>(Paths::SHADER_DIR) { }
         void LoadAll() override;
         GLuint& Get(Shaders::ShaderID);
+        GLuint& Get(const std::string& s) { return ResourceManager::Get(s); }
     };
 
     class FontManager : public ResourceManager<UI::Text::Font> {
