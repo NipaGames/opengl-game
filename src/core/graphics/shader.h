@@ -39,7 +39,7 @@ public:
 
         // yanderedev switch statement
         if constexpr(std::is_same_v<T, int> || std::is_same_v<T, bool>)
-            glUniform1i(location, value); 
+            glUniform1i(location, value);
         else if constexpr(std::is_same_v<T, float>)
             glUniform1f(location, value);
         else if constexpr(std::is_same_v<T, glm::mat2>)
@@ -48,6 +48,8 @@ public:
             glUniformMatrix3fv(location, 1, GL_FALSE, &value[0][0]);
         else if constexpr(std::is_same_v<T, glm::mat4>)
             glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+        else if constexpr(std::is_same_v<T, glm::vec2>)
+            glUniform2f(location, ((glm::vec2) value).x, ((glm::vec2) value).y);
         else if constexpr(std::is_same_v<T, glm::vec3>)
             glUniform3f(location, ((glm::vec3) value).x, ((glm::vec3) value).y, ((glm::vec3) value).z);
         else if constexpr(std::is_same_v<T, glm::vec4>)

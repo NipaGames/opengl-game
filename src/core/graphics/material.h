@@ -55,6 +55,8 @@ public:
             vec2Uniforms_[name] = value;
         else if constexpr(std::is_same_v<T, glm::vec3>)
             vec3Uniforms_[name] = value;
+        else if constexpr(std::is_same_v<T, glm::vec4>)
+            vec4Uniforms_[name] = value;
     }
     template<typename T>
     T GetShaderUniform(const std::string& name) {
@@ -72,6 +74,8 @@ public:
             return vec2Uniforms_[name];
         else if constexpr(std::is_same_v<T, glm::vec3>)
             return vec3Uniforms_[name];
+        else if constexpr(std::is_same_v<T, glm::vec4>)
+            return vec4Uniforms_[name];
         else
             return T();
     }
