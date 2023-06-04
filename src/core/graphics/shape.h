@@ -11,7 +11,7 @@ public:
     GLuint vao = NULL;
     GLuint vbo = NULL;
     ~Shape();
-    Shape() { }
+    Shape() = default;
     Shape(const Shape&);
     Shape(Shape&&);
     void GenerateVAO();

@@ -35,12 +35,13 @@ private:
     int maxRenderedDirLights_ = 0;
     int maxRenderedSpotlights_ = 0;
     std::vector<GLuint> shaders_;
+    int entitiesOnFrustum_ = 0;
 public:
     std::unordered_map<std::string, std::shared_ptr<Material>> materials;
     glm::vec3 skyboxColor = glm::vec3(0.0);
     bool highlightNormals = false;
     bool showHitboxes = false;
-    Renderer() { }
+    Renderer() = default;
     virtual ~Renderer();
     void UpdateLighting();
     void SetWindow(GLFWwindow* window) { window_ = window; }
@@ -57,4 +58,5 @@ public:
     void CopyShadersFromResources();
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
+    int CountEntitiesOnFrustum() { return entitiesOnFrustum_; }
 };

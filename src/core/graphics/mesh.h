@@ -15,7 +15,7 @@ public:
     GLuint ebo = NULL;
     GLuint normalBuffer = NULL;
     GLuint texCoordBuffer = NULL;
-    Mesh() { }
+    Mesh() = default;
     Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& t, const std::vector<float>& n) : vertices(v), indices(i), texCoords(t), normals(n) { }
     Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& t, const std::vector<float>& n) : id(meshId), vertices(v), texCoords(t), indices(i), normals(n) { }
     Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i) : vertices(v), indices(i), normals(v) {

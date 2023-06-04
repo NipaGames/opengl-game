@@ -25,7 +25,7 @@ private:
     // cache shader program
     mutable GLuint _program = GL_NONE;
 public:
-    Shader() { }
+    Shader() = default;
     Shader(Shaders::ShaderID id) : id_(id) { }
     Shader(const std::string& id) : id_(id) { }
     void Use() const;

@@ -13,6 +13,6 @@ namespace Serializer {
         StageSerializer(const std::string& p) {
             Serialize(p);
         }
-        StageSerializer() { }
+        StageSerializer() = default;
     };
 };

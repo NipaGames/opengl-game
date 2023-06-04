@@ -34,7 +34,7 @@ namespace UI {
         TextRenderingMethod renderingMethod = TextRenderingMethod::RENDER_TO_TEXTURE; // Must be declared before start, no effect otherwise
         
         virtual ~TextComponent();
-        TextComponent() { }
+        TextComponent() = default;
         TextComponent(UI::Canvas* c, int p = 0) : UIComponent(c, p) { }
         
         void Start();

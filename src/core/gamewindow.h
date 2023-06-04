@@ -31,7 +31,7 @@ private:
 
     void DispatchEvent(EventType);
 public:
-    GameWindow() { }
+    GameWindow() = default;
     GameWindow(const std::string&, int, int, bool = true);
     
     bool Create(Renderer&);

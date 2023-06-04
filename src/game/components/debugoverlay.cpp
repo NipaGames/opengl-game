@@ -57,6 +57,7 @@ void DebugOverlay::Start() {
 
     textContainer_.AppendElement("pos: [ {:.2f}, {:.2f}, {:.2f} ]", "pos");
     textContainer_.AppendElement("entities: {}", "entities");
+    textContainer_.AppendElement("rendered entities: {}", "entitiesOnFrustum");
     textContainer_.AppendElement("stages: [ {} ]", "stages");
     textContainer_.AppendNewline();
 
@@ -93,6 +94,7 @@ void DebugOverlay::FixedUpdate() {
     glm::vec3 camPos = game->GetRenderer().GetCamera().pos;
     textContainer_.SetValue("pos", camPos.x, camPos.y, camPos.z);
     textContainer_.SetValue("entities", game->GetEntityManager().CountEntities());
+    textContainer_.SetValue("entitiesOnFrustum", game->GetRenderer().CountEntitiesOnFrustum());
     const std::vector<std::string>& stages = Stage::GetLoadedStages();
     std::string stagesStr;
     if (stages.size() > 0) {

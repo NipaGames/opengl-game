@@ -87,6 +87,8 @@ void Game::GameThread() {
         direction.y = sin(glm::radians(cam.pitch));
         direction.z = sin(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));
         cam.front = glm::normalize(direction);
+        cam.right = glm::normalize(glm::cross(cam.front, cam.up));
+        cam.UpdateFrustum();
         
         renderer_.Render();
         Input::ClearKeysPressedDown();

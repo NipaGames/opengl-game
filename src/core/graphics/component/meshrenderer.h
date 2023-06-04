@@ -10,12 +10,15 @@
 
 class MeshRenderer : public Component<MeshRenderer> {
 private:
+    mutable glm::mat4 modelMatrix_;
 public:
     bool isAdded = false;
     DEFINE_COMPONENT_DATA_VALUE_VECTOR(std::shared_ptr<Mesh>, meshes);
 
     virtual ~MeshRenderer();
+    virtual void CalculateModelMatrix();
 
     virtual void Start();
-    virtual void Render(const glm::mat4&, const glm::mat4&, const Shader* = nullptr);
+    virtual bool IsOnFrustum(const ViewFrustum&) const;
+    virtual void Render(const glm::mat4&, const glm::mat4&, const Shader* = nullptr) const;
 };

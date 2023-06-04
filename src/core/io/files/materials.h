@@ -14,6 +14,6 @@ namespace Serializer {
         MaterialSerializer(const std::string& p) {
             Serialize(p);
         }
-        MaterialSerializer() { }
+        MaterialSerializer() = default;
     };
 };

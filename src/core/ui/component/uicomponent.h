@@ -17,7 +17,7 @@ namespace UI {
             canvas_ = c;
             priority_ = p;
         }
-        UIComponent() { }
+        UIComponent() = default;
         virtual ~UIComponent() {
             if (isAddedToCanvas_ && canvas_ != nullptr)
                 canvas_->RemoveUIComponent(this);

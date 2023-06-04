@@ -41,7 +41,8 @@ bool Renderer::Init() {
 
     float aspectRatio = (float) 16 / (float) 9;
 
-    camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), aspectRatio, 0.1f, 500.0f);
+    camera_.aspectRatio = aspectRatio;
+    camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), aspectRatio, camera_.clippingNear, camera_.clippingFar);
     camera_.pos = glm::vec3(0.0f, 0.0f, -10.0f);
     
     glGenFramebuffers(1, &MSAAFbo_);
@@ -143,9 +144,13 @@ void Renderer::Render() {
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
     glUseProgram(0);
-
+    entitiesOnFrustum_ = 0;
     for (auto meshRenderer : meshes_) {
-        meshRenderer->Render(camera_.projectionMatrix, viewMatrix);
+        meshRenderer->CalculateModelMatrix();
+        if (meshRenderer->IsOnFrustum(camera_.frustum)) {
+            meshRenderer->Render(camera_.projectionMatrix, viewMatrix);
+            entitiesOnFrustum_++;
+        }
     }
     if (highlightNormals) {
         for (auto meshRenderer : meshes_) {
@@ -187,7 +192,8 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
-    camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), (float) width / (float) height, 0.1f, 500.0f);
+    camera_.aspectRatio = (float) width / (float) height;
+    camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), camera_.aspectRatio, camera_.clippingNear, camera_.clippingFar);
     
     for (auto& c : canvases_) {
         c.second.UpdateWindowSize();
