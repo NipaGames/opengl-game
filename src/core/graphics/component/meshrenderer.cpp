@@ -54,9 +54,9 @@ bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
     glm::vec3 center = parent->transform->position;
 
     // Scaled orientation
-    glm::vec3 right = modelMatrix_[0];
-    glm::vec3 up = modelMatrix_[1];
-    glm::vec3 forward = -modelMatrix_[2];
+    glm::vec3 right = modelMatrix_[0] * .5f;
+    glm::vec3 up = modelMatrix_[1] * .5f;
+    glm::vec3 forward = -modelMatrix_[2] * .5f;
 
     glm::vec3 extents;
 
