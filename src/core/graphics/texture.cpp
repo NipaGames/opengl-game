@@ -7,10 +7,10 @@
 
 using namespace Texture;
 
-Texture::TextureID Resources::TextureManager::LoadResource(const std::fs::path& path) {
+std::optional<TextureID> Resources::TextureManager::LoadResource(const std::fs::path& path) {
     if (!std::filesystem::exists(path)) {
         spdlog::warn("Texture does not exist!");
-        return TEXTURE_NONE;
+        return std::optional<TextureID>(TEXTURE_NONE);
     }
 
     auto fPath = std::filesystem::absolute(path);
@@ -36,5 +36,5 @@ Texture::TextureID Resources::TextureManager::LoadResource(const std::fs::path& 
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
 
-    return texture;
+    return std::optional<TextureID>(texture);
 }

@@ -119,7 +119,7 @@ GLuint& Resources::ShaderManager::Get(ShaderID shader) {
     return ResourceManager::Get((std::string) magic_enum::enum_name(shader));
 }
 
-GLuint Resources::ShaderManager::LoadResource(const std::fs::path&) {
+std::optional<GLuint> Resources::ShaderManager::LoadResource(const std::fs::path&) {
     throw "not implemented yet";
 }
 
@@ -127,6 +127,12 @@ GLuint Shaders::GetShaderProgram(ShaderID shader) {
     return game->resources.shaderManager.Get(shader);
 }
 
+GLuint Shader::GetProgram() const {
+    if (_program == GL_NONE)
+        _program = Shaders::GetShaderProgram(id_);
+    return _program;
+}
+
 void Shader::Use() const {
-    glUseProgram(game->resources.shaderManager.Get(id_));
+    glUseProgram(GetProgram());
 }

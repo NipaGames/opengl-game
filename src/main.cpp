@@ -7,7 +7,7 @@
 
 int main() {
     spdlog::set_pattern("[%T] %-10l %v");
-    #ifdef _DEBUG
+    #ifdef DEBUG_BUILD
         spdlog::set_level(spdlog::level::debug);
     #endif
     srand(static_cast<unsigned int>(time(0)));    

@@ -5,14 +5,12 @@
 #include <iostream>
 
 #include <core/graphics/shape.h>
+#include <core/io/resourcemanager.h>
 
 using namespace UI::Text;
 
 FT_Library freeType;
 Shape charShape;
-std::unordered_map<FontID, Font> fonts;
-FontID currentFontPtr = 0;
-
 
 bool UI::Text::Init() {
     if (FT_Init_FreeType(&freeType)) {
@@ -69,33 +67,23 @@ bool RenderGlyphs(Font& font) {
     return warn;
 }
 
-std::optional<Font> UI::Text::LoadFontFile(const std::string& path, const glm::ivec2& size) {
+std::optional<Font> Resources::FontManager::LoadResource(const std::fs::path& path) {
+    std::string pathStr = path.string();
     Font font;
-    if (FT_New_Face(freeType, path.c_str(), 0, &font.fontFace)) {
-        spdlog::warn("Font '{}' not loaded properly!", path);
+    if (FT_New_Face(freeType, pathStr.c_str(), 0, &font.fontFace))
         return std::nullopt;
-    }
-    FT_Set_Pixel_Sizes(font.fontFace, size.x, size.y);
-    if (RenderGlyphs(font)) {
-        spdlog::warn("Some glyphs not loaded of '{}'", path);
-    }
-    spdlog::info("Loaded font file '{}'", path);
-    return font;
+    FT_Set_Pixel_Sizes(font.fontFace, fontSize_.x, fontSize_.y);
+    if (RenderGlyphs(font))
+        spdlog::warn("Some glyphs not loaded!", pathStr);
+    return std::optional<Font>(font);
 }
 
-std::optional<Font> UI::Text::LoadFontFile(const std::string& path, int size) {
-    return LoadFontFile(path, glm::ivec2(0, size));
+void Resources::FontManager::SetFontSize(const glm::ivec2& size) {
+    fontSize_ = size;
 }
 
-const Font& UI::Text::GetFont(FontID id) {
-    return fonts.at(id);
-}
-
-FontID UI::Text::AssignFont(const std::optional<Font>& font) {
-    if (font == std::nullopt)
-        return FONT_NONE;
-    fonts[currentFontPtr] = *font;
-    return currentFontPtr++;
+void Resources::FontManager::SetFontSize(int size) {
+    SetFontSize(glm::ivec2(fontSize_.x, size));
 }
 
 void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size, float modifier) {    

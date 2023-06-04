@@ -19,8 +19,6 @@
 #define LOG_FN() LOG_FN_(__FUNCTION__)
 
 UI::TextComponent* fpsText = nullptr;
-UI::Text::FontID fontId = FONT_NONE;
-UI::Text::FontID font2Id = FONT_NONE;
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
@@ -34,8 +32,6 @@ bool MonkeyGame::InitWindow() {
 void MonkeyGame::PreLoad() {
     LOG_FN();
     using namespace UI::Text;
-    fontId = AssignFont(LoadFontFile(Paths::Path(Paths::FONTS_DIR, "Augusta.ttf"), 96));
-    font2Id = AssignFont(LoadFontFile(Paths::Path(Paths::FONTS_DIR, "FiraCode-Regular.ttf"), 48));
 }
 
 void MonkeyGame::Start() {
@@ -98,9 +94,9 @@ void MonkeyGame::Start() {
     terrainRb->mass = 0.0f;
     terrainRb->collider = plane->CreateBtCollider();
     
-    if (fontId != FONT_NONE && font2Id != FONT_NONE) {
+    if (resources.fontManager.HasLoaded("firacode-regular.ttf")) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
-        debugOverlay->fontId = font2Id;
+        debugOverlay->fontId = "firacode-regular.ttf";
 
         // super text rendering benchmark 9000
         /*UI::Canvas& canvas = GetRenderer().CreateCanvas("test");

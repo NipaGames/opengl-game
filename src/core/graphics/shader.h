@@ -20,10 +20,13 @@ namespace Shaders {
 class Shader {
 private:
     Shaders::ShaderID id_;
+    // cache shader program
+    mutable GLuint _program = GL_NONE;
 public:
     Shader() : id_(Shaders::ShaderID::UNLIT) { }
     Shader(Shaders::ShaderID id) : id_(id) { }
     void Use() const;
+    GLuint GetProgram() const;
     Shaders::ShaderID GetId() const { return id_; }
 
     // this implementation sucks ass, maybe i'll come with something better later
@@ -31,20 +34,23 @@ public:
     // nevermind, these 'if constexpr' statements are really cool although they look very cursed
     
     template<typename T>
-    void SetUniform(const std::string& name, const T& value) const {
+    void SetUniform(const char* name, const T& value) const {
+        GLuint location = glGetUniformLocation(GetProgram(), name);
+
+        // yanderedev switch statement
         if constexpr(std::is_same_v<T, int> || std::is_same_v<T, bool>)
-            glUniform1i(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), value); 
-        if constexpr(std::is_same_v<T, float>)
-            glUniform1f(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), value);
-        if constexpr(std::is_same_v<T, glm::mat2>)
-            glUniformMatrix2fv(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), 1, GL_FALSE, &value[0][0]);
-        if constexpr(std::is_same_v<T, glm::mat3>)
-            glUniformMatrix3fv(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), 1, GL_FALSE, &value[0][0]);
-        if constexpr(std::is_same_v<T, glm::mat4>)
-            glUniformMatrix4fv(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), 1, GL_FALSE, &value[0][0]);
-        if constexpr(std::is_same_v<T, glm::vec3>)
-            glUniform3f(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), ((glm::vec3) value).x, ((glm::vec3) value).y, ((glm::vec3) value).z);
-        if constexpr(std::is_same_v<T, glm::vec4>)
-            glUniform4f(glGetUniformLocation(Shaders::GetShaderProgram(id_), name.c_str()), ((glm::vec4) value).x, ((glm::vec4) value).y, ((glm::vec4) value).z, ((glm::vec4) value).w);
+            glUniform1i(location, value); 
+        else if constexpr(std::is_same_v<T, float>)
+            glUniform1f(location, value);
+        else if constexpr(std::is_same_v<T, glm::mat2>)
+            glUniformMatrix2fv(location, 1, GL_FALSE, &value[0][0]);
+        else if constexpr(std::is_same_v<T, glm::mat3>)
+            glUniformMatrix3fv(location, 1, GL_FALSE, &value[0][0]);
+        else if constexpr(std::is_same_v<T, glm::mat4>)
+            glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+        else if constexpr(std::is_same_v<T, glm::vec3>)
+            glUniform3f(location, ((glm::vec3) value).x, ((glm::vec3) value).y, ((glm::vec3) value).z);
+        else if constexpr(std::is_same_v<T, glm::vec4>)
+            glUniform4f(location, ((glm::vec4) value).x, ((glm::vec4) value).y, ((glm::vec4) value).z, ((glm::vec4) value).w);
     }
 };

@@ -2,64 +2,84 @@
 
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <unordered_map>
+#include <map>
 #include <filesystem>
+#include <optional>
 #include <spdlog/spdlog.h>
 
 #include "paths.h"
 #include <core/graphics/shader.h>
 #include <core/graphics/texture.h>
+#include <core/ui/text.h>
 
 class Resources {
 public:
-    template <typename T, typename K = std::string>
+    template <typename T>
     class ResourceManager {
+    private:
+        struct ItemComp {
+            bool operator() (const std::string& l, const std::string& r) const {
+                #ifdef strcasecmp
+                    return strcasecmp(l.c_str(), r.c_str()) < 0;
+                #else
+                    return _stricmp(l.c_str(), r.c_str()) < 0;
+                #endif
+            }
+        };
+        std::string itemID_;
+        std::string typeStr_;
     protected:
-        std::unordered_map<K, T> items_;
+        std::map<std::string, T, ItemComp> items_;
         std::fs::path path_;
-        virtual T LoadResource(const std::fs::path&) = 0;
-        virtual K CreateID() { throw "not implemented"; }
+        virtual std::optional<T> LoadResource(const std::fs::path&) = 0;
+        void SetItemID(const std::string& id) { itemID_ = id; }
     public:
-        ResourceManager(const std::string& p) : path_(p) { }
-        ResourceManager(const std::fs::path& p) : path_(p) { }
+        ResourceManager(const std::fs::path& p, const std::string& t = "resource") : path_(p), typeStr_(t) { }
         virtual void LoadAll() {
             for (const auto& f : std::fs::directory_iterator(path_))
                 Load(f.path());
         }
         virtual void Load(const std::fs::path& p) {
-            K id;
-            if constexpr(std::is_same_v<K, std::string>)
-                id = std::fs::proximate(p, path_).generic_string();
+            itemID_ = std::fs::proximate(p, path_).generic_string();
+            std::string fileName = std::fs::proximate(p, path_.parent_path()).generic_string();
+            spdlog::info("Loading {} '{}'", typeStr_, fileName);
+            std::optional<T> resource = LoadResource(std::fs::absolute(p));
+            spdlog::debug("  (id: {})", itemID_);
+            if (resource.has_value())
+                items_[itemID_] = resource.value();
             else
-                id = CreateID();
-            spdlog::info("Loading resource '" + std::fs::proximate(p, path_.parent_path()).generic_string() + "'");
-            items_[id] = LoadResource(std::fs::absolute(p));
+                spdlog::info("Failed loading {} '{}'", typeStr_, fileName);
         }
-        virtual T& Get(const K& item) {
+        virtual T& Get(const std::string& item) {
             return items_.at(item);
         }
-        T& operator [](const K& item) {
+        bool HasLoaded(const std::string& item) {
+            return items_.count(item) > 0;
+        }
+        T& operator [](const std::string& item) {
             if (items_.count(item) == 0) {
                 T t;
                 items_[item] = t;
             }
             return Get(item);
         }
-        const std::unordered_map<K, T>& GetAll() {
+        const std::map<std::string, T, ItemComp>& GetAll() {
             return items_;
         }
     };
 
     class TextureManager : public ResourceManager<Texture::TextureID> {
     protected:
-        Texture::TextureID LoadResource(const std::fs::path&) override;
+        std::optional<Texture::TextureID> LoadResource(const std::fs::path&) override;
     public:
-        TextureManager() : ResourceManager<Texture::TextureID>(Paths::TEXTURES_DIR) { }
+        TextureManager() : ResourceManager<Texture::TextureID>(Paths::TEXTURES_DIR, "texture") { }
     };
 
     class ShaderManager : public ResourceManager<GLuint> {
     protected:
-        GLuint LoadResource(const std::fs::path&) override;
+        std::optional<GLuint> LoadResource(const std::fs::path&) override;
         void LoadShader(GLuint, const std::string&, Shaders::ShaderType);
         void LoadStandardShader(Shaders::ShaderID, const std::string&, Shaders::ShaderType);
     public:
@@ -68,8 +88,19 @@ public:
         GLuint& Get(Shaders::ShaderID);
     };
 
+    class FontManager : public ResourceManager<UI::Text::Font> {
+    protected:
+        std::optional<UI::Text::Font> LoadResource(const std::fs::path&) override;
+        glm::ivec2 fontSize_ = { 0, 48 };
+    public:
+        FontManager() : ResourceManager<UI::Text::Font>(Paths::FONTS_DIR, "font") { }
+        void SetFontSize(const glm::ivec2&);
+        void SetFontSize(int);
+    };
+
     TextureManager textureManager;
     ShaderManager shaderManager;
+    FontManager fontManager;
 
     void LoadAll();
 };

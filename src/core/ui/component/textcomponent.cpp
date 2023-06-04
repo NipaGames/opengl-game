@@ -38,7 +38,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
 
     if (renderingMethod_ == TextRenderingMethod::RENDER_EVERY_FRAME) {
-        UI::Text::RenderText(UI::Text::GetFont(font), text_, pos, size, modifier);
+        UI::Text::RenderText(game->resources.fontManager.Get(font), text_, pos, size, modifier);
     }
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         float w = textSize_.x * size * modifier;
@@ -66,7 +66,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
 }
 
 void UI::TextComponent::ResizeText() {
-    auto f = UI::Text::GetFont(font);
+    auto& f = game->resources.fontManager.Get(font);
     padding_ = UI::Text::GetVerticalPadding(f, text_);
     textSize_ = glm::ivec2(UI::Text::GetTextWidth(f, text_), padding_[1] + padding_[0]);
 

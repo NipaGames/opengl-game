@@ -21,13 +21,13 @@ class DebugTextContainer {
 public:
     float spacing = 30;
     std::string canvasId;
-    Text::FontID fontId;
+    std::string fontId;
     glm::vec2 pos = glm::vec2(0);
     std::vector<DebugTextElement> texts;
     int lines = 0;
 
     DebugTextContainer() { }
-    DebugTextContainer(const std::string& c, Text::FontID f) : canvasId(c), fontId(f) { }
+    DebugTextContainer(const std::string& c, const std::string& f) : canvasId(c), fontId(f) { }
     template<typename... Args>
     void SetValue(const std::string& var, Args... args) {
         for (auto& textElement : texts) {
@@ -52,7 +52,7 @@ private:
     int frames_;
 public:
     std::string canvasId = "debugOverlay";
-    Text::FontID fontId;
+    std::string fontId;
     void Start();
     void FixedUpdate();
     void Update();

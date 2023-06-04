@@ -18,6 +18,7 @@ private:
 
     std::unordered_map<std::string, glm::vec2> vec2Uniforms_;
     std::unordered_map<std::string, glm::vec3> vec3Uniforms_;
+    std::unordered_map<std::string, glm::vec4> vec4Uniforms_;
 
     Shader shader_;
     Texture::TextureID texture_ = TEXTURE_NONE;
@@ -42,17 +43,17 @@ public:
     void SetShaderUniform(const std::string& name, const T& value) {
         if constexpr(std::is_same_v<T, int>)
             intUniforms_[name] = value;
-        if constexpr(std::is_same_v<T, float>)
+        else if constexpr(std::is_same_v<T, float>)
             floatUniforms_[name] = value;
-        if constexpr(std::is_same_v<T, glm::mat2>)
+        else if constexpr(std::is_same_v<T, glm::mat2>)
             mat2Uniforms_[name] = value;
-        if constexpr(std::is_same_v<T, glm::mat3>)
+        else if constexpr(std::is_same_v<T, glm::mat3>)
             mat3Uniforms_[name] = value;
-        if constexpr(std::is_same_v<T, glm::mat4>)
+        else if constexpr(std::is_same_v<T, glm::mat4>)
             mat4Uniforms_[name] = value;
-        if constexpr(std::is_same_v<T, glm::vec2>)
+        else if constexpr(std::is_same_v<T, glm::vec2>)
             vec2Uniforms_[name] = value;
-        if constexpr(std::is_same_v<T, glm::vec3>)
+        else if constexpr(std::is_same_v<T, glm::vec3>)
             vec3Uniforms_[name] = value;
     }
     template<typename T>
