@@ -55,7 +55,8 @@
             "MeshRenderer": {
                 "meshes": [
                     "asdoijdsaoidahs"
-                ]
+                ],
+                "isStatic": true
             },
             "Physics::RigidBody": {
                 "mass": 0
@@ -69,7 +70,8 @@
             "MeshRenderer": {
                 "meshes": [
                     "asdoijdsaoidahs"
-                ]
+                ],
+                "isStatic": true
             },
             "Physics::RigidBody": {
                 "mass": 0
@@ -83,7 +85,8 @@
             "MeshRenderer": {
                 "meshes": [
                     "asdoijdsaoidahs"
-                ]
+                ],
+                "isStatic": true
             },
             "Physics::RigidBody": {
                 "mass": 0

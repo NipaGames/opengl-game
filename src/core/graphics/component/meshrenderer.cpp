@@ -10,6 +10,8 @@ MeshRenderer::~MeshRenderer() {
 }
 
 void MeshRenderer::Start() {
+    if (isStatic)
+        CalculateModelMatrix();
     if (!isAdded)
         game->GetRenderer().AddMeshRenderer(this);
     glm::vec3 min = aabb_.GetMin();

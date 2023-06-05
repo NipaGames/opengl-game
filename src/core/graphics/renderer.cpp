@@ -146,7 +146,8 @@ void Renderer::Render() {
     glUseProgram(0);
     entitiesOnFrustum_ = 0;
     for (auto meshRenderer : meshes_) {
-        meshRenderer->CalculateModelMatrix();
+        if (!meshRenderer->isStatic)
+            meshRenderer->CalculateModelMatrix();
         if (meshRenderer->IsOnFrustum(camera_.frustum)) {
             meshRenderer->Render(camera_.projectionMatrix, viewMatrix);
             entitiesOnFrustum_++;

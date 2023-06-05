@@ -76,7 +76,9 @@ void MonkeyGame::Start() {
     mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.5f, 0.5f, 1.0f));
 
     Entity& mogus = entityManager_.CreateEntity();
-    mogus.AddComponent<MeshRenderer>()->meshes = mogusModel.meshes;
+    auto mogusRenderer = mogus.AddComponent<MeshRenderer>();
+    mogusRenderer->meshes = mogusModel.meshes;
+    mogusRenderer->isStatic = true;
     mogus.transform->position = glm::vec3(0.0f, 0.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);
 
@@ -87,7 +89,9 @@ void MonkeyGame::Start() {
     plane->GenerateVAO();
     plane->material = renderer_.materials.at("MAT_GRASS");
     Entity& terrain = entityManager_.CreateEntity();
-    terrain.AddComponent<MeshRenderer>()->meshes.push_back(plane);
+    auto terrainRenderer = terrain.AddComponent<MeshRenderer>();
+    terrainRenderer->meshes.push_back(plane);
+    terrainRenderer->isStatic = true;
     terrain.transform->size = glm::vec3(50, .25f, 50);
     terrain.transform->position.y = -.5f;
     auto terrainRb = terrain.AddComponent<Physics::RigidBody>();

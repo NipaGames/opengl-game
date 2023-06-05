@@ -97,6 +97,16 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 *Integrated Bullet physics library and introducing stage loading* 19.5.2023
 
+ 
+
+![boring ass profiler stuff](/images/verysleepy.png)
+
+*Got this thing running 2000 fps after a few minor optimizations.*
+*(highlighted functions directly called in OpenGLProject.exe)*
+*Yellow: math*
+*Blue: win32 window management stuff and input system*
+5.6.2023
+
   
 
 ###  Current features:

@@ -36,6 +36,13 @@ JSON_SERIALIZE_TYPES(SerializeJSONVector<2>, glm::vec2, glm::ivec2);
 JSON_SERIALIZE_TYPES(SerializeJSONVector<3>, glm::vec3, glm::ivec3);
 
 JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+    if (!j.is_boolean())
+        return false;
+    args.Return((bool) j);
+    return true;
+}, bool);
+
+JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
     if (!j.is_string())
         return false;
     auto s = magic_enum::enum_cast<Shaders::ShaderID>((std::string) j);
