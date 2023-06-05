@@ -12,6 +12,15 @@ MeshRenderer::~MeshRenderer() {
 void MeshRenderer::Start() {
     if (!isAdded)
         game->GetRenderer().AddMeshRenderer(this);
+    glm::vec3 min = aabb_.GetMin();
+    glm::vec3 max = aabb_.GetMax();
+    for (const auto& mesh : meshes) {
+        glm::vec3 meshMin = mesh->aabb.GetMin();
+        glm::vec3 meshMax = mesh->aabb.GetMax();
+        min = glm::vec3(std::min(min.x, meshMin.x), std::min(min.y, meshMin.y), std::min(min.z, meshMin.z));
+        max = glm::vec3(std::max(max.x, meshMax.x), std::max(max.y, meshMax.y), std::max(max.z, meshMax.z));
+    }
+    aabb_ = ViewFrustum::AABB::FromMinMax(min, max);
 }
 
 void MeshRenderer::CalculateModelMatrix() {
@@ -51,12 +60,12 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
 }
 
 bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
-    glm::vec3 center = parent->transform->position;
+    glm::vec3 center = parent->transform->position + glm::vec3(parent->transform->rotation * glm::vec4(aabb_.center * parent->transform->size, 1.0f));
 
     // Scaled orientation
-    glm::vec3 right = modelMatrix_[0] * .5f;
-    glm::vec3 up = modelMatrix_[1] * .5f;
-    glm::vec3 forward = -modelMatrix_[2] * .5f;
+    glm::vec3 right = modelMatrix_[0] * aabb_.extents.x;
+    glm::vec3 up = modelMatrix_[1] * aabb_.extents.y;
+    glm::vec3 forward = -modelMatrix_[2] * aabb_.extents.z;
 
     glm::vec3 extents;
 

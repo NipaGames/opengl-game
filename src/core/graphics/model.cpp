@@ -28,6 +28,9 @@ std::shared_ptr<Mesh> Model::ProcessMesh(const aiMesh* mesh, const aiScene* scen
         for(unsigned int j = 0; j < face.mNumIndices; j++)
             processedMesh->indices.push_back(face.mIndices[j]);
     }
+    glm::vec3 aabbMin(mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z);
+    glm::vec3 aabbMax(mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z);
+    processedMesh->aabb = ViewFrustum::AABB::FromMinMax(aabbMin, aabbMax);
     return processedMesh;
 }
 
@@ -43,7 +46,7 @@ void Model::ProcessNodes(const aiNode* node, const aiScene* scene) {
 
 void Model::LoadModel(const std::string& path) {
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenBoundingBoxes);
     if (!scene) {
         spdlog::error("Failed loading model '" + path + "'!");
         return;

@@ -11,6 +11,7 @@
 class MeshRenderer : public Component<MeshRenderer> {
 private:
     mutable glm::mat4 modelMatrix_;
+    ViewFrustum::AABB aabb_;
 public:
     bool isAdded = false;
     DEFINE_COMPONENT_DATA_VALUE_VECTOR(std::shared_ptr<Mesh>, meshes);

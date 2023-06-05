@@ -6,7 +6,19 @@ class ViewFrustum {
 public:
     struct AABB {
         glm::vec3 center = glm::vec3(0.0f);
-        glm::vec3 extents = glm::vec3(0.0f);
+        glm::vec3 extents = glm::vec3(.5f);
+        static AABB FromMinMax(const glm::vec3& min, const glm::vec3& max) {
+            AABB aabb;
+            aabb.center = (max + min) * 0.5f;
+            aabb.extents = max - aabb.center;
+            return aabb;
+        }
+        glm::vec3 GetMin() {
+            return center - extents;
+        }
+        glm::vec3 GetMax() {
+            return center + extents;
+        }
     };
     struct FrustumPlane {
         glm::vec3 normal = { 0.0f, 1.0f, 0.0f };
