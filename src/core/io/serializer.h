@@ -138,16 +138,19 @@ namespace Serializer {
     class IFileSerializer {
     protected:
         std::string path_;
-        virtual void ReadFile(std::ifstream&) = 0;
+        virtual void ParseContents(std::ifstream&) = 0;
     public:
-        virtual void Serialize(const std::string&);
+        virtual ~IFileSerializer() = default;
+        virtual void SerializeFile(const std::string&);
     };
 
     class JSONFileSerializer : public IFileSerializer {
     protected:
         nlohmann::json jsonData_;
         virtual void ParseJSON() = 0;
-        virtual void ReadFile(std::ifstream&) override;
+        virtual void ParseContents(std::ifstream&) override;
+    public:
+        virtual ~JSONFileSerializer() = default;
     };
 
     enum class SerializerType {

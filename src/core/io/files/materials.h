@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/io/serializer.h>
+#include "../serializer.h"
 #include <core/graphics/material.h>
 
 namespace Serializer {
@@ -12,7 +12,7 @@ namespace Serializer {
         std::unordered_map<std::string, std::shared_ptr<Material>>& GetMaterials();
         void AddMaterials();
         MaterialSerializer(const std::string& p) {
-            Serialize(p);
+            SerializeFile(p);
         }
         MaterialSerializer() = default;
     };

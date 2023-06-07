@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/io/serializer.h>
+#include "../serializer.h"
 #include <core/stagemanager.h>
 
 namespace Serializer {
@@ -11,7 +11,7 @@ namespace Serializer {
     public:
         Stage::Stage& GetStage();
         StageSerializer(const std::string& p) {
-            Serialize(p);
+            SerializeFile(p);
         }
         StageSerializer() = default;
     };

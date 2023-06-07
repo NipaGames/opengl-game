@@ -40,17 +40,17 @@ bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, cons
     return false; 
 }
 
-void IFileSerializer::Serialize(const std::string& p) {
+void IFileSerializer::SerializeFile(const std::string& p) {
     path_ = p;
     std::ifstream f(path_);
     if (f.fail()) {
         spdlog::error("Cannot read file '" + path_ + "'!");
         return;
     }
-    ReadFile(f);
+    ParseContents(f);
 }
 
-void JSONFileSerializer::ReadFile(std::ifstream& f) {
+void JSONFileSerializer::ParseContents(std::ifstream& f) {
     try {
         jsonData_ = nlohmann::json::parse(f);
     }

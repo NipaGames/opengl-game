@@ -10,6 +10,7 @@
 #include <spdlog/spdlog.h>
 
 #include "paths.h"
+#include "files/cfg.h"
 #include <core/graphics/shader.h>
 #include <core/graphics/texture.h>
 #include <core/ui/text.h>
@@ -40,6 +41,10 @@ public:
         virtual void LoadAll() {
             for (const auto& f : std::fs::directory_iterator(path_))
                 Load(f.path());
+        }
+        virtual void LoadAll(const std::vector<std::string>& paths) {
+            for (const auto& f : paths)
+                Load(path_ / f);
         }
         virtual void Load(const std::fs::path& p) {
             itemID_ = std::fs::proximate(p, path_).generic_string();
@@ -84,7 +89,7 @@ public:
         void LoadStandardShader(Shaders::ShaderID, const std::string&, Shaders::ShaderType);
     public:
         ShaderManager() : ResourceManager<GLuint>(Paths::SHADER_DIR) { }
-        void LoadAll() override;
+        virtual void LoadAll() override;
         GLuint& Get(Shaders::ShaderID);
         GLuint& Get(const std::string& s) { return ResourceManager::Get(s); }
     };
@@ -99,6 +104,7 @@ public:
         void SetFontSize(int);
     };
 
+    const CFG::CFGObject* importsFile;
     TextureManager textureManager;
     ShaderManager shaderManager;
     FontManager fontManager;
