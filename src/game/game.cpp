@@ -45,8 +45,7 @@ void MonkeyGame::Start() {
 
     float range = 4.0f;
     int monkeyCount = 6;
-    Model monkeyModel;
-    monkeyModel.LoadModel(Paths::Path(Paths::OBJECTS_DIR, "chimp.fbx"));
+    Model& monkeyModel = resources.objectManager.Get("chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
@@ -65,8 +64,7 @@ void MonkeyGame::Start() {
         monkey.transform->position = glm::vec3(cos(rad) * range, 0.0, sin(rad) * range);
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
-    Model mogusModel;
-    mogusModel.LoadModel(Paths::Path(Paths::OBJECTS_DIR, "mog.obj"));
+    Model& mogusModel = resources.objectManager.Get("mog.obj");
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(Shaders::ShaderID::UNLIT);

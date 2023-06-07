@@ -7,4 +7,5 @@ void Resources::LoadAll() {
     textureManager.LoadAll(importsFile->GetItemValues<std::string>("textures"));
     shaderManager.LoadAll();
     fontManager.LoadAll(importsFile->GetItemValues<std::string>("fonts"));
+    objectManager.LoadAll(importsFile->GetItemValues<std::string>("objects"));
 }

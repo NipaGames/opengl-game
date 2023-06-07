@@ -27,7 +27,7 @@ private:
     std::vector<MeshRenderer*> meshes_;
     std::vector<Light::Light*> lights_;
     std::unordered_map<std::string, UI::Canvas> canvases_;
-    Camera camera_;
+    Camera camera_ = Camera();
     Shader framebufferShader_;
     Shader normalShader_;
     glm::ivec2 viewportSize_;

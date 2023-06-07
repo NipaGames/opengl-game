@@ -1,6 +1,7 @@
 #include "model.h"
 
 #include <spdlog/spdlog.h>
+#include <core/io/resourcemanager.h>
 
 std::shared_ptr<Mesh> Model::ProcessMesh(const aiMesh* mesh, const aiScene* scene) {
     auto processedMesh = std::make_shared<Mesh>();
@@ -59,4 +60,10 @@ void Model::LoadModel(const std::string& path) {
     }
     dir_ = path.substr(0, path.find_last_of('/'));
     ProcessNodes(rootNode, scene);
+}
+
+std::optional<Model> Resources::ObjectManager::LoadResource(const std::fs::path& path) {
+    Model model;
+    model.LoadModel(path.string());
+    return model;
 }

@@ -13,6 +13,7 @@
 #include "files/cfg.h"
 #include <core/graphics/shader.h>
 #include <core/graphics/texture.h>
+#include <core/graphics/model.h>
 #include <core/ui/text.h>
 
 class Resources {
@@ -104,10 +105,18 @@ public:
         void SetFontSize(int);
     };
 
+    class ObjectManager : public ResourceManager<Model> {
+    protected:
+        std::optional<Model> LoadResource(const std::fs::path&) override;
+    public:
+        ObjectManager() : ResourceManager<Model>(Paths::OBJECTS_DIR, "object") { }
+    };
+
     const CFG::CFGObject* importsFile;
     TextureManager textureManager;
     ShaderManager shaderManager;
     FontManager fontManager;
+    ObjectManager objectManager;
 
     void LoadAll();
 };
