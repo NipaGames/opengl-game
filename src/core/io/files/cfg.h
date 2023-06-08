@@ -83,7 +83,7 @@ namespace CFG {
     template<typename T>
     struct CFGParseTreeNode {
         std::vector<CFGParseTreeNode<T>*> children;
-        CFGParseTreeNode<T>* parent;
+        CFGParseTreeNode<T>* parent = nullptr;
         T value;
         ~CFGParseTreeNode() {
             children.clear();

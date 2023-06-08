@@ -21,7 +21,7 @@ CFGParseTreeNode<std::string>* CreateIndentationTree(std::stringstream& buffer) 
         }
         // remove trailing whitespace
         while (!expr.empty() && (expr.at(expr.length() - 1) == ' ' || expr.at(expr.length() - 1) == '\t')) {
-            expr = expr.substr(0, expr.length() - 1);
+            expr.pop_back();
         }
         if (expr.empty())
             continue;
@@ -78,8 +78,8 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
     // string
     else if (std::regex_search(val, matches, std::regex("^(\\w+|\"(.*)\")$"))) {
         CFGField<std::string>* thisNode = new CFGField<std::string>{ name, CFGFieldType::STRING };
-        std::string val = matches[2].matched ? matches[2] : matches[1];
-        thisNode->value = val;
+        std::string strVal = matches[2].matched ? matches[2] : matches[1];
+        thisNode->value = strVal;
         return thisNode;
     }
     return nullptr;
@@ -96,10 +96,12 @@ bool ValidateCFGFieldType(const ICFGField* node, std::vector<CFGFieldType> types
     }
     if (types.at(0) == CFGFieldType::ARRAY) {
         const CFGObject* arrayObject = static_cast<const CFGObject*>(node);
-        for (const ICFGField* f : arrayObject->GetItems()) {
-            if (!ValidateCFGFieldType(f, { types.begin() + 1, types.end() }))
-                return false;
-        }
+        // yeah could just as well be a raw loop but will keep this for now
+        auto validate = [&](const CFG::ICFGField* f) {
+            return !ValidateCFGFieldType(f, { types.begin() + 1, types.end() });
+        };
+        if (std::any_of(arrayObject->GetItems().begin(), arrayObject->GetItems().end(), validate))
+            return false;
     }
     return true;
 }
