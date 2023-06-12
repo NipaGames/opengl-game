@@ -7,6 +7,8 @@
 #include "shader.h"
 #include "texture.h"
 
+#define MATERIAL_MISSING "MATERIAL_MISSING"
+
 class Material {
 private:
     std::unordered_map<std::string, int> intUniforms_;

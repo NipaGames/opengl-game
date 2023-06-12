@@ -36,8 +36,8 @@ private:
     int maxRenderedSpotlights_ = 0;
     std::vector<GLuint> shaders_;
     int entitiesOnFrustum_ = 0;
+    std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
 public:
-    std::unordered_map<std::string, std::shared_ptr<Material>> materials;
     glm::vec3 skyboxColor = glm::vec3(0.0);
     bool highlightNormals = false;
     bool showHitboxes = false;
@@ -59,4 +59,6 @@ public:
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
     int CountEntitiesOnFrustum() { return entitiesOnFrustum_; }
+    std::shared_ptr<Material> GetMaterial(const std::string&);
+    std::unordered_map<std::string, std::shared_ptr<Material>>& GetMaterials() { return materials_; }
 };

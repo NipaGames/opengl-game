@@ -1,0 +1,10 @@
+[
+    {
+        "model": "mog.obj",
+        "defaultMaterial": "MAT_MOGUS",
+        "materialOverrides": {
+            "2": ":BODY",
+            "3": ":VISOR"
+        }
+    }
+]

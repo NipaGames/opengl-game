@@ -93,6 +93,13 @@ bool Renderer::Init() {
 
     glfwGetWindowSize(window_, &viewportSize_.x, &viewportSize_.y);
 
+    std::shared_ptr<Material> missingMaterial = std::make_shared<Material>(Shaders::ShaderID::STROBE_UNLIT);
+    missingMaterial->SetShaderUniform("colors[0]", glm::vec3(0.0f));
+    missingMaterial->SetShaderUniform("colors[1]", glm::vec3(1.0f, 0.0f, 1.0f));
+    missingMaterial->SetShaderUniform("strobeInterval", .25f);
+    missingMaterial->SetShaderUniform("colorCount", 2);
+    materials_[MATERIAL_MISSING] = missingMaterial;
+
     return true;
 }
 
@@ -219,6 +226,12 @@ void Renderer::AddMeshRenderer(MeshRenderer* mesh) {
 void Renderer::RemoveMeshRenderer(MeshRenderer* mesh) {
     if (meshes_.size() == 0) return;
     meshes_.erase(std::remove(meshes_.begin(), meshes_.end(), mesh), meshes_.end());
+}
+
+std::shared_ptr<Material> Renderer::GetMaterial(const std::string& mat) {
+    if (materials_.count(mat) == 0)
+        return materials_.at(MATERIAL_MISSING);
+    return materials_.at(mat);
 }
 
 UI::Canvas& Renderer::CreateCanvas(std::string id) {

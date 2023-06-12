@@ -3,6 +3,7 @@
 #include "../camera.h"
 #include "../material.h"
 #include "../mesh.h"
+#include "../object.h"
 #include <core/entity/component.h>
 
 #include <opengl.h>

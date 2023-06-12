@@ -9,5 +9,6 @@ namespace Shaders {
         UI_TEXT,
         UI_SHAPE,
         LINE,
+        STROBE_UNLIT
     };
 };

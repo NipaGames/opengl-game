@@ -54,6 +54,7 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
         shader->SetUniform("view", viewMatrix);
         shader->SetUniform("model", modelMatrix_);
         shader->SetUniform("viewPos", game->GetRenderer().GetCamera().pos);
+        shader->SetUniform("time", (float) glfwGetTime());
         mesh->Render();
 
         // unbinding

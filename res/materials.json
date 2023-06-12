@@ -10,5 +10,20 @@
             "specularHighlight": 8,
             "specularStrength": 0
         }
+    },
+    {
+        "id": "MAT_MOGUS",
+        "shader": "UNLIT",
+        "uniforms": {
+            "color": 0.0
+        },
+        "children": {
+            "BODY": {
+                "color": [ 1.0, 0.0, 0.0 ]
+            },
+            "VISOR": {
+                "color": [ 0.5, 0.5, 1.0 ]
+            }
+        }
     }
 ]

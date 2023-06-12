@@ -141,10 +141,33 @@ namespace Serializer {
         virtual void ParseContents(std::ifstream&) = 0;
     public:
         virtual ~IFileSerializer() = default;
+        virtual void SerializeFile();
         virtual void SerializeFile(const std::string&);
+        IFileSerializer(const std::string&);
+        IFileSerializer() = default;
+    };
+
+    template<typename T>
+    class SerializerItemInterface {
+    protected:
+        std::unordered_map<std::string, T> items_;
+    public:
+        std::unordered_map<std::string, T>& GetItems() {
+            return items_;
+        }
+        const T& GetItem(const std::string& item) const {
+            return items_.at(item);
+        }
+        // copy all items into an external container
+        virtual void Register(std::unordered_map<std::string, T>& container) {
+            for (auto& item : items_) {
+                container.insert(item);
+            }
+        }
     };
 
     class JSONFileSerializer : public IFileSerializer {
+    using IFileSerializer::IFileSerializer;
     protected:
         nlohmann::json jsonData_;
         virtual void ParseJSON() = 0;

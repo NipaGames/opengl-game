@@ -37,15 +37,13 @@ void MonkeyGame::PreLoad() {
 void MonkeyGame::Start() {
     LOG_FN();
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
-    Serializer::MaterialSerializer serializer(Paths::MATERIALS_PATH.string());
-    serializer.AddMaterials();
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
 
     float range = 4.0f;
     int monkeyCount = 6;
-    Model& monkeyModel = resources.objectManager.Get("chimp.fbx");
+    Model& monkeyModel = resources.modelManager.Get("chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
         mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
@@ -64,14 +62,14 @@ void MonkeyGame::Start() {
         monkey.transform->position = glm::vec3(cos(rad) * range, 0.0, sin(rad) * range);
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
-    Model& mogusModel = resources.objectManager.Get("mog.obj");
+    Model& mogusModel = resources.modelManager.Get("mog.obj");
     for (auto mesh : mogusModel.meshes) {
         mesh->GenerateVAO();
-        mesh->material = std::make_shared<Material>(Shaders::ShaderID::UNLIT);
+        mesh->material = renderer_.GetMaterial("MAT_MOGUS");
         mesh->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.0f, 0.0f, 0.0f));
     }
-    mogusModel.meshes[2]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f, 0.0f, 0.0f));
-    mogusModel.meshes[3]->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.5f, 0.5f, 1.0f));
+    mogusModel.meshes[2]->material = renderer_.GetMaterial("MAT_MOGUS:BODY");
+    mogusModel.meshes[3]->material = renderer_.GetMaterial("MAT_MOGUS:VISOR");
 
     Entity& mogus = entityManager_.CreateEntity();
     auto mogusRenderer = mogus.AddComponent<MeshRenderer>();
@@ -85,7 +83,7 @@ void MonkeyGame::Start() {
     plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
     plane->GenerateVAO();
-    plane->material = renderer_.materials.at("MAT_GRASS");
+    plane->material = renderer_.GetMaterial("MAT_GRASS");
     Entity& terrain = entityManager_.CreateEntity();
     auto terrainRenderer = terrain.AddComponent<MeshRenderer>();
     terrainRenderer->meshes.push_back(plane);

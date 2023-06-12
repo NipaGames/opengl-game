@@ -11,6 +11,8 @@
 
 #include "paths.h"
 #include "files/cfg.h"
+#include "files/materials.h"
+#include "files/objects.h"
 #include <core/graphics/shader.h>
 #include <core/graphics/texture.h>
 #include <core/graphics/model.h>
@@ -88,6 +90,7 @@ public:
         std::optional<GLuint> LoadResource(const std::fs::path&) override;
         void LoadShader(GLuint, const std::string&, Shaders::ShaderType);
         void LoadStandardShader(Shaders::ShaderID, const std::string&, Shaders::ShaderType);
+        void LoadStandardShader(Shaders::ShaderID, const std::string&, const std::string&, const std::string& = "");
     public:
         ShaderManager() : ResourceManager<GLuint>(Paths::SHADER_DIR) { }
         virtual void LoadAll() override;
@@ -105,18 +108,20 @@ public:
         void SetFontSize(int);
     };
 
-    class ObjectManager : public ResourceManager<Model> {
+    class ModelManager : public ResourceManager<Model> {
     protected:
         std::optional<Model> LoadResource(const std::fs::path&) override;
     public:
-        ObjectManager() : ResourceManager<Model>(Paths::OBJECTS_DIR, "object") { }
+        ModelManager() : ResourceManager<Model>(Paths::MODELS_DIR, "model") { }
     };
 
-    const CFG::CFGObject* importsFile;
+    const CFG::CFGObject* imports;
+    Serializer::MaterialSerializer materialsFile;
+    Serializer::ObjectSerializer objectsFile;
     TextureManager textureManager;
     ShaderManager shaderManager;
     FontManager fontManager;
-    ObjectManager objectManager;
+    ModelManager modelManager;
 
     void LoadAll();
 };

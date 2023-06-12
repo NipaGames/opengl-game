@@ -62,7 +62,7 @@ void Model::LoadModel(const std::string& path) {
     ProcessNodes(rootNode, scene);
 }
 
-std::optional<Model> Resources::ObjectManager::LoadResource(const std::fs::path& path) {
+std::optional<Model> Resources::ModelManager::LoadResource(const std::fs::path& path) {
     Model model;
     model.LoadModel(path.string());
     return model;

@@ -105,6 +105,19 @@ void Resources::ShaderManager::LoadStandardShader(Shaders::ShaderID id, const st
     items_[(std::string) magic_enum::enum_name(id)] = program;
 }
 
+void Resources::ShaderManager::LoadStandardShader(Shaders::ShaderID id, const std::string& vert, const std::string& frag, const std::string& geom) {
+    GLuint program = glCreateProgram();
+    LoadShader(program, vert, ShaderType::VERT);
+    LoadShader(program, frag, ShaderType::FRAG);
+    if (!geom.empty())
+        LoadShader(program, geom, ShaderType::GEOM);
+    glLinkProgram(program);
+    auto programMessage = GetProgramInfoLog(program);
+	if (programMessage != "")
+		spdlog::info(programMessage);
+    items_[(std::string) magic_enum::enum_name(id)] = program;
+}
+
 void Resources::ShaderManager::LoadAll() {
     LoadStandardShader(ShaderID::UNLIT, "unlit", ShaderType::VERT_FRAG);
     LoadStandardShader(ShaderID::LIT, "lit", ShaderType::VERT_FRAG);
@@ -113,6 +126,7 @@ void Resources::ShaderManager::LoadAll() {
     LoadStandardShader(ShaderID::UI_TEXT, "text", ShaderType::VERT_FRAG);
     LoadStandardShader(ShaderID::UI_SHAPE, "uishape", ShaderType::VERT_FRAG);
     LoadStandardShader(ShaderID::LINE, "line", ShaderType::VERT_FRAG_GEOM);
+    LoadStandardShader(ShaderID::STROBE_UNLIT, "unlit", "strobe_unlit");
 }
 
 GLuint& Resources::ShaderManager::Get(ShaderID shader) {
