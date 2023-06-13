@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 #include <core/io/resourcemanager.h>
+#include <core/game.h>
 
 std::shared_ptr<Mesh> Model::ProcessMesh(const aiMesh* mesh, const aiScene* scene) {
     auto processedMesh = std::make_shared<Mesh>();
@@ -32,6 +33,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(const aiMesh* mesh, const aiScene* scen
     glm::vec3 aabbMin(mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z);
     glm::vec3 aabbMax(mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z);
     processedMesh->aabb = ViewFrustum::AABB::FromMinMax(aabbMin, aabbMax);
+    processedMesh->GenerateVAO();
     return processedMesh;
 }
 
@@ -65,5 +67,19 @@ void Model::LoadModel(const std::string& path) {
 std::optional<Model> Resources::ModelManager::LoadResource(const std::fs::path& path) {
     Model model;
     model.LoadModel(path.string());
+    std::string id = GetItemID();
+    if (game->resources.objectsFile.GetItems().count(id) != 0) {
+        const Object& objData = game->resources.objectsFile.GetItem(id);
+        if (objData.defaultMaterial != nullptr) {
+            for (auto& m : model.meshes) {
+                m->material = objData.defaultMaterial;
+            }
+        }
+        for (const auto& [i, mat] : objData.materials) {
+            if (i >= model.meshes.size())
+                continue;
+            model.meshes.at(i)->material = mat;
+        }
+    }
     return model;
 }

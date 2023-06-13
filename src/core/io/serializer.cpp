@@ -40,10 +40,6 @@ bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, cons
     return false; 
 }
 
-IFileSerializer::IFileSerializer(const std::string& p) {
-    path_ = p;
-}
-
 void IFileSerializer::SerializeFile() {
     std::ifstream f(path_);
     if (f.fail()) {

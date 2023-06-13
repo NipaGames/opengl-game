@@ -35,7 +35,7 @@ private:
     int maxRenderedDirLights_ = 0;
     int maxRenderedSpotlights_ = 0;
     std::vector<GLuint> shaders_;
-    int entitiesOnFrustum_ = 0;
+    std::vector<MeshRenderer*> entitiesOnFrustum_;
     std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
 public:
     glm::vec3 skyboxColor = glm::vec3(0.0);
@@ -56,9 +56,11 @@ public:
     void AddLight(Light::Light*);
     void RemoveLight(Light::Light*);
     void CopyShadersFromResources();
+    void UpdateFrustum();
+    void SortMeshesByDistance();
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
-    int CountEntitiesOnFrustum() { return entitiesOnFrustum_; }
+    size_t CountEntitiesOnFrustum() { return entitiesOnFrustum_.size(); }
     std::shared_ptr<Material> GetMaterial(const std::string&);
     std::unordered_map<std::string, std::shared_ptr<Material>>& GetMaterials() { return materials_; }
 };

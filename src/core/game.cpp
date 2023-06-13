@@ -72,9 +72,12 @@ void Game::GameThread() {
         if (currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_) {
             Input::PollKeysPressedDown();
             prevFixedUpdate_ = currentTime;
+            FixedUpdate();
             for (const auto& entity : entityManager_.entities_) {
                 entity->FixedUpdate();
             }
+            renderer_.UpdateFrustum();
+            renderer_.SortMeshesByDistance();
         }
         window_.Update();
         Update();

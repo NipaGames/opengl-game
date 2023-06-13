@@ -29,6 +29,7 @@ struct Spotlight {
 
 struct Material {
   vec3 color;
+  float opacity;
   float specularStrength;
   int specularHighlight;
   vec3 ambientColor;
@@ -103,5 +104,5 @@ void main() {
   col += material.ambientColor;
   if (material.hasTexture)
     col *= texture(textureSampler, fragmentTexCoord).xyz;
-  color = vec4(col, 1.0);
+  color = vec4(col, material.opacity);
 }

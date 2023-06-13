@@ -49,6 +49,7 @@ bool Stage::LoadStage(const std::string& id) {
     loadedStages.insert(loadedStages.begin(), s.id);
     spdlog::info("Loaded stage '" + id + "' (" + std::to_string(s.entities.size()) + " entities modified)");
     game->GetRenderer().UpdateLighting();
+    game->GetRenderer().UpdateFrustum();
     return true;
 }
 
@@ -63,6 +64,7 @@ bool Stage::UnloadStage(const std::string& id) {
     }
     loadedStages.erase(idIt);
     game->GetRenderer().UpdateLighting();
+    game->GetRenderer().UpdateFrustum();
     return true;
 }
 

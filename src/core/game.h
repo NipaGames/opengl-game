@@ -41,6 +41,7 @@ public:
     virtual void Start() { }
     // Called every frame
     virtual void Update() { }
+    virtual void FixedUpdate() { }
 
     virtual double GetDeltaTime() { return deltaTime_; }
     virtual double GetFixedDeltaTime() { return 1.0 / fixedUpdateRate_; }

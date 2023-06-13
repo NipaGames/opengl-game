@@ -45,7 +45,6 @@ void MonkeyGame::Start() {
     int monkeyCount = 6;
     Model& monkeyModel = resources.modelManager.Get("chimp.fbx");
     for (auto mesh : monkeyModel.meshes) {
-        mesh->GenerateVAO();
         mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
         mesh->material->SetShaderUniform<glm::vec3>("color", color);
@@ -62,18 +61,9 @@ void MonkeyGame::Start() {
         monkey.transform->position = glm::vec3(cos(rad) * range, 0.0, sin(rad) * range);
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
-    Model& mogusModel = resources.modelManager.Get("mog.obj");
-    for (auto mesh : mogusModel.meshes) {
-        mesh->GenerateVAO();
-        mesh->material = renderer_.GetMaterial("MAT_MOGUS");
-        mesh->material->SetShaderUniform<glm::vec3>("color", glm::vec3(0.0f, 0.0f, 0.0f));
-    }
-    mogusModel.meshes[2]->material = renderer_.GetMaterial("MAT_MOGUS:BODY");
-    mogusModel.meshes[3]->material = renderer_.GetMaterial("MAT_MOGUS:VISOR");
-
     Entity& mogus = entityManager_.CreateEntity();
     auto mogusRenderer = mogus.AddComponent<MeshRenderer>();
-    mogusRenderer->meshes = mogusModel.meshes;
+    mogusRenderer->meshes = resources.modelManager.Get("mog.obj").meshes;
     mogusRenderer->isStatic = true;
     mogus.transform->position = glm::vec3(0.0f, 0.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);

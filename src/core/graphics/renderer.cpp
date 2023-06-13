@@ -140,6 +140,21 @@ void Renderer::CopyShadersFromResources() {
 void Renderer::Start() {
     CopyShadersFromResources();
     UpdateLighting();
+    UpdateFrustum();
+}
+
+void Renderer::SortMeshesByDistance() {
+    std::sort(entitiesOnFrustum_.begin(), entitiesOnFrustum_.end(), [&] (const auto& mesh0, const auto& mesh1) {
+        return glm::length(camera_.pos - mesh0->parent->transform->position) > glm::length(camera_.pos - mesh1->parent->transform->position);
+    });
+}
+
+void Renderer::UpdateFrustum() {
+    entitiesOnFrustum_.clear();
+    std::copy_if(meshes_.begin(), meshes_.end(), std::back_inserter(entitiesOnFrustum_),
+                [&] (auto mesh) {
+                    return mesh->IsOnFrustum(camera_.frustum);
+                });
 }
 
 void Renderer::Render() {
@@ -151,14 +166,10 @@ void Renderer::Render() {
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
     glUseProgram(0);
-    entitiesOnFrustum_ = 0;
-    for (auto meshRenderer : meshes_) {
-        if (!meshRenderer->isStatic)
-            meshRenderer->CalculateModelMatrix();
-        if (meshRenderer->IsOnFrustum(camera_.frustum)) {
-            meshRenderer->Render(camera_.projectionMatrix, viewMatrix);
-            entitiesOnFrustum_++;
-        }
+    for (auto mesh : entitiesOnFrustum_) {
+        if (!mesh->isStatic)
+            mesh->CalculateModelMatrix();
+        mesh->Render(camera_.projectionMatrix, viewMatrix);
     }
     if (highlightNormals) {
         for (auto meshRenderer : meshes_) {

@@ -4,7 +4,7 @@
 #include <core/graphics/object.h>
 
 namespace Serializer {
-    class ObjectSerializer : public JSONFileSerializer, public SerializerItemInterface<std::shared_ptr<Object>> {
+    class ObjectSerializer : public JSONFileSerializer, public SerializerItemInterface<Object> {
     protected:
         void ParseJSON() override;
     };

@@ -13,9 +13,8 @@ void Resources::LoadAll() {
     materialsFile.SerializeFile(Paths::MATERIALS_PATH.string());
     materialsFile.Register(game->GetRenderer().GetMaterials());
 
-    modelManager.LoadAll(imports->GetItemValues<std::string>("models"));
     objectsFile.SerializeFile(Paths::OBJECTS_PATH.string());
-    //objectsFile.Register();
+    modelManager.LoadAll(imports->GetItemValues<std::string>("models"));
 
     fontManager.LoadAll(imports->GetItemValues<std::string>("fonts"));
 }

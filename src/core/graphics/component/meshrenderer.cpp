@@ -45,7 +45,8 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
         // default uniforms
         // idk if it would be better to define these as default initializers for Material class
         shader->Use();
-        shader->SetUniform<glm::vec3>("material.color", glm::vec3(1.0f));
+        shader->SetUniform("material.color", glm::vec3(1.0f));
+        shader->SetUniform("material.opacity", 1.0f);
 
         mesh->material->Use();
         mesh->Bind();

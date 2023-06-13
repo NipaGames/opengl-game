@@ -143,23 +143,24 @@ namespace Serializer {
         virtual ~IFileSerializer() = default;
         virtual void SerializeFile();
         virtual void SerializeFile(const std::string&);
-        IFileSerializer(const std::string&);
+        IFileSerializer(const std::string& p) : path_(p) { }
         IFileSerializer() = default;
     };
 
     template<typename T>
     class SerializerItemInterface {
+    typedef std::unordered_map<std::string, T> ItemsContainer;
     protected:
-        std::unordered_map<std::string, T> items_;
+        ItemsContainer items_;
     public:
-        std::unordered_map<std::string, T>& GetItems() {
+        const ItemsContainer& GetItems() const {
             return items_;
         }
         const T& GetItem(const std::string& item) const {
             return items_.at(item);
         }
         // copy all items into an external container
-        virtual void Register(std::unordered_map<std::string, T>& container) {
+        virtual void Register(ItemsContainer& container) {
             for (auto& item : items_) {
                 container.insert(item);
             }

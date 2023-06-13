@@ -39,6 +39,7 @@ public:
         std::fs::path path_;
         virtual std::optional<T> LoadResource(const std::fs::path&) = 0;
         void SetItemID(const std::string& id) { itemID_ = id; }
+        const std::string& GetItemID() { return itemID_; }
     public:
         ResourceManager(const std::fs::path& p, const std::string& t = "resource") : path_(p), typeStr_(t) { }
         virtual void LoadAll() {
