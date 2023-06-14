@@ -166,9 +166,11 @@ void Renderer::Render() {
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
     glUseProgram(0);
-    for (auto mesh : entitiesOnFrustum_) {
+    for (auto mesh : meshes_) {
         if (!mesh->isStatic)
             mesh->CalculateModelMatrix();
+    }
+    for (auto mesh : entitiesOnFrustum_) {
         mesh->Render(camera_.projectionMatrix, viewMatrix);
     }
     if (highlightNormals) {

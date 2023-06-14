@@ -43,7 +43,7 @@ void MonkeyGame::Start() {
 
     float range = 4.0f;
     int monkeyCount = 6;
-    Model& monkeyModel = resources.modelManager.Get("chimp.fbx");
+    Model& monkeyModel = resources.modelManager["chimp.fbx"];
     for (auto mesh : monkeyModel.meshes) {
         mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
         glm::vec3 color = glm::vec3((double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX), (double) rand() / (RAND_MAX));
@@ -63,7 +63,7 @@ void MonkeyGame::Start() {
     }
     Entity& mogus = entityManager_.CreateEntity();
     auto mogusRenderer = mogus.AddComponent<MeshRenderer>();
-    mogusRenderer->meshes = resources.modelManager.Get("mog.obj").meshes;
+    mogusRenderer->meshes = resources.modelManager["OBJ_MOGUS"].meshes;
     mogusRenderer->isStatic = true;
     mogus.transform->position = glm::vec3(0.0f, 0.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);

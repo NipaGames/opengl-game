@@ -1,6 +1,6 @@
 [
     {
-        "model": "mog.obj",
+        "model": "OBJ_MOGUS",
         "defaultMaterial": "MAT_MOGUS",
         "materialOverrides": {
             "2": ":BODY",

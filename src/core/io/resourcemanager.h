@@ -10,7 +10,6 @@
 #include <spdlog/spdlog.h>
 
 #include "paths.h"
-#include "files/cfg.h"
 #include "files/materials.h"
 #include "files/objects.h"
 #include <core/graphics/shader.h>
@@ -18,8 +17,19 @@
 #include <core/graphics/model.h>
 #include <core/ui/text.h>
 
+// forward declarations
+namespace CFG {
+    struct ICFGField;
+    template<typename>
+    struct CFGField;
+};
+
 class Resources {
 public:
+    struct Import {
+        std::string path;
+        std::string id;
+    };
     template <typename T>
     class ResourceManager {
     private:
@@ -46,12 +56,16 @@ public:
             for (const auto& f : std::fs::directory_iterator(path_))
                 Load(f.path());
         }
-        virtual void LoadAll(const std::vector<std::string>& paths) {
-            for (const auto& f : paths)
-                Load(path_ / f);
+        virtual void LoadAll(const std::vector<Import>& imports) {
+            for (const auto& f : imports) {
+                if (f.id.empty())
+                    SetItemID(std::fs::proximate(f.path, path_).generic_string());
+                else
+                    SetItemID(f.id);
+                Load(path_ / f.path);
+            }
         }
         virtual void Load(const std::fs::path& p) {
-            itemID_ = std::fs::proximate(p, path_).generic_string();
             std::string fileName = std::fs::proximate(p, path_.parent_path()).generic_string();
             spdlog::info("Loading {} '{}'", typeStr_, fileName);
             std::optional<T> resource = LoadResource(std::fs::absolute(p));
@@ -116,7 +130,7 @@ public:
         ModelManager() : ResourceManager<Model>(Paths::MODELS_DIR, "model") { }
     };
 
-    const CFG::CFGObject* imports;
+    const CFG::CFGField<std::vector<CFG::ICFGField*>>* imports;
     Serializer::MaterialSerializer materialsFile;
     Serializer::ObjectSerializer objectsFile;
     TextureManager textureManager;

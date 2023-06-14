@@ -3,6 +3,9 @@
 #include <sstream>
 #include <stack>
 #include <regex>
+#include <queue>
+#include <sstream>
+#include <magic_enum/magic_enum.hpp>
 
 using namespace Serializer;
 using namespace CFG;
@@ -42,16 +45,38 @@ CFGParseTreeNode<std::string>* CreateIndentationTree(std::stringstream& buffer) 
     return root;
 }
 
+const std::string MATCH_NUMBER = "(\\d*\\.?\\d+)";
+const std::string MATCH_STRING = "(\\w+|\"(.*)\")";
+
+ICFGField* ParseField(const std::string& val) {
+    std::smatch groups;
+    // number
+    if (std::regex_search(val, std::regex("^" + MATCH_NUMBER + "$"))) {
+        CFGField<float>* thisNode = new CFGField<float>(CFGFieldType::NUMBER);
+        thisNode->value = std::stof(val);
+        return thisNode;
+    }
+    // string
+    if (std::regex_search(val, groups, std::regex("^" + MATCH_STRING + "$"))) {
+        CFGField<std::string>* thisNode = new CFGField<std::string>(CFGFieldType::STRING);
+        std::string strVal = groups[2].matched ? groups[2] : groups[1];
+        thisNode->value = strVal;
+        return thisNode;
+    }
+    return nullptr;
+}
+
 ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot = false) {
     std::string name = "";
     std::string val = node->value;
 
-    std::smatch matches;
+    std::smatch groups;
+
     // object or array
-    if (isRoot || std::regex_search(node->value, matches, std::regex("^(\\w+|\"(.*)\")\\s*:$"))) {
+    if (isRoot || std::regex_search(node->value, groups, std::regex("^" + MATCH_STRING + "\\s*:$"))) {
         if (!isRoot)
-            name = matches[2].matched ? matches[2] : matches[1];
-        CFGField<std::vector<ICFGField*>>* thisNode = new CFGField<std::vector<ICFGField*>>{ name, CFGFieldType::ARRAY };
+            name = groups[2].matched ? groups[2] : groups[1];
+        CFGObject* thisNode = new CFGObject{ name, CFGFieldType::ARRAY };
         for (auto* child : node->children) {
             ICFGField* item = ParseIndentTreeNodes(child);
             if (item != nullptr)
@@ -63,63 +88,172 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
         }
         return thisNode;
     }
-    else {
-        if (std::regex_search(node->value, matches, std::regex("^(\\w+|\"(.*)\")\\s*:\\s*([^\\s].*)$"))) {
-            name = matches[2].matched ? matches[2] : matches[1];
-            val = matches[3];
+    // field name
+    if (std::regex_match(node->value, groups, std::regex("^" + MATCH_STRING + "\\s*:\\s*([^\\s].*)$"))) {
+        name = groups[2].matched ? groups[2] : groups[1];
+        val = groups[3];
+    }
+    // struct elements
+    auto searchStart = val.cbegin();
+    std::vector<std::smatch> vals;
+    while (std::regex_search(searchStart, val.cend(), groups, std::regex("(" + MATCH_STRING + "|" + MATCH_NUMBER + ")"))) {
+        vals.push_back(groups);
+        // basically a hack around the fact that c++ regex provides no lookarounds
+        // check that the next char is space or end
+        if (groups.suffix().first != val.cend() && !std::isspace(*groups.suffix().first))
+            return nullptr;
+        searchStart = groups.suffix().first;
+    }
+    if (vals.empty())
+        return nullptr;
+    
+    if (vals.size() > 1) {
+        CFGObject* thisNode = new CFGObject{ name, CFGFieldType::STRUCT };
+        for (const auto& v : vals) {
+            ICFGField* field = ParseField(v[0]);
+            if (field == nullptr)
+                return nullptr;
+            thisNode->AddItem(field);
         }
-    }
-    // number
-    if (std::regex_search(val, std::regex("^\\d*\\.?\\d+$"))) {
-        CFGField<float>* thisNode = new CFGField<float>{ name, CFGFieldType::NUMBER };
-        thisNode->value = std::stof(val);
         return thisNode;
     }
-    // string
-    else if (std::regex_search(val, matches, std::regex("^(\\w+|\"(.*)\")$"))) {
-        CFGField<std::string>* thisNode = new CFGField<std::string>{ name, CFGFieldType::STRING };
-        std::string strVal = matches[2].matched ? matches[2] : matches[1];
-        thisNode->value = strVal;
-        return thisNode;
+    else {
+        ICFGField* field = ParseField(vals.at(0)[0]);
+        if (field == nullptr)
+            return nullptr;
+        field->name = name;
+        return field;
+    }
+
+    return nullptr;
+}
+
+template<typename T>
+ICFGField* CreateNewCFGObject(ICFGField* copyFrom = nullptr) {
+    CFGField<T>* field = new CFGField<T>();
+    if (copyFrom != nullptr)
+        field->value = static_cast<CFGField<T>*>(copyFrom)->value;
+    return field;
+}
+
+ICFGField* CreateNewCFGObject(CFGFieldType type, ICFGField* copyFrom = nullptr) {
+    switch (type) {
+        case CFGFieldType::STRING:
+            return CreateNewCFGObject<std::string>(copyFrom);
+        case CFGFieldType::NUMBER:
+            return CreateNewCFGObject<float>(copyFrom);
+        case CFGFieldType::ARRAY:
+            return CreateNewCFGObject<std::vector<ICFGField*>>(copyFrom);
+        case CFGFieldType::STRUCT:
+            return CreateNewCFGObject<std::vector<ICFGField*>>(copyFrom);
     }
     return nullptr;
 }
 
-bool ValidateCFGFieldType(const ICFGField* node, std::vector<CFGFieldType> types) {
-    if (types.empty())
-        return false;
-    if (node == nullptr)
-        return false;
-    if (node->type != types.at(0)) {
-        spdlog::warn("Invalid field type for '{}'!", !node->name.empty() ? node->name : "UNNAMED_FIELD");
-        return false;
-    }
-    if (types.at(0) == CFGFieldType::ARRAY) {
-        const CFGObject* arrayObject = static_cast<const CFGObject*>(node);
+ICFGField* CreateNewCFGObject(ICFGField* copyFrom) {
+    return CreateNewCFGObject(copyFrom->type, copyFrom);
+}
+
+
+bool ValidateCFGFieldType(ICFGField*, std::vector<CFGFieldType>);
+
+bool ValidateSubItems(ICFGField* node, const std::vector<CFGFieldType>& types) {
+    const CFGObject* arrayObject = static_cast<const CFGObject*>(node);
         // yeah could just as well be a raw loop but will keep this for now
-        auto validate = [&](const CFG::ICFGField* f) {
-            return !ValidateCFGFieldType(f, { types.begin() + 1, types.end() });
-        };
-        if (std::any_of(arrayObject->GetItems().begin(), arrayObject->GetItems().end(), validate))
+    auto validate = [&](CFG::ICFGField* f) {
+        return !ValidateCFGFieldType(f, { types.begin() + 1, types.end() });
+    };
+    return !std::any_of(arrayObject->GetItems().begin(), arrayObject->GetItems().end(), validate);
+}
+
+bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
+    CFGObject* structNode;
+    if (node->type != CFGFieldType::STRUCT) {
+        std::string name = node->name;
+        CFGFieldType type = node->type;
+        ICFGField* field = CreateNewCFGObject(node);
+        if (field == nullptr)
             return false;
+        structNode = new CFGObject{ name, CFGFieldType::STRUCT };
+        field->type = type;
+        structNode->AddItem(field);
+        for (auto it = node->parent->GetItems().begin(); it != node->parent->GetItems().end(); it++) {
+            if (*it == node)
+                *it = structNode;
+        }
+        delete node;
+    }
+    else
+        structNode = static_cast<CFGObject*>(node);
+    std::queue<CFGFieldType> typesQueue(std::deque<CFGFieldType>(types.begin(), types.end()));
+    std::queue<CFGFieldType> structTypesQueue;
+    for (const auto& item : structNode->GetItems())
+        structTypesQueue.push(item->type);
+    while (!typesQueue.empty()) {
+        if (typesQueue.front() == CFGFieldType::STRUCT_MEMBER_REQUIRED) {
+            typesQueue.pop();
+            if (structTypesQueue.empty() || typesQueue.front() != structTypesQueue.front())
+                return false;
+        }
+        else {
+            if (structTypesQueue.empty())
+                structNode->AddItem(CreateNewCFGObject(typesQueue.front()));
+            else if (typesQueue.front() != structTypesQueue.front())
+                return false;
+        }
+        typesQueue.pop();
+        if (!structTypesQueue.empty())
+            structTypesQueue.pop();
     }
     return true;
 }
 
-ICFGField* CreateNewCFGObject(std::vector<CFGFieldType> types) {
-    ICFGField* field;
-    switch (types.at(0)) {
-        case CFGFieldType::STRING:
-            field = new CFGField<std::string>();
-            break;
-        case CFGFieldType::NUMBER:
-            field = new CFGField<float>();
-            break;
-        case CFGFieldType::ARRAY:
-            field = new CFGObject();
-            break;
+bool ValidateCFGFieldType(ICFGField* node, std::vector<CFGFieldType> types) {
+    if (types.empty())
+        return false;
+    if (node == nullptr)
+        return false;
+    if (types.at(0) == CFGFieldType::STRUCT) {
+        bool success = ValidateStruct(node, { types.begin() + 1, types.end() });
+        if (!success) {
+            std::stringstream expected;
+            for (auto it = types.cbegin() + 1; it != types.cend(); it++) {
+                bool req = false;
+                if (*it == CFGFieldType::STRUCT_MEMBER_REQUIRED) {
+                    req = true;
+                    ++it;
+                }
+                expected << fmt::format("{{{}}}{}", req ? "req" : "opt", magic_enum::enum_name(*it));
+                if ((it + 1) != types.cend())
+                    expected << ", ";
+            }
+            std::stringstream received;
+            if (node->type != CFGFieldType::STRUCT)
+                received << magic_enum::enum_name(node->type);
+            else {
+                const CFGObject* structNode = static_cast<const CFGObject*>(node);
+                for (auto it = structNode->GetItems().cbegin(); it != structNode->GetItems().cend(); it++) {
+                    received << magic_enum::enum_name((*it)->type);
+                    if ((it + 1) != structNode->GetItems().cend())
+                        received << ", ";
+                }
+            }
+            spdlog::warn("Invalid struct field types! (Expected [{}] but received [{}])", expected.str(), received.str());
+        }
+        return success;
     }
-    return field;
+    if (node->type != types.at(0)) {
+        spdlog::warn("Invalid field type for '{}'! (Expected {} but received {})",
+            !node->name.empty() ? node->name : "UNNAMED_FIELD",
+            magic_enum::enum_name(types.at(0)),
+            magic_enum::enum_name(node->type));
+        return false;
+    }
+    if (types.at(0) == CFGFieldType::ARRAY) {
+        if (!ValidateSubItems(node, types))
+            return false;
+    }
+    return true;
 }
 
 bool ValidateCFGFields(CFGObject* node, const CFGStructuredFields& fields) {
@@ -135,7 +269,7 @@ bool ValidateCFGFields(CFGObject* node, const CFGStructuredFields& fields) {
                 if (f.isObject)
                     newField = new CFGObject();
                 else
-                    newField = CreateNewCFGObject(f.types);
+                    newField = CreateNewCFGObject(f.types.at(0));
                 newField->name = f.name;
                 node->AddItem(newField);
                 continue;
@@ -173,12 +307,13 @@ CFGObject* CFGSerializer::ParseCFG(std::stringstream& buffer, const CFGFile* fil
     CFGObject* root = ParseIndentTree(strRoot);
     delete strRoot;
     if (root == nullptr) {
-        spdlog::warn("Invalid CFG field value(s)!");
+        spdlog::warn("Invalid CFG format!");
         delete root;
         return nullptr;
     }
     if (fileFormat != nullptr) {
         if (!ValidateCFG(root, fileFormat)) {
+            spdlog::warn("Field validation failed!");
             return nullptr;
         }
     }
@@ -192,6 +327,6 @@ void CFGSerializer::ParseContents(std::ifstream& f) {
     if (root_ == nullptr) {
         // create an empty object, don't wan't to null check every time
         root_ = new CFGObject();
-        spdlog::warn("({}) Incorrect CFG file format!", path_);
+        spdlog::warn("({}) CFG parsing failed!", path_);
     }
 }

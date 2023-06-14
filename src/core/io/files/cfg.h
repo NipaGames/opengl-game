@@ -1,20 +1,26 @@
 #pragma once
 
 #include "../serializer.h"
+#include "../resourcemanager.h"
 #include <vector>
 #include <initializer_list>
 #include <string>
 #include <unordered_map>
+#include <magic_enum/magic_enum.hpp>
 
 namespace CFG {
     enum class CFGFieldType {
         STRING,
         NUMBER,
-        ARRAY
+        ARRAY,
+        STRUCT,
+        STRUCT_MEMBER_REQUIRED
     };
-    #define CFG_STRING_ARRAY CFG::CFGFieldType::ARRAY, CFG::CFGFieldType::STRING
-    #define CFG_NUM_ARRAY CFG::CFGFieldType::ARRAY, CFG::CFGFieldType::NUMBER
-
+    #define CFG_ARRAY(type) CFG::CFGFieldType::ARRAY, type
+    #define CFG_REQUIRE(type) CFG::CFGFieldType::STRUCT_MEMBER_REQUIRED, type
+    #define CFG_STRUCT(...) CFG::CFGFieldType::STRUCT, __VA_ARGS__
+    #define CFG_IMPORT_ARRAY CFG_ARRAY(CFG_STRUCT(CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING))
+    
     struct CFGStructuredField {
         std::string name;
         std::vector<CFGFieldType> types;
@@ -39,13 +45,23 @@ namespace CFG {
     struct ICFGField {
         std::string name;
         CFGFieldType type;
+        CFGField<std::vector<ICFGField*>>* parent;
+        ICFGField() = default;
+        ICFGField(CFGFieldType t) : type(t) { }
+        ICFGField(const std::string& n, CFGFieldType t) : name(n), type(t) { }
     };
 
     template<typename T>
     struct CFGField : ICFGField {
+    using ICFGField::ICFGField;
         T value;
+        CFGField(const T& val) : value(val) { }
         const std::vector<ICFGField*>& GetItems() const { return static_cast<const std::vector<ICFGField*>&>(value); }
-        void AddItem(ICFGField* f) { static_cast<std::vector<ICFGField*>&>(value).push_back(f); }
+        std::vector<ICFGField*>& GetItems() { return static_cast<std::vector<ICFGField*>&>(value); }
+        void AddItem(ICFGField* f) {
+            static_cast<std::vector<ICFGField*>&>(value).push_back(f);
+            f->parent = this;
+        }
         template<typename F>
         const CFGField<F>* GetItemByName(const std::string& name) const {
             auto it = std::find_if(GetItems().begin(), GetItems().end(), [&](const ICFGField* field) {
@@ -57,14 +73,23 @@ namespace CFG {
                 return nullptr;
             return static_cast<CFGField<F>*>(*it);
         }
+        template<typename F>
+        const CFGField<F>* GetItemByIndex(int i) const {
+            if (i >= GetItems().size())
+                return nullptr;
+            return static_cast<CFGField<F>*>(GetItems().at(i));
+        }
         const CFGField<std::vector<ICFGField*>>* GetObjectByName(const std::string& name) const {
             return GetItemByName<std::vector<CFG::ICFGField*>>(name);
+        }
+        const T& GetValue() const {
+            return value;
         }
         template<typename F>
         std::vector<F> Values() const {
             std::vector<F> vec;
             for (const ICFGField* item : GetItems()) {
-                vec.push_back(static_cast<const CFGField<F>*>(item)->value);
+                vec.push_back(static_cast<const CFGField<F>*>(item)->GetValue());
             }
             return vec;
         }
@@ -75,6 +100,28 @@ namespace CFG {
                 return obj->Values<F>();
             else
                 return std::vector<F>();
+        }
+        std::vector<Resources::Import> ListImports(const std::string& name) const {
+            const CFGObject* obj = GetObjectByName(name);
+            if (obj == nullptr)
+                return { };
+            std::vector<Resources::Import> imports;
+            const std::vector<ICFGField*>& items = obj->GetItems();
+            for (const ICFGField* v : items) {
+                if (v->type != CFGFieldType::STRUCT) {
+                    spdlog::warn("'{}' cannot be parsed as a list of imports!", name);
+                    return { };
+                }
+                const CFGObject* import = static_cast<const CFGObject*>(v);
+                if (import == nullptr)
+                    continue;
+                const auto* pathField = import->GetItemByIndex<std::string>(0);
+                const auto* idField = import->GetItemByIndex<std::string>(1);
+                if (pathField == nullptr || idField == nullptr)
+                    continue;
+                imports.push_back({ pathField->GetValue(), idField->GetValue() });
+            }
+            return imports;
         }
     };
 
@@ -106,17 +153,17 @@ namespace CFG {
     class ImportsFile : public CFGFile {
         CFGStructuredFields DefineFields() const override {
             return {
-                { "fonts", CFG_STRING_ARRAY },
-                { "objects", CFG_STRING_ARRAY },
-                { "shaders", CFG_STRING_ARRAY },
-                { "stages", CFG_STRING_ARRAY },
-                { "textures", CFG_STRING_ARRAY }
+                { "fonts", CFG_IMPORT_ARRAY },
+                { "models", CFG_IMPORT_ARRAY },
+                { "shaders", CFG_IMPORT_ARRAY },
+                { "stages", CFG_IMPORT_ARRAY },
+                { "textures", CFG_IMPORT_ARRAY }
             };
         }
     };
 }
 
-namespace Serializer {
+namespace Serializer {    
     class CFGSerializer : public IFileSerializer {
     private:
         const CFG::CFGFile* file_ = nullptr;
