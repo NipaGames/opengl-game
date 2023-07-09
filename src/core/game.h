@@ -25,6 +25,7 @@ protected:
     double prevFixedUpdate_;
     // time in seconds since the last frame
     double deltaTime_;
+    bool isFixedUpdate_ = false;
     // 0 for unlimited
     int limitFps_ = 0;
     // fixed updates per second
@@ -45,6 +46,7 @@ public:
 
     virtual double GetDeltaTime() { return deltaTime_; }
     virtual double GetFixedDeltaTime() { return 1.0 / fixedUpdateRate_; }
+    virtual bool IsCurrentlyFixedUpdate() { return isFixedUpdate_; }
     virtual EntityManager& GetEntityManager() { return entityManager_; }
     virtual GameWindow& GetGameWindow() { return window_; }
     virtual Renderer& GetRenderer() { return renderer_; }

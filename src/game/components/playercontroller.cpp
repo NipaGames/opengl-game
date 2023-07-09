@@ -98,7 +98,8 @@ void PlayerController::Update() {
     }
     velocity *= speed;
     characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * btScalar(std::min(game->GetFixedDeltaTime(), game->GetDeltaTime())));
-    characterController_->updateAction(Physics::dynamicsWorld, btScalar(game->GetDeltaTime()));
+    if (!game->IsCurrentlyFixedUpdate())
+        characterController_->updateAction(Physics::dynamicsWorld, btScalar(game->GetDeltaTime()));
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
     if (pushRigidBodies_) {
         if (glm::length(velocity) > 0.0f) {

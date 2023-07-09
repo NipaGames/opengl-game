@@ -69,7 +69,8 @@ void Game::GameThread() {
         }
 
         Physics::Update(deltaTime_);
-        if (currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_) {
+        isFixedUpdate_ = currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_;
+        if (isFixedUpdate_) {
             Input::PollKeysPressedDown();
             prevFixedUpdate_ = currentTime;
             FixedUpdate();
