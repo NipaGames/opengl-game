@@ -38,9 +38,8 @@ void PlayerController::Start() {
     characterController_ = new btKinematicCharacterController(ghostObject_, capsuleCollider, stepHeight_, btVector3(0.0f, 1.0f, 0.0f));
     characterController_->setMaxPenetrationDepth(.2f);
     characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
-    characterController_->setJumpSpeed(btScalar(6.0f));
+    characterController_->setJumpSpeed(btScalar(jumpSpeed_));
     Physics::dynamicsWorld->addCollisionObject(ghostObject_, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
-    Physics::dynamicsWorld->addAction(characterController_);
     game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
@@ -98,8 +97,7 @@ void PlayerController::Update() {
     }
     velocity *= speed;
     characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * btScalar(std::min(game->GetFixedDeltaTime(), game->GetDeltaTime())));
-    if (!game->IsCurrentlyFixedUpdate())
-        characterController_->updateAction(Physics::dynamicsWorld, btScalar(game->GetDeltaTime()));
+
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
     if (pushRigidBodies_) {
         if (glm::length(velocity) > 0.0f) {
@@ -115,7 +113,9 @@ void PlayerController::Update() {
             }
         }
     }
-    
+
+    characterController_->updateAction(Physics::dynamicsWorld, btScalar(game->GetDeltaTime()));
+
     cam.pos.x = parent->transform->position.x;
     cam.pos.z = parent->transform->position.z;
 

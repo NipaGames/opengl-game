@@ -13,7 +13,8 @@ private:
     btKinematicCharacterController* characterController_ = nullptr;
     btPairCachingGhostObject* ghostObject_ = nullptr;
     float stepHeight_ = 0.2f;
-    float gravity_ = -10.0f;
+    float gravity_ = -9.8f * 3.0f;
+    float jumpSpeed_ = 10.0f;
     bool pushRigidBodies_ = false;
 public:
     ~PlayerController();
