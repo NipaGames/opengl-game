@@ -51,7 +51,8 @@ void Game::GameThread() {
         double currentTime = glfwGetTime();
         if (limitFps_ > 0 && currentTime - prevUpdate_ < 1.0 / limitFps_)
             continue;
-        deltaTime_ = currentTime - prevUpdate_;
+        // don't skip too big intervals (>.5s)
+        deltaTime_ = std::min(currentTime - prevUpdate_, .5);
         prevUpdate_ = currentTime;
 
         if (Input::SET_FULLSCREEN_PENDING) {
