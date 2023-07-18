@@ -4,6 +4,7 @@
 
 #include "input.h"
 #include "physics/physics.h"
+#include "io/serializetypes.h"
 
 bool Game::InitWindow() {
     window_ = GameWindow("", BASE_WIDTH, BASE_HEIGHT);
@@ -34,6 +35,7 @@ void Game::GameThread() {
     PreLoad();
     glfwShowWindow(game->GetGameWindow().GetWindow());
     Physics::Init();
+    RegisterDefaultSerializers();
     resources.LoadAll();
     Start();
     for (const auto& entity : entityManager_.entities_) {

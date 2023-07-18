@@ -8,3 +8,5 @@
 // Return true if successful,
 // Return value with (Serializer::SerializationArgs&) args.Return(val);
 #define JSON_SERIALIZE_TYPES(f, ...) inline const void* _UNIQUE_VAR_NAME(_json_serialization_init_val_) = Serializer::AddJSONSerializer<__VA_ARGS__>(f)
+
+void RegisterDefaultSerializers();

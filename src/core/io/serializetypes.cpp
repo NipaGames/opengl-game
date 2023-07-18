@@ -4,8 +4,6 @@
 #include <core/graphics/shader.h>
 #include <core/graphics/component/meshrenderer.h>
 
-#ifndef JSON_DEFAULT_SERIALIZATIONS
-
 template<typename T>
 bool SerializeJSONNumber(Serializer::SerializationArgs& args, const nlohmann::json& j) {
     if (!j.is_number())
@@ -13,9 +11,6 @@ bool SerializeJSONNumber(Serializer::SerializationArgs& args, const nlohmann::js
     args.Return<T>(j);
     return true;
 }
-
-JSON_SERIALIZE_TYPES(SerializeJSONNumber<int>, int);
-JSON_SERIALIZE_TYPES(SerializeJSONNumber<float>, float);
 
 template<size_t S>
 bool SerializeJSONVector(Serializer::SerializationArgs& args, const nlohmann::json& j) {
@@ -32,35 +27,39 @@ bool SerializeJSONVector(Serializer::SerializationArgs& args, const nlohmann::js
     return true;
 }
 
-JSON_SERIALIZE_TYPES(SerializeJSONVector<2>, glm::vec2, glm::ivec2);
-JSON_SERIALIZE_TYPES(SerializeJSONVector<3>, glm::vec3, glm::ivec3);
+void RegisterDefaultSerializers() {
+    // JSON serializers
+    Serializer::AddJSONSerializer<int>(SerializeJSONNumber<int>);
+    Serializer::AddJSONSerializer<float>(SerializeJSONNumber<float>);
+    Serializer::AddJSONSerializer<glm::vec2, glm::ivec2>(SerializeJSONVector<2>);
+    Serializer::AddJSONSerializer<glm::vec3, glm::ivec3>(SerializeJSONVector<3>);
+    Serializer::AddJSONSerializer<bool>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+        if (!j.is_boolean())
+            return false;
+        args.Return((bool) j);
+        return true;
+    });
+    Serializer::AddJSONSerializer<Shaders::ShaderID>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+        if (!j.is_string())
+            return false;
+        auto s = magic_enum::enum_cast<Shaders::ShaderID>((std::string) j);
+        if (!s.has_value())
+            return false;
+        args.Return(s.value());
+        return true;
+    });
+    // just a placeholder for now
+    Serializer::AddJSONSerializer<std::shared_ptr<Mesh>>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+        auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
+        mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
+        mesh->material->SetShaderUniform<int>("specularHighlight", 8);
+        mesh->material->SetShaderUniform<float>("specularStrength", 0);
+        args.Return(mesh);
+        return true;
+    });
+}
 
-JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
-    if (!j.is_boolean())
-        return false;
-    args.Return((bool) j);
-    return true;
-}, bool);
-
-JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
-    if (!j.is_string())
-        return false;
-    auto s = magic_enum::enum_cast<Shaders::ShaderID>((std::string) j);
-    if (!s.has_value())
-        return false;
-    args.Return(s.value());
-    return true;
-}, Shaders::ShaderID);
-
-// just a placeholder for now
-JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
-    auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-    mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
-    mesh->material->SetShaderUniform<int>("specularHighlight", 8);
-    mesh->material->SetShaderUniform<float>("specularStrength", 0);
-    args.Return(mesh);
-    return true;
-}, std::shared_ptr<Mesh>);
-
+#ifndef JSON_DEFAULT_SERIALIZATIONS
+// global scope macro serializer registrations here
 #define JSON_DEFAULT_SERIALIZATIONS
 #endif

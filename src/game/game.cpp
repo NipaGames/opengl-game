@@ -31,7 +31,6 @@ bool MonkeyGame::InitWindow() {
 
 void MonkeyGame::PreLoad() {
     LOG_FN();
-    using namespace UI::Text;
 }
 
 void MonkeyGame::Start() {
