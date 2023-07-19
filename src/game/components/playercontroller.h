@@ -3,6 +3,7 @@
 #include <opengl.h>
 #include <core/entity/component.h>
 #include <core/physics/component/rigidbody.h>
+#include <core/entity/serializable.h>
 #include <BulletDynamics/Character/btKinematicCharacterController.h>
 #include <BulletCollision/CollisionDispatch/btGhostObject.h>
 
@@ -23,8 +24,7 @@ public:
     void Start();
     void Update();
 
-    DEFINE_COMPONENT_DATA_VALUE(float, speed, 10.0f);
-    DEFINE_COMPONENT_DATA_VALUE(glm::vec3, spawnPosition, glm::vec3(0.0f));
-    DEFINE_COMPONENT_DATA_VALUE_VECTOR(int, testNums);
-    float mass = 4;
+    SDEF(float, speed) = SVAL(10.0f);
+    SDEF(glm::vec3, spawnPosition) = SVAL(glm::vec3(0.0f));
+    SDEFVD(int, testNums);
 };

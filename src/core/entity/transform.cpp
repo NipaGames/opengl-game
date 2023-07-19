@@ -1,17 +1,17 @@
 #include "transform.h"
 
+#include <core/physics/utils.h>
+
 btVector3 Transform::btGetPos() {
-    return btVector3(position.x, position.y, position.z);
+    return Physics::GLMVectorToBtVector3(position);
 }
 
 btVector3 Transform::btGetSize() {
-    return btVector3(size.x, size.y, size.z);
+    return Physics::GLMVectorToBtVector3(size);
 }
 
 btQuaternion Transform::btGetRotation() {
-    btQuaternion quat;
-    quat.setEulerZYX(rotation.x, rotation.y, rotation.z);
-    return quat;
+    return Physics::GLMQuatToBtQuat(rotation);
 }
 
 btTransform Transform::btGetTransform() {
@@ -23,8 +23,6 @@ btTransform Transform::btGetTransform() {
 }
 
 void Transform::btSetTransform(const btTransform& trans) {
-    const btVector3& pos = trans.getOrigin();
-    position = { pos.getX(), pos.getY(), pos.getZ() };
-    const btQuaternion& rot = trans.getRotation();
-    rotation = { rot.getX(), rot.getY(), rot.getZ(), rot.getW() };
+    position = Physics::BtVectorToGLMVector3(trans.getOrigin());
+    rotation = Physics::BtQuatToGLMQuat(trans.getRotation());
 }

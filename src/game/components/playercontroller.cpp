@@ -3,6 +3,7 @@
 #include <core/event.h>
 #include <core/game.h>
 #include <core/input.h>
+#include <core/physics/utils.h>
 
 PlayerController::~PlayerController() {
     delete characterController_;
@@ -24,7 +25,7 @@ void PlayerController::OnMouseMove() {
 
 void PlayerController::Spawn() {
     characterController_->reset(Physics::dynamicsWorld);
-	characterController_->warp(btVector3(spawnPosition.x, spawnPosition.y, spawnPosition.z));
+	characterController_->warp(Physics::GLMVectorToBtVector3(spawnPosition));
 }
 
 void PlayerController::Start() {
