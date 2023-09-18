@@ -107,6 +107,13 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 *Blue: win32 window management stuff and input system*  
 5.6.2023
 
+ 
+
+![skybox](/images/screenshot12.png)
+
+*The Great Skybox Update. (also the debug overlay and the level layout haven't been shown yet)*  
+18.9.2023
+
   
 
 ###  Current features:
