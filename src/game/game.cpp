@@ -6,6 +6,7 @@
 #include <core/io/paths.h>
 #include <core/io/resourcemanager.h>
 #include <core/graphics/model.h>
+#include <core/graphics/cubemap.h>
 #include <core/graphics/component/meshrenderer.h>
 #include <core/terrain/plane.h>
 #include <core/ui/component/textcomponent.h>
@@ -39,6 +40,10 @@ void MonkeyGame::Start() {
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
+
+    renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE);
+    renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
+    renderer_.skyboxTexture = Cubemap::LoadTextureFromDir("skybox", true);
 
     float range = 4.0f;
     int monkeyCount = 6;

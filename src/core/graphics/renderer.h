@@ -38,6 +38,8 @@ private:
     std::vector<MeshRenderer*> entitiesOnFrustum_;
     std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
 public:
+    std::shared_ptr<Mesh> skybox = nullptr;
+    Texture::TextureID skyboxTexture = NULL;
     glm::vec3 skyboxColor = glm::vec3(0.0);
     bool highlightNormals = false;
     bool showHitboxes = false;
