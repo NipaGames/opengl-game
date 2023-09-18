@@ -39,7 +39,7 @@ Texture::TextureID Cubemap::LoadTextureFromFaces(const std::string& dir, const c
                     for (int j = 0; j < width; j++) {
                         for (int c = 0; c < nChannels; c++) {
                             int newPos = width * i * nChannels + j * nChannels + c;
-                            int oldPos = width * (i + 1) * nChannels - j * nChannels + c;
+                            int oldPos = width * (i + 1) * nChannels - (j + 1) * nChannels + c;
                             flippedImg[newPos] = img[oldPos];
                         }
                     }
