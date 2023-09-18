@@ -177,10 +177,8 @@ bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
         structNode = new CFGObject{ name, CFGFieldType::STRUCT };
         field->type = type;
         structNode->AddItem(field);
-        for (auto it = node->parent->GetItems().begin(); it != node->parent->GetItems().end(); it++) {
-            if (*it == node)
-                *it = structNode;
-        }
+        auto& parentItems = node->parent->GetItems();
+        *std::find(parentItems.begin(), parentItems.end(), node) = structNode;
         delete node;
     }
     else

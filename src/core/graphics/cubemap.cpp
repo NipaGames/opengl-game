@@ -4,7 +4,7 @@
 #include <spdlog/spdlog.h>
 #include <core/io/paths.h>
 
-constexpr char* const DEFAULT_FACES[6] {
+const char* const DEFAULT_FACES[6] = {
     "RIGHT.png",
     "LEFT.png",
     "TOP.png",

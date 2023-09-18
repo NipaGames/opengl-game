@@ -43,7 +43,15 @@ void MonkeyGame::Start() {
 
     renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE);
     renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
-    renderer_.skyboxTexture = Cubemap::LoadTextureFromDir("skybox", true);
+    const char* faces[6] = {
+        "graycloud_rt.jpg",
+        "graycloud_lf.jpg",
+        "graycloud_up.jpg",
+        "graycloud_dn.jpg",
+        "graycloud_ft.jpg",
+        "graycloud_bk.jpg"
+    };
+    renderer_.skyboxTexture = Cubemap::LoadTextureFromFaces("cloud-skybox", faces, true);
 
     float range = 4.0f;
     int monkeyCount = 6;
