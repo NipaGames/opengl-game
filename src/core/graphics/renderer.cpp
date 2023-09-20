@@ -30,6 +30,7 @@ bool Renderer::Init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glEnable(GL_DEPTH_TEST);
+
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glEnable(GL_BLEND);
@@ -160,31 +161,11 @@ void Renderer::UpdateFrustum() {
 void Renderer::Render() {
     // first pass (draw into framebuffer)
     glBindFramebuffer(GL_FRAMEBUFFER, MSAAFbo_);
+    
     glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
-    // draw skybox
-    if (skybox != nullptr) {
-        glDepthMask(GL_FALSE);
-        glCullFace(GL_FRONT);
-
-        const Shader* shader = &skybox->material->GetShader();
-        shader->Use();
-        shader->SetUniform("view", glm::mat4(glm::mat3(viewMatrix)));
-        shader->SetUniform("projection", camera_.projectionMatrix);
-        
-        glBindVertexArray(skybox->vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skybox->ebo);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-
-        skybox->Render();
-        glBindVertexArray(0);
-        glDepthMask(GL_TRUE);
-        glCullFace(GL_BACK);
-    }
 
     glUseProgram(0);
     for (auto mesh : meshes_) {
@@ -194,6 +175,32 @@ void Renderer::Render() {
     for (auto mesh : entitiesOnFrustum_) {
         mesh->Render(camera_.projectionMatrix, viewMatrix);
     }
+
+    // draw skybox
+    if (skybox != nullptr) {
+        glDepthFunc(GL_LEQUAL);
+        glCullFace(GL_FRONT);
+        glEnable(GL_DEPTH_CLAMP);
+
+        const Shader* shader = &skybox->material->GetShader();
+        shader->Use();
+        glm::mat4 skyboxView = glm::mat4(glm::mat3(viewMatrix));
+        shader->SetUniform("view", skyboxView);
+        shader->SetUniform("projection", camera_.projectionMatrix);
+        shader->SetUniform("clippingFar", camera_.clippingFar);
+        
+        glBindVertexArray(skybox->vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skybox->ebo);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+
+        skybox->Render();
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS);
+        glCullFace(GL_BACK);
+        glDisable(GL_DEPTH_CLAMP);
+    }
+
     if (highlightNormals) {
         for (auto meshRenderer : meshes_) {
             meshRenderer->Render(camera_.projectionMatrix, viewMatrix, &normalShader_);
@@ -220,6 +227,7 @@ void Renderer::Render() {
         c.second.Draw();
     }
 
+    glEnable(GL_DEPTH_TEST);
     glfwSwapBuffers(window_);
 }
 
