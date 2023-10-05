@@ -6,5 +6,9 @@
             "2": ":BODY",
             "3": ":VISOR"
         }
+    },
+    {
+        "model": "OBJ_CAVE",
+        "defaultMaterial": "MAT_CAVE"
     }
 ]

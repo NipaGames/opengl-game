@@ -38,7 +38,7 @@ public:
     float fov = 60.0f;
     float yaw = 90.0f;
     float pitch = 0.0f;
-    float clippingFar = 100.0f;
+    float clippingFar = 1000.0f;
     float clippingNear = .1f;
     float aspectRatio;
     glm::vec3 front = glm::vec3(0.0f, 0.0f, 1.0f);

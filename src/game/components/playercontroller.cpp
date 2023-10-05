@@ -69,6 +69,9 @@ void PlayerController::Update() {
             velocity -= glm::normalize(glm::cross(front, cam.up));
         if (Input::IsKeyDown(GLFW_KEY_D))
             velocity += glm::normalize(glm::cross(front, cam.up));
+
+        if (Input::IsKeyPressedDown(GLFW_KEY_LEFT_SHIFT))
+            running_ = !running_;
             
         if (velocity != glm::vec3(0.0f))
             velocity = glm::normalize(velocity);
@@ -92,14 +95,20 @@ void PlayerController::Update() {
         if (isFlying_) {
             if (Input::IsKeyDown(GLFW_KEY_SPACE))
                 velocity.y += 1.0f;
-            if (Input::IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+            if (Input::IsKeyDown(GLFW_KEY_LEFT_CONTROL))
                 velocity.y -= 1.0f;
         }
     }
-    velocity *= speed;
+    float movingSpeed = speed;
+    if (running_) {
+        movingSpeed *= 2.0f;
+    }
+    velocity *= movingSpeed;
     characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * btScalar(game->GetDeltaTime()));
 
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
+
+    // shits pretty broken, don't use
     if (pushRigidBodies_) {
         if (glm::length(velocity) > 0.0f) {
             for (int i = 0; i < ghostObject_->getNumOverlappingObjects(); i++) {

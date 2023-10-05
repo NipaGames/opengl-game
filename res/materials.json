@@ -12,6 +12,16 @@
         }
     },
     {
+        "id": "MAT_CAVE",
+        "shader": "LIT",
+        "uniforms": {
+            "color": 0.25,
+            "specularHighlight": 8,
+            "specularStrength": 0,
+            "ambientColor": 0.1
+        }
+    },
+    {
         "id": "MAT_MOGUS",
         "shader": "UNLIT",
         "uniforms": {

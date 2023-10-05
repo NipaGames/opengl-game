@@ -17,6 +17,7 @@ private:
     float gravity_ = -9.8f * 3.0f;
     float jumpSpeed_ = 10.0f;
     bool pushRigidBodies_ = false;
+    bool running_ = false;
 public:
     ~PlayerController();
     void Spawn();

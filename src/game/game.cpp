@@ -40,6 +40,7 @@ void MonkeyGame::Start() {
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
+    player.AddComponent<Light::PointLight>()->intensity = .5f;
 
     renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE);
     renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
@@ -80,6 +81,14 @@ void MonkeyGame::Start() {
     mogus.transform->position = glm::vec3(0.0f, 0.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);
 
+    Entity& cave = entityManager_.CreateEntity();
+    auto caveRenderer = cave.AddComponent<MeshRenderer>();
+    caveRenderer->meshes = resources.modelManager["OBJ_CAVE"].meshes;
+    caveRenderer->isStatic = true;
+    caveRenderer->alwaysOnFrustum = true;
+    cave.transform->position = glm::vec3(0.0f, -5.0f, 120.0f);
+    cave.transform->size = glm::vec3(1.5f);
+
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
     plane->heightVariation = 1.0f;
     plane->textureSize = glm::vec2(2);
@@ -117,6 +126,7 @@ void MonkeyGame::Start() {
 }
 
 void MonkeyGame::Update() {
+    renderer_.UpdateLighting();
     if (Input::IsKeyPressedDown(GLFW_KEY_N))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
 

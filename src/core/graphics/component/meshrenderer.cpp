@@ -64,6 +64,9 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
 }
 
 bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
+    if (alwaysOnFrustum)
+        return true;
+    
     glm::vec3 center = parent->transform->position + glm::vec3(parent->transform->rotation * glm::vec4(aabb_.center * parent->transform->size, 1.0f));
 
     // Scaled orientation
