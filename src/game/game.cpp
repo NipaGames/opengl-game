@@ -19,7 +19,7 @@
 #define LOG_FN_(fn) spdlog::debug("[{} called]", fn)
 #define LOG_FN() LOG_FN_(__FUNCTION__)
 
-UI::TextComponent* fpsText = nullptr;
+Lights::PointLight* playerLight = nullptr;
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
@@ -40,7 +40,8 @@ void MonkeyGame::Start() {
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
-    player.AddComponent<Light::PointLight>()->intensity = .5f;
+    playerLight = player.AddComponent<Lights::PointLight>();
+    playerLight->intensity = .5f;
 
     renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE);
     renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
@@ -126,7 +127,7 @@ void MonkeyGame::Start() {
 }
 
 void MonkeyGame::Update() {
-    renderer_.UpdateLighting();
+    playerLight->ApplyForAllShaders();
     if (Input::IsKeyPressedDown(GLFW_KEY_N))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
 

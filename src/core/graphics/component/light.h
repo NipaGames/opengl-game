@@ -4,7 +4,7 @@
 #include <core/entity/component.h>
 #include <core/entity/entity.h>
 
-namespace Light {
+namespace Lights {
     inline int POINT_LIGHTS_INDEX = 0;
     inline int DIRECTIONAL_LIGHTS_INDEX = 0;
     inline int SPOTLIGHTS_INDEX = 0;
@@ -27,6 +27,7 @@ namespace Light {
         LightType type_ = LightType::NONE;
     protected:
         void SetType(LightType t) { type_ = t; }
+        std::string lightUniform_;
     public:
         DEFINE_COMPONENT_DATA_VALUE(glm::vec3, color, glm::vec3(1.0f));
         DEFINE_COMPONENT_DATA_VALUE(float, intensity, 1.0f);
@@ -36,15 +37,18 @@ namespace Light {
         IComponent* Clone() const override;
         void Start() override;
         LightType GetType() { return type_; }
-        virtual void ApplyLight(GLuint) const { }
+        virtual void UseAsNext() { }
+        virtual void ApplyLight(GLuint) const;
+        virtual void ApplyForAllShaders() const;
     };
 
-    class PointLight: public Light {
+    class PointLight : public Light {
     public:
         DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
 
-        PointLight() { SetType(LightType::POINT); }
-        void ApplyLight(GLuint) const override;
+        PointLight() { Light::SetType(LightType::POINT); }
+        void UseAsNext() override;
+        void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(PointLight);
 
@@ -52,8 +56,9 @@ namespace Light {
     public:
         DEFINE_COMPONENT_DATA_VALUE_DEFAULT(glm::vec3, dir);
         
-        DirectionalLight() { SetType(LightType::DIRECTIONAL); }
-        void ApplyLight(GLuint) const override;
+        DirectionalLight() { Light::SetType(LightType::DIRECTIONAL); }
+        void UseAsNext() override;
+        void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(DirectionalLight);
 
@@ -65,7 +70,8 @@ namespace Light {
         DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
 
         Spotlight() { Light::SetType(LightType::SPOTLIGHT); }
-        void ApplyLight(GLuint) const override;
+        void UseAsNext() override;
+        void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(Spotlight);
 }

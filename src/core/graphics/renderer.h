@@ -25,7 +25,7 @@ private:
     GLuint MSAATextureColorBuffer_;
     Shape framebufferShape_;
     std::vector<MeshRenderer*> meshes_;
-    std::vector<Light::Light*> lights_;
+    std::vector<Lights::Light*> lights_;
     std::unordered_map<std::string, UI::Canvas> canvases_;
     Camera camera_ = Camera();
     Shader framebufferShader_;
@@ -55,8 +55,8 @@ public:
     void UpdateCameraProjection(int, int);
     void AddMeshRenderer(MeshRenderer*);
     void RemoveMeshRenderer(MeshRenderer*);
-    void AddLight(Light::Light*);
-    void RemoveLight(Light::Light*);
+    void AddLight(Lights::Light*);
+    void RemoveLight(Lights::Light*);
     void CopyShadersFromResources();
     void UpdateFrustum();
     void SortMeshesByDistance();
@@ -65,4 +65,5 @@ public:
     size_t CountEntitiesOnFrustum() { return entitiesOnFrustum_.size(); }
     std::shared_ptr<Material> GetMaterial(const std::string&);
     std::unordered_map<std::string, std::shared_ptr<Material>>& GetMaterials() { return materials_; }
+    const std::vector<GLuint>& GetShaders() { return shaders_; }
 };

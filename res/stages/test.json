@@ -43,7 +43,7 @@
             }
         },
         {
-        "Light::DirectionalLight": {
+        "Lights::DirectionalLight": {
                 "dir": [ 0.7071, 0.7071, 0.0 ]
             }
         },
@@ -91,6 +91,9 @@
             "Physics::RigidBody": {
                 "mass": 0
             }
+        },
+        {
+            
         }
     ]
 }

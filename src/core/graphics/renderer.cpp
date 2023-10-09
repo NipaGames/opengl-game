@@ -107,29 +107,30 @@ bool Renderer::Init() {
 void Renderer::UpdateLighting() {
     for (GLuint shader : shaders_) {
         glUseProgram(shader);
-        Light::ResetIndices();
+        Lights::ResetIndices();
         for (auto l : lights_) {
+            l->UseAsNext();
             l->ApplyLight(shader);
         }
-        if (Light::POINT_LIGHTS_INDEX < maxRenderedPointLights_) {
-            for (int i = Light::POINT_LIGHTS_INDEX; i < maxRenderedPointLights_; i++) {
+        if (Lights::POINT_LIGHTS_INDEX < maxRenderedPointLights_) {
+            for (int i = Lights::POINT_LIGHTS_INDEX; i < maxRenderedPointLights_; i++) {
                 glUniform1i(glGetUniformLocation(shader, std::string("pointLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
             }
         }
-        if (Light::DIRECTIONAL_LIGHTS_INDEX < maxRenderedDirLights_) {
-            for (int i = Light::DIRECTIONAL_LIGHTS_INDEX; i < maxRenderedDirLights_; i++) {
+        if (Lights::DIRECTIONAL_LIGHTS_INDEX < maxRenderedDirLights_) {
+            for (int i = Lights::DIRECTIONAL_LIGHTS_INDEX; i < maxRenderedDirLights_; i++) {
                 glUniform1i(glGetUniformLocation(shader, std::string("directionalLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
             }
         }
-        if (Light::SPOTLIGHTS_INDEX < maxRenderedSpotlights_) {
-            for (int i = Light::SPOTLIGHTS_INDEX; i < maxRenderedSpotlights_; i++) {
+        if (Lights::SPOTLIGHTS_INDEX < maxRenderedSpotlights_) {
+            for (int i = Lights::SPOTLIGHTS_INDEX; i < maxRenderedSpotlights_; i++) {
                 glUniform1i(glGetUniformLocation(shader, std::string("spotlights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
             }
         }
     }
-    maxRenderedPointLights_ = std::max(Light::POINT_LIGHTS_INDEX, maxRenderedPointLights_);
-    maxRenderedDirLights_ = std::max(Light::DIRECTIONAL_LIGHTS_INDEX, maxRenderedDirLights_);
-    maxRenderedSpotlights_ = std::max(Light::SPOTLIGHTS_INDEX, maxRenderedSpotlights_);
+    maxRenderedPointLights_ = std::max(Lights::POINT_LIGHTS_INDEX, maxRenderedPointLights_);
+    maxRenderedDirLights_ = std::max(Lights::DIRECTIONAL_LIGHTS_INDEX, maxRenderedDirLights_);
+    maxRenderedSpotlights_ = std::max(Lights::SPOTLIGHTS_INDEX, maxRenderedSpotlights_);
 }
 
 void Renderer::CopyShadersFromResources() {
@@ -250,12 +251,12 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     }
 }
 
-void Renderer::AddLight(Light::Light* light) {
+void Renderer::AddLight(Lights::Light* light) {
     lights_.push_back(light);
     light->isAdded = true;
 }
 
-void Renderer::RemoveLight(Light::Light* light) {
+void Renderer::RemoveLight(Lights::Light* light) {
     if (lights_.size() == 0) return;
     lights_.erase(std::remove(lights_.begin(), lights_.end(), light), lights_.end());
 }
