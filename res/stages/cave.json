@@ -1,0 +1,41 @@
+{
+    "id": "cave",
+    "entities": [
+        {
+            "Transform": {
+                "position": [ 12, 20, 5 ]
+            },
+            "Lights::Spotlight": {
+                "cutOffMin": 0.95,
+                "cutOffMax": 0.9,
+                "range": 25,
+                "dir": [ 1.0, -0.45, 0.15 ],
+                "intensity": 1
+            }
+        },
+        {
+            "id": "cave",
+            "Transform": {
+                "position": [ 0, -5, 120 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_CAVE",
+                "isStatic": true,
+                "alwaysOnFrustum": true
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 28.25, -4.75, 55 ]
+            },
+            "Lights::PointLight": {
+                "color": [ 1, 0.8, 0.5 ],
+                "range": 5
+            },
+            "MeshRenderer": {
+                "object": "OBJ_TORCH",
+                "isStatic": true
+            }
+        }
+    ]
+}

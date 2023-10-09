@@ -73,6 +73,14 @@ std::optional<Model> Resources::ModelManager::LoadResource(const std::fs::path& 
         if (objData.defaultMaterial != nullptr) {
             for (auto& m : model.meshes) {
                 m->material = objData.defaultMaterial;
+                if (objData.size != glm::vec3(1.0f)) {
+                    for (int i = 0; i < m->vertices.size(); i++) {
+                        m->vertices[i] *= objData.size[i % 3];
+                    }
+                    m->aabb.center *= objData.size;
+                    m->aabb.extents *= objData.size;
+                    m->GenerateVAO();
+                }
             }
         }
         for (const auto& [i, mat] : objData.materials) {

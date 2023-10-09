@@ -18,6 +18,7 @@ public:
     // enable this if the object transform doesn't update, no need to calculate model matrices every frame that way
     DEFINE_COMPONENT_DATA_VALUE(bool, isStatic, false);
     DEFINE_COMPONENT_DATA_VALUE(bool, alwaysOnFrustum, false);
+    DEFINE_COMPONENT_DATA_VALUE(std::string, object, "");
     DEFINE_COMPONENT_DATA_VALUE_VECTOR(std::shared_ptr<Mesh>, meshes);
 
     virtual ~MeshRenderer();

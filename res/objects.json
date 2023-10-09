@@ -9,10 +9,23 @@
     },
     {
         "model": "OBJ_CAVE",
+        "size": 1.5,
         "defaultMaterial": "MAT_TILE_WALL",
         "materialOverrides": {
-            "1": "MAT_CAVE:WALL",
-            "2": "MAT_CAVE:FLOOR"
+            "1": "MAT_WOOD_CEILING",
+            "2": "MAT_FLOOR",
+            "3": "MAT_WOOD_CEILING:POLE",
+            "4": "MAT_CAVE:WALL",
+            "5": "MAT_CAVE:FLOOR"
+        }
+    },
+    {
+        "model": "OBJ_TORCH",
+        "size": 0.1,
+        "defaultMaterial": "MAT_TORCH_METAL",
+        "materialOverrides": {
+            "0": "MAT_TORCH_WOOD",
+            "3": "MAT_TORCH_FLAME"
         }
     }
 ]

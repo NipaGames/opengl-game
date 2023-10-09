@@ -10,6 +10,11 @@ MeshRenderer::~MeshRenderer() {
 }
 
 void MeshRenderer::Start() {
+    if (!object.empty()) {
+        for (auto mesh : game->resources.modelManager[object].meshes) {
+            meshes.push_back(mesh);
+        }
+    }
     if (isStatic)
         CalculateModelMatrix();
     if (!isAdded)

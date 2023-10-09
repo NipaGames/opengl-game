@@ -64,10 +64,11 @@ namespace Lights {
     }
 
     void Spotlight::UseAsNext() {
-        lightUniform_ = "spotlights[" + std::to_string(POINT_LIGHTS_INDEX++) + "]";
+        lightUniform_ = "spotlights[" + std::to_string(SPOTLIGHTS_INDEX++) + "]";
     }
     void Spotlight::ApplyLight(GLuint shader) const {
         Light::ApplyLight(shader);
+        glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".dir").c_str()), dir.x, dir.y, dir.z);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".pos").c_str()), parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform_ + ".range").c_str()), range);
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform_ + ".cutOffMin").c_str()), cutOffMin);

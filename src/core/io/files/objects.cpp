@@ -23,6 +23,10 @@ std::optional<ObjectPair> ParseObject(const json& objJson) {
         defaultMaterialId = objJson.at("defaultMaterial");
         obj.defaultMaterial = game->GetRenderer().GetMaterial(defaultMaterialId);
     }
+    if (objJson.contains("size")) {
+        if (!SetJSONPointerValue(&obj.size, objJson.at("size")))
+            return std::nullopt;
+    }
     if (objJson.contains("materialOverrides")) {
         if (!objJson.at("materialOverrides").is_object())
             return std::nullopt;

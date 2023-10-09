@@ -69,8 +69,8 @@ bool Stage::UnloadStage(const std::string& id) {
 }
 
 void Stage::UnloadAllStages() {
-    for (const std::string& s : loadedStages) {
-        UnloadStage(s);
+    for (int i = 0; i < loadedStages.size(); i++) {
+        UnloadStage(loadedStages.at(i--));
     }
 }
 

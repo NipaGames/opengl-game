@@ -86,9 +86,6 @@
             "Physics::RigidBody": {
                 "mass": 0
             }
-        },
-        {
-            
         }
     ]
 }

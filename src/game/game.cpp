@@ -37,18 +37,13 @@ void MonkeyGame::PreLoad() {
 void MonkeyGame::Start() {
     LOG_FN();
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
+    Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "cave.json"));
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
     playerLight = player.AddComponent<Lights::PointLight>();
     playerLight->intensity = .5f;
     playerLight->range = 5.0f;
-
-    Entity& light = entityManager_.CreateEntity();
-    light.transform->position = { 30.0f, -3.0f, 55.0f };
-    Lights::PointLight* pointLight = light.AddComponent<Lights::PointLight>();
-    pointLight->color = { 1.0f, .8f, .5f };
-    pointLight->range = 5.0f;
 
     renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE_WITHOUT_TEXCOORDS);
     renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
@@ -88,14 +83,6 @@ void MonkeyGame::Start() {
     mogusRenderer->isStatic = true;
     mogus.transform->position = glm::vec3(0.0f, 0.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);
-
-    Entity& cave = entityManager_.CreateEntity();
-    auto caveRenderer = cave.AddComponent<MeshRenderer>();
-    caveRenderer->meshes = resources.modelManager["OBJ_CAVE"].meshes;
-    caveRenderer->isStatic = true;
-    caveRenderer->alwaysOnFrustum = true;
-    cave.transform->position = glm::vec3(0.0f, -5.0f, 120.0f);
-    cave.transform->size = glm::vec3(1.5f);
 
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
     plane->heightVariation = 1.0f;
@@ -142,8 +129,8 @@ void MonkeyGame::Update() {
         GetRenderer().showHitboxes = !GetRenderer().showHitboxes;
 
     if (Input::IsKeyPressedDown(GLFW_KEY_L)) {
-        Stage::UnloadAllStages();
-        Stage::LoadStage("teststage");
+        Stage::UnloadStage("cave");
+        Stage::LoadStage("cave");
     }
 
     if (Input::IsKeyPressedDown(GLFW_KEY_U)) {

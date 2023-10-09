@@ -26,6 +26,27 @@
         }
     },
     {
+        "id": "MAT_WOOD_CEILING",
+        "shader": "LIT",
+        "texture": {
+            "path": "wood.jpg"
+        },
+        "uniforms": {
+            "color": 1.0,
+            "specularHighlight": 8,
+            "specularStrength": 0,
+            "ambientColor": 0.4,
+            "tiling": 25
+        },
+        "children": {
+            "POLE": {
+                "color": 0.5,
+                "ambientColor": 0.35,
+                "tiling": 10
+            }
+        }
+    },
+    {
         "id": "MAT_TILE_WALL",
         "shader": "LIT",
         "texture": {
@@ -34,8 +55,22 @@
         "uniforms": {
             "color": 1.0,
             "specularHighlight": 8,
-            "specularStrength": 0,
-            "ambientColor": 0.15,
+            "specularStrength": 0.25,
+            "ambientColor": 0.05,
+            "tiling": 50
+        }
+    },
+    {
+        "id": "MAT_FLOOR",
+        "shader": "LIT",
+        "texture": {
+            "path": "floor.jpg"
+        },
+        "uniforms": {
+            "color": 1.0,
+            "specularHighlight": 4,
+            "specularStrength": 0.75,
+            "ambientColor": 0.1,
             "tiling": 50
         }
     },
@@ -53,12 +88,41 @@
         "children": {
             "WALL": {
                 "color": 0.5,
-                "ambientColor": 0.1
+                "ambientColor": 0.05
             },
             "FLOOR": {
                 "color": 0.5,
-                "ambientColor": [0.11, 0.11, 0.09]
+                "ambientColor": [0.07, 0.07, 0.05]
             }
+        }
+    },
+    {
+        "id": "MAT_TORCH_WOOD",
+        "shader": "LIT",
+        "texture": {
+            "path": "wood.jpg"
+        },
+        "uniforms": {
+            "specularHighlight": 8,
+            "specularStrength": 0,
+            "color": 1.0,
+            "tiling": 5
+        }
+    },
+    {
+        "id": "MAT_TORCH_METAL",
+        "shader": "LIT",
+        "uniforms": {
+            "specularHighlight": 4,
+            "specularStrength": 1.0,
+            "color": 0.5
+        }
+    },
+    {
+        "id": "MAT_TORCH_FLAME",
+        "shader": "UNLIT",
+        "uniforms": {
+            "color": [ 1.0, 0.9, 0.25 ]
         }
     },
     {
