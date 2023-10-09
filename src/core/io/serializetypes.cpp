@@ -1,6 +1,7 @@
 #include "serializetypes.h"
 #include "serializer.h"
 
+#include <core/game.h>
 #include <core/graphics/shader.h>
 #include <core/graphics/component/meshrenderer.h>
 
@@ -51,9 +52,7 @@ void RegisterDefaultSerializers() {
     // just a placeholder for now
     Serializer::AddJSONSerializer<std::shared_ptr<Mesh>>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
         auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-        mesh->material = std::make_shared<Material>(Shaders::ShaderID::LIT);
-        mesh->material->SetShaderUniform<int>("specularHighlight", 8);
-        mesh->material->SetShaderUniform<float>("specularStrength", 0);
+        mesh->material = game->GetRenderer().GetMaterial("MAT_DEFAULT");
         args.Return(mesh);
         return true;
     });

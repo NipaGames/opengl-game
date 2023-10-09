@@ -34,6 +34,7 @@ struct Material {
   int specularHighlight;
   vec3 ambientColor;
   bool hasTexture;
+  vec2 tiling;
 };
 
 in vec3 fragmentNormal;
@@ -103,6 +104,6 @@ void main() {
   // col += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
   col += material.ambientColor;
   if (material.hasTexture)
-    col *= texture(textureSampler, fragmentTexCoord).xyz;
+    col *= texture(textureSampler, fragmentTexCoord * material.tiling).xyz;
   color = vec4(col, material.opacity);
 }

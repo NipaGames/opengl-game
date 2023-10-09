@@ -42,8 +42,15 @@ void MonkeyGame::Start() {
     player.AddComponent<PlayerController>();
     playerLight = player.AddComponent<Lights::PointLight>();
     playerLight->intensity = .5f;
+    playerLight->range = 5.0f;
 
-    renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE);
+    Entity& light = entityManager_.CreateEntity();
+    light.transform->position = { 30.0f, -3.0f, 55.0f };
+    Lights::PointLight* pointLight = light.AddComponent<Lights::PointLight>();
+    pointLight->color = { 1.0f, .8f, .5f };
+    pointLight->range = 5.0f;
+
+    renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE_WITHOUT_TEXCOORDS);
     renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
     const char* faces[6] = {
         "graycloud_rt.jpg",

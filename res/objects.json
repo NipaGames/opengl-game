@@ -9,6 +9,10 @@
     },
     {
         "model": "OBJ_CAVE",
-        "defaultMaterial": "MAT_CAVE"
+        "defaultMaterial": "MAT_TILE_WALL",
+        "materialOverrides": {
+            "1": "MAT_CAVE:WALL",
+            "2": "MAT_CAVE:FLOOR"
+        }
     }
 ]

@@ -43,11 +43,6 @@
             }
         },
         {
-        "Lights::DirectionalLight": {
-                "dir": [ 0.7071, 0.7071, 0.0 ]
-            }
-        },
-        {
             "Transform": {
                 "position": [ -10, 1.5, 0 ],
                 "size": [ 1, 5, 10 ]
