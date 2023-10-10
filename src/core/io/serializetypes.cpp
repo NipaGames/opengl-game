@@ -34,6 +34,15 @@ void RegisterDefaultSerializers() {
     Serializer::AddJSONSerializer<float>(SerializeJSONNumber<float>);
     Serializer::AddJSONSerializer<glm::vec2, glm::ivec2>(SerializeJSONVector<2>);
     Serializer::AddJSONSerializer<glm::vec3, glm::ivec3>(SerializeJSONVector<3>);
+    Serializer::AddJSONSerializer<glm::quat>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+        glm::vec3 eulers;
+        Serializer::SerializationArgs vecArgs(Serializer::SerializerType::ANY_POINTER);
+        vecArgs.ptr = &eulers;
+        if (!SerializeJSONVector<3>(vecArgs, j))
+            return false;
+        args.Return(glm::quat(glm::radians(eulers)));
+        return false;
+    });
     Serializer::AddJSONSerializer<std::string>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
         if (j.is_string()) {
             args.Return((std::string) j);

@@ -26,7 +26,8 @@
         },
         {
             "Transform": {
-                "position": [ 28.25, -4.75, 55 ]
+                "position": [ 28, -4.75, 55 ],
+                "rotation": [ 0, 10, -20 ]
             },
             "Lights::PointLight": {
                 "color": [ 1, 0.8, 0.5 ],
