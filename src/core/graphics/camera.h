@@ -13,10 +13,10 @@ public:
             aabb.extents = max - aabb.center;
             return aabb;
         }
-        glm::vec3 GetMin() {
+        glm::vec3 GetMin() const {
             return center - extents;
         }
-        glm::vec3 GetMax() {
+        glm::vec3 GetMax() const {
             return center + extents;
         }
     };

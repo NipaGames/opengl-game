@@ -25,6 +25,15 @@
             }
         },
         {
+            "id": "gate_0",
+            "Transform": {
+                "position": [ 0, -5, 120 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_GATE"
+            }
+        },
+        {
             "Transform": {
                 "position": [ 28, -4.75, 55 ],
                 "rotation": [ 0, 10, -20 ]

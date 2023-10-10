@@ -16,13 +16,19 @@
             "2": "MAT_FLOOR",
             "3": "MAT_WOOD_CEILING:POLE",
             "4": "MAT_CAVE:WALL",
-            "5": "MAT_CAVE:FLOOR"
+            "5": "MAT_CAVE:WALL",
+            "6": "MAT_CAVE:FLOOR"
         }
+    },
+    {
+        "model": "OBJ_GATE",
+        "size": 1.5,
+        "defaultMaterial": "MAT_METAL"
     },
     {
         "model": "OBJ_TORCH",
         "size": 0.1,
-        "defaultMaterial": "MAT_TORCH_METAL",
+        "defaultMaterial": "MAT_METAL",
         "materialOverrides": {
             "0": "MAT_TORCH_WOOD",
             "3": "MAT_TORCH_FLAME"

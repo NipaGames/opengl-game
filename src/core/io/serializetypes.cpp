@@ -41,7 +41,7 @@ void RegisterDefaultSerializers() {
         if (!SerializeJSONVector<3>(vecArgs, j))
             return false;
         args.Return(glm::quat(glm::radians(eulers)));
-        return false;
+        return true;
     });
     Serializer::AddJSONSerializer<std::string>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
         if (j.is_string()) {

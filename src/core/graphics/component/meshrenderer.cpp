@@ -1,8 +1,12 @@
 #include "meshrenderer.h"
 
+#include <limits>
+
 #include <core/entity/entity.h>
 #include <core/game.h>
 #include <core/io/serializetypes.h>
+
+Shader aabbShader = Shader(Shaders::ShaderID::UNLIT);
 
 MeshRenderer::~MeshRenderer() {
     if (isAdded)
@@ -19,15 +23,16 @@ void MeshRenderer::Start() {
         CalculateModelMatrix();
     if (!isAdded)
         game->GetRenderer().AddMeshRenderer(this);
-    glm::vec3 min = aabb_.GetMin();
-    glm::vec3 max = aabb_.GetMax();
+    glm::vec3 aabbMin = glm::vec3(std::numeric_limits<float>::max());
+    glm::vec3 aabbMax = glm::vec3(-std::numeric_limits<float>::max());
     for (const auto& mesh : meshes) {
         glm::vec3 meshMin = mesh->aabb.GetMin();
         glm::vec3 meshMax = mesh->aabb.GetMax();
-        min = glm::vec3(std::min(min.x, meshMin.x), std::min(min.y, meshMin.y), std::min(min.z, meshMin.z));
-        max = glm::vec3(std::max(max.x, meshMax.x), std::max(max.y, meshMax.y), std::max(max.z, meshMax.z));
+        aabbMin = glm::vec3(std::min(aabbMin.x, meshMin.x), std::min(aabbMin.y, meshMin.y), std::min(aabbMin.z, meshMin.z));
+        aabbMax = glm::vec3(std::max(aabbMax.x, meshMax.x), std::max(aabbMax.y, meshMax.y), std::max(aabbMax.z, meshMax.z));
     }
-    aabb_ = ViewFrustum::AABB::FromMinMax(min, max);
+    aabb_ = ViewFrustum::AABB::FromMinMax(aabbMin, aabbMax);
+    glBindVertexArray(0);
 }
 
 void MeshRenderer::CalculateModelMatrix() {
@@ -37,7 +42,7 @@ void MeshRenderer::CalculateModelMatrix() {
     modelMatrix_ = glm::scale(modelMatrix_, parent->transform->size);
 }
 
-void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix, const Shader* shader) const {
+void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix, const Shader* shader, bool aabbDebug) const {
     bool useDefaultShader = true;
     if (shader != nullptr)
         useDefaultShader = false;
@@ -65,6 +70,51 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
 
         // unbinding
         glBindVertexArray(0);
+    }
+    // not gonna optimize this since it's just a debug visualizer
+    // yeah, it's pretty horrible that a new meshes gets created every frame
+    // well, at least this doesn't cause a memory leak afaik (meshes are also deleted)
+    if (aabbDebug) {
+        glm::vec3 aabbMin = aabb_.GetMin();
+        glm::vec3 aabbMax = aabb_.GetMax();
+        Mesh aabbMesh(
+            {
+                aabbMin.x, aabbMax.y, aabbMax.z,
+                aabbMin.x, aabbMin.y, aabbMax.z,
+                aabbMax.x, aabbMax.y, aabbMax.z,
+                aabbMax.x, aabbMin.y, aabbMax.z,
+                aabbMin.x, aabbMax.y, aabbMin.z,
+                aabbMin.x, aabbMin.y, aabbMin.z,
+                aabbMax.x, aabbMax.y, aabbMin.z,
+                aabbMax.x, aabbMin.y, aabbMin.z
+            },
+            {
+                3, 2, 0, 1, 3, 0,
+                7, 6, 2, 3, 7, 2,
+                5, 4, 6, 7, 5, 6,
+                1, 0, 4, 5, 1, 4,
+                6, 4, 0, 2, 6, 0,
+                1, 5, 7, 1, 7, 3,
+            }
+        );
+        aabbMesh.GenerateVAO();
+
+        aabbShader.Use();
+        glBindVertexArray(aabbMesh.vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aabbMesh.ebo);
+
+        aabbShader.SetUniform("projection", projectionMatrix);
+        aabbShader.SetUniform("view", viewMatrix);
+        aabbShader.SetUniform("model", modelMatrix_);
+        aabbShader.SetUniform("viewPos", game->GetRenderer().GetCamera().pos);
+        aabbShader.SetUniform("time", (float) glfwGetTime());
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        aabbShader.SetUniform("material.color", glm::vec3(1.0f, 0.0f, 0.0f));
+        aabbShader.SetUniform("material.opacity", 1.0f);
+        aabbMesh.Render();
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }
 

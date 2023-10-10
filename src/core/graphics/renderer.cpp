@@ -174,7 +174,7 @@ void Renderer::Render() {
             mesh->CalculateModelMatrix();
     }
     for (auto mesh : entitiesOnFrustum_) {
-        mesh->Render(camera_.projectionMatrix, viewMatrix);
+        mesh->Render(camera_.projectionMatrix, viewMatrix, nullptr, showAabbs);
     }
 
     // draw skybox

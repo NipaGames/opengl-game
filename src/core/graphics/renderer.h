@@ -43,6 +43,7 @@ public:
     glm::vec3 skyboxColor = glm::vec3(0.0);
     bool highlightNormals = false;
     bool showHitboxes = false;
+    bool showAabbs = false;
     Renderer() = default;
     virtual ~Renderer();
     void UpdateLighting();

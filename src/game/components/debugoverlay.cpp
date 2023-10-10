@@ -73,6 +73,7 @@ void DebugOverlay::Start() {
 
     textContainer_.AppendElement("normals shown: {}", "normalsShown");
     textContainer_.AppendElement("hitboxes shown: {}", "hitboxesShown");
+    textContainer_.AppendElement("aabbs shown: {}", "aabbsShown");
 }
 
 void DebugOverlay::Update() {
@@ -110,6 +111,7 @@ void DebugOverlay::FixedUpdate() {
 
     textContainer_.SetValue("normalsShown", game->GetRenderer().highlightNormals);
     textContainer_.SetValue("hitboxesShown", game->GetRenderer().showHitboxes);
+    textContainer_.SetValue("aabbsShown", game->GetRenderer().showAabbs);
 
     #ifdef LOG_SYSTEM_RESOURCES_WIN32
     PROCESS_MEMORY_COUNTERS pmc;

@@ -110,7 +110,7 @@
         }
     },
     {
-        "id": "MAT_TORCH_METAL",
+        "id": "MAT_METAL",
         "shader": "LIT",
         "uniforms": {
             "specularHighlight": 4,
@@ -122,7 +122,8 @@
         "id": "MAT_TORCH_FLAME",
         "shader": "UNLIT",
         "uniforms": {
-            "color": [ 1.0, 0.9, 0.25 ]
+            "color": [ 1.0, 0.8, 0.25 ],
+            "opacity": 0.75
         }
     },
     {

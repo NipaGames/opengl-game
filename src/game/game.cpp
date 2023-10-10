@@ -122,11 +122,14 @@ void MonkeyGame::Start() {
 
 void MonkeyGame::Update() {
     playerLight->ApplyForAllShaders();
-    if (Input::IsKeyPressedDown(GLFW_KEY_N))
+    if (Input::IsKeyPressedDown(GLFW_KEY_F6))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
 
-    if (Input::IsKeyPressedDown(GLFW_KEY_H))
+    if (Input::IsKeyPressedDown(GLFW_KEY_F7))
         GetRenderer().showHitboxes = !GetRenderer().showHitboxes;
+
+    if (Input::IsKeyPressedDown(GLFW_KEY_F8))
+        GetRenderer().showAabbs = !GetRenderer().showAabbs;
 
     if (Input::IsKeyPressedDown(GLFW_KEY_L)) {
         Stage::UnloadStage("cave");
