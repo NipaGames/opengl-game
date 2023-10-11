@@ -251,6 +251,12 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     }
 }
 
+void Renderer::UpdateFramebufferVideoSettings(const Resources::VideoSettings& settings) {
+    framebufferShader_.Use();
+    framebufferShader_.SetUniform("cfg.gamma", settings.gamma);
+    glUseProgram(0);
+}
+
 void Renderer::AddLight(Lights::Light* light) {
     lights_.push_back(light);
     light->isAdded = true;

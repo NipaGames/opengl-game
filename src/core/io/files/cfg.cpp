@@ -101,7 +101,7 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
         // basically a hack around the fact that c++ regex provides no lookarounds
         // check that the next char is space or end
         if (groups.suffix().first != val.cend() && !std::isspace(*groups.suffix().first))
-            return nullptr;
+            break;
         searchStart = groups.suffix().first;
     }
     if (vals.empty())
@@ -118,7 +118,7 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
         return thisNode;
     }
     else {
-        ICFGField* field = ParseField(vals.at(0)[0]);
+        ICFGField* field = ParseField(val);
         if (field == nullptr)
             return nullptr;
         field->name = name;

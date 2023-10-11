@@ -22,6 +22,7 @@ namespace CFG {
     struct ICFGField;
     template<typename>
     struct CFGField;
+    typedef CFGField<std::vector<ICFGField*>> CFGObject;
 };
 
 class Resources {
@@ -130,13 +131,21 @@ public:
         ModelManager() : ResourceManager<Model>(Paths::MODELS_DIR, "model") { }
     };
 
-    const CFG::CFGField<std::vector<CFG::ICFGField*>>* imports;
+    struct VideoSettings {
+        float gamma;
+    };
+
+    const CFG::CFGObject* imports;
     Serializer::MaterialSerializer materialsFile;
     Serializer::ObjectSerializer objectsFile;
+
+    VideoSettings videoSettings;
+
     TextureManager textureManager;
     ShaderManager shaderManager;
     FontManager fontManager;
     ModelManager modelManager;
 
+    void ParseVideoSettings(CFG::CFGObject*);
     void LoadAll();
 };

@@ -19,6 +19,8 @@ namespace Paths {
     inline std::fs::path MATERIALS_PATH = RESOURCES_DIR / "materials.json";
     inline std::fs::path OBJECTS_PATH = RESOURCES_DIR / "objects.json";
 
+    inline std::fs::path VIDEO_SETTINGS_PATH = RESOURCES_DIR / "video.cfg";
+
     inline std::string Path(const std::fs::path& p, const std::string& subPath) {
         return std::fs::path(p / subPath).string();
     }

@@ -12,6 +12,7 @@
 #include "shape.h"
 #include "component/light.h"
 #include "component/meshrenderer.h"
+#include <core/io/resourcemanager.h>
 #include <core/ui/canvas.h>
 
 
@@ -61,6 +62,7 @@ public:
     void CopyShadersFromResources();
     void UpdateFrustum();
     void SortMeshesByDistance();
+    void UpdateFramebufferVideoSettings(const Resources::VideoSettings&);
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
     size_t CountEntitiesOnFrustum() { return entitiesOnFrustum_.size(); }

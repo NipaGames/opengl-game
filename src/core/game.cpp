@@ -37,6 +37,7 @@ void Game::GameThread() {
     Physics::Init();
     RegisterDefaultSerializers();
     resources.LoadAll();
+    renderer_.UpdateFramebufferVideoSettings(resources.videoSettings);
     Start();
     for (const auto& entity : entityManager_.entities_) {
         entity->Start();

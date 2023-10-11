@@ -27,11 +27,11 @@ namespace CFG {
         bool required = false;
         bool isObject = false;
         std::vector<CFGStructuredField> objectParams;
-        template<typename ... Field>
+        template<typename... Field>
         CFGStructuredField(const std::string& n, bool r, const Field&... t) : name(n), required(r) {
             (types.push_back(t), ...);
         }
-        template<typename ... Field>
+        template<typename... Field>
         CFGStructuredField(const std::string& n, const Field&... t) : CFGStructuredField(n, false, t...) { }
         CFGStructuredField(const std::string& n, bool r, const std::vector<CFGStructuredField>& v) :
             isObject(true),
@@ -158,6 +158,14 @@ namespace CFG {
                 { "shaders", CFG_IMPORT_ARRAY },
                 { "stages", CFG_IMPORT_ARRAY },
                 { "textures", CFG_IMPORT_ARRAY }
+            };
+        }
+    };
+
+    class VideoSettingsFile : public CFGFile {
+        CFGStructuredFields DefineFields() const override {
+            return {
+                { "gamma", CFGFieldType::NUMBER }
             };
         }
     };
