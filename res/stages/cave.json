@@ -27,7 +27,8 @@
         {
             "id": "gate_0",
             "Transform": {
-                "position": [ 0, -5, 120 ]
+                "position": [ 36, -4.65, 54.75 ],
+                "rotation": [ 0, 18, 0 ]
             },
             "MeshRenderer": {
                 "object": "OBJ_GATE"
