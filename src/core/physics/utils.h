@@ -11,16 +11,13 @@ namespace Physics {
     }
     inline btQuaternion GLMVectorToBtQuat(const glm::vec3& quat) {
         btQuaternion btQuat;
-        btQuat.setEulerZYX(quat.x, quat.y, quat.z);
+        btQuat.setEulerZYX(quat.z, quat.y, quat.x);
         return btQuat;
     }
     inline btQuaternion GLMQuatToBtQuat(const glm::quat& quat) {
-        btQuaternion btQuat;
-        btQuat.setEulerZYX(quat.x, quat.y, quat.z);
-        btQuat.setW(quat.w);
-        return btQuat;
+        return GLMVectorToBtQuat(glm::eulerAngles(quat));
     }
     inline glm::quat BtQuatToGLMQuat(const btQuaternion& quat) {
-        return glm::quat(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
+        return glm::quat(quat.getW(), quat.getX(), quat.getY(), quat.getZ());
     }
 };

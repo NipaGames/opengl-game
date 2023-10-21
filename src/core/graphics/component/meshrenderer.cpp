@@ -150,3 +150,14 @@ bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
     ViewFrustum::AABB newAABB { center, extents };
     return frustum.IsOnFrustum(newAABB);
 }
+
+// serialization
+#include <core/io/serializer.h>
+#include <core/io/serializetypes.h>
+
+JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+    auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
+    mesh->material = game->GetRenderer().GetMaterial("MAT_DEFAULT");
+    args.Return(mesh);
+    return true;
+}, std::shared_ptr<Mesh>);

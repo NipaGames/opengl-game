@@ -32,6 +32,10 @@
             },
             "MeshRenderer": {
                 "object": "OBJ_GATE"
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
             }
         },
         {

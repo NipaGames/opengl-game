@@ -65,13 +65,6 @@ void RegisterDefaultSerializers() {
         args.Return(s.value());
         return true;
     });
-    // just a placeholder for now
-    Serializer::AddJSONSerializer<std::shared_ptr<Mesh>>([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
-        auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-        mesh->material = game->GetRenderer().GetMaterial("MAT_DEFAULT");
-        args.Return(mesh);
-        return true;
-    });
 }
 
 #ifndef JSON_DEFAULT_SERIALIZATIONS

@@ -27,4 +27,5 @@ public:
     virtual void Start();
     virtual bool IsOnFrustum(const ViewFrustum&) const;
     virtual void Render(const glm::mat4&, const glm::mat4&, const Shader* = nullptr, bool = false) const;
+    const ViewFrustum::AABB& GetAABB() const { return aabb_; }
 };
