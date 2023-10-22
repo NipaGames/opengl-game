@@ -24,6 +24,8 @@
 #include <shellapi.h>
 #endif
 
+#include <magic_enum/magic_enum.hpp>
+
 #define LOG_FN_(fn) spdlog::debug("[{} called]", fn)
 #define LOG_FN() LOG_FN_(__FUNCTION__)
 
@@ -52,7 +54,6 @@ void MonkeyGame::Start() {
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "cave.json"));
 
     REGISTER_EVENT(TestEvent);
-    CALL_EVENT("TestEvent", 2, "adfsdsaf");
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
@@ -170,14 +171,14 @@ void MonkeyGame::Update() {
             std::cout << "> ";
             std::getline(std::cin, line);
             // trim whitespace from start
-            while (line.find(' ') == 0) {
+            while (!line.empty() && line.at(0) == ' ') {
                 line.erase(0, 1);
             }
             std::string commandName = line;
             // get the name from the characters before space
             size_t spacePos = commandName.find(' ');
             if (spacePos != std::string::npos) {
-                commandName = commandName.substr(0, spacePos);
+                commandName.resize(spacePos);
             }
             // to lowercase
             for (int i = 0; i < commandName.length(); i++) {
@@ -198,7 +199,10 @@ void MonkeyGame::Update() {
                 exit(0);
             }
             else if (commandName == "event") {
-                EVENT_PARSER.ParseCommand(commandArgs);
+                EventReturnStatus err = EVENT_PARSER.ParseCommand(commandArgs);
+                if (err != EventReturnStatus::OK) {
+                    spdlog::warn("failed: {}", magic_enum::enum_name(err));
+                }
             }
             else if (commandName == "github") {
                 #ifdef _WIN32

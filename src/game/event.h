@@ -16,10 +16,17 @@ public:
     void Trigger();
 };
 
+enum class EventReturnStatus : int {
+    OK,
+    INVALID_SYNTAX,
+    INVALID_PARAMS,
+    EVENT_NOT_FOUND
+};
+
 // std::any could also probably work but since i don't plan on having too many types i'll just use std::variant
 using EventParameter = std::variant<int, std::string>;
 using EventArgs = std::vector<EventParameter>;
-using EventFn = std::function<bool(const EventArgs&)>;
+using EventFn = std::function<EventReturnStatus(const EventArgs&)>;
 
 class EventManager {
 private:
@@ -34,7 +41,7 @@ public:
         EventFn event = [=](const EventArgs& args) {
             if (sizeof...(Args) != args.size()) {
                 spdlog::warn("Wrong number of parameters given when calling '{}'!", id);
-                return false;
+                return EventReturnStatus::INVALID_PARAMS;
             }
             int i = 0;
             bool correctTypes = true;
@@ -47,7 +54,7 @@ public:
                 ++i;
             } (), ...);
             if (!correctTypes)
-                return false;
+                return EventReturnStatus::INVALID_PARAMS;
             
             // so basically we need to unpack the event args and pass each element as a parameter
             // afaik each case with different param length needs to be hardcoded, at the moment we have these up to 3 params
@@ -56,49 +63,50 @@ public:
 
             if (args.size() == 0) {
                 ((void(*)()) va_event)();
-                return true;
+                return EventReturnStatus::OK;
             }
 
             if constexpr (sizeof...(Args) >= 1) {
                 if (args.size() == 1) {
                     ((void(*)(_nthT<0, Args...>)) va_event)(std::get<_nthT<0, Args...>>(args.at(0)));
-                    return true;
+                    return EventReturnStatus::OK;
                 }
             }
 
             if constexpr (sizeof...(Args) >= 2) {
                 if (args.size() == 2) {
                     ((void(*)(_nthT<0, Args...>, _nthT<1, Args...>)) va_event)(std::get<_nthT<0, Args...>>(args.at(0)), std::get<_nthT<1, Args...>>(args.at(1)));
-                    return true;
+                    return EventReturnStatus::OK;
                 }
             }
             
             if constexpr (sizeof...(Args) >= 3) {
                 if (args.size() == 3) {
                     ((void(*)(_nthT<0, Args...>, _nthT<1, Args...>, _nthT<2, Args...>)) va_event)(std::get<_nthT<0, Args...>>(args.at(0)), std::get<_nthT<1, Args...>>(args.at(1)), std::get<_nthT<2, Args...>>(args.at(2)));
-                    return true;
+                    return EventReturnStatus::OK;
                 }
             }
 
-            return false;
+            spdlog::warn("lol max parameter capacity exceeded", id);
+            return EventReturnStatus::INVALID_PARAMS;
         };
         events_[id] = event;
     }
     void RegisterEvent(const std::string& id, void(*event)(const EventArgs&)) {
         events_[id] = [=](const EventArgs& args) {
             event(args);
-            return true;
+            return EventReturnStatus::OK;
         };
     }
-    bool CallEvent(const std::string& id, const EventArgs& args) {
+    EventReturnStatus CallEvent(const std::string& id, const EventArgs& args) {
         if (!events_.count(id)) {
             spdlog::warn("Event '{}' not found!", id);
-            return false;
+            return EventReturnStatus::EVENT_NOT_FOUND;
         }
         return events_[id](args);
     }
     template <typename... Args>
-    bool CallEvent(const std::string& id, Args... va_args) {
+    EventReturnStatus CallEvent(const std::string& id, Args... va_args) {
         EventArgs args;
         ([&] {
             args.push_back(va_args);

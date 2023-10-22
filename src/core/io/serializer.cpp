@@ -2,7 +2,7 @@
 
 using namespace Serializer;
 
-bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, const nlohmann::json& jsonVal, std::string entityId) {
+bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, const nlohmann::json& jsonVal, const std::string& entityId) {
     auto dataVal = c->data.GetComponentDataValue(k);
     if (dataVal == nullptr)
         return false;
