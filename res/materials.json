@@ -47,7 +47,7 @@
         }
     },
     {
-        "id": "MAT_TILE_WALL",
+        "id": "MAT_TILE",
         "shader": "LIT",
         "texture": {
             "path": "tile.jpg"
@@ -58,6 +58,12 @@
             "specularStrength": 0.25,
             "ambientColor": 0.05,
             "tiling": 50
+        },
+        "children": {
+            "LEVER": {
+                "color": 0.5,
+                "tiling": 1.5
+            }
         }
     },
     {
@@ -97,7 +103,7 @@
         }
     },
     {
-        "id": "MAT_TORCH_WOOD",
+        "id": "MAT_WOOD",
         "shader": "LIT",
         "texture": {
             "path": "wood.jpg"
@@ -107,6 +113,11 @@
             "specularStrength": 0,
             "color": 1.0,
             "tiling": 5
+        },
+        "children": {
+            "KNOB": {
+                "color": 1.5
+            }
         }
     },
     {
@@ -116,6 +127,13 @@
             "specularHighlight": 4,
             "specularStrength": 1.0,
             "color": 0.5
+        },
+        "children": {
+            "DARK": {
+                "specularHighlight": 16,
+                "specularStrength": 0.5,
+                "color": 0.25
+            }
         }
     },
     {
@@ -124,6 +142,19 @@
         "uniforms": {
             "color": [ 1.0, 0.8, 0.25 ],
             "opacity": 0.75
+        }
+    },
+    {
+        "id": "MAT_LEVER",
+        "shader": "LIT",
+        "texture": {
+            "path": "lever.jpg"
+        },
+        "uniforms": {
+            "specularHighlight": 8,
+            "specularStrength": 0,
+            "color": 0.5,
+            "tiling": [ 1, 7 ]
         }
     },
     {

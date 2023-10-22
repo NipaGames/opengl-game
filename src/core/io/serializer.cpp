@@ -2,7 +2,7 @@
 
 using namespace Serializer;
 
-bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, const nlohmann::json& jsonVal) {
+bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, const nlohmann::json& jsonVal, std::string entityId) {
     auto dataVal = c->data.GetComponentDataValue(k);
     if (dataVal == nullptr)
         return false;
@@ -15,6 +15,7 @@ bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, cons
     
     const auto& serializer = *it;
     SerializationArgs args(SerializerType::COMPONENT_DATA);
+    args.entityId = entityId;
     switch (dataVal->componentType) {
         case ComponentDataValueType::SINGLE:
             args.ctData = &c->data;

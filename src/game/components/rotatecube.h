@@ -2,6 +2,7 @@
 
 #include <core/entity/component.h>
 #include <core/entity/entity.h>
+#include <core/game.h>
 
 #include <opengl.h>
 

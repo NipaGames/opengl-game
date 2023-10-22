@@ -15,6 +15,14 @@
 #include "components/playercontroller.h"
 #include "components/rotatecube.h"
 #include "components/debugoverlay.h"
+#include "event.h"
+#include "eventparser.h"
+
+#ifdef _WIN32
+#undef APIENTRY
+#include <windows.h>
+#include <shellapi.h>
+#endif
 
 #define LOG_FN_(fn) spdlog::debug("[{} called]", fn)
 #define LOG_FN() LOG_FN_(__FUNCTION__)
@@ -34,10 +42,17 @@ void MonkeyGame::PreLoad() {
     LOG_FN();
 }
 
+void TestEvent(int n0, std::string testString) {
+    spdlog::info("{}; {}", testString, n0 * 2);
+}
+
 void MonkeyGame::Start() {
     LOG_FN();
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "cave.json"));
+
+    REGISTER_EVENT(TestEvent);
+    CALL_EVENT("TestEvent", 2, "adfsdsaf");
     
     Entity& player = entityManager_.CreateEntity("Player");
     player.AddComponent<PlayerController>();
@@ -138,5 +153,69 @@ void MonkeyGame::Update() {
 
     if (Input::IsKeyPressedDown(GLFW_KEY_U)) {
         Stage::UnloadAllStages();
+    }
+
+    // console
+    if (Input::IsKeyPressedDown(GLFW_KEY_F1)) {
+        Input::IS_MOUSE_LOCKED = false;
+        Input::CURSOR_MODE_CHANGE_PENDING = true;
+        Input::CONSOLE_FOCUS_PENDING = true;
+        std::string line;
+        std::cout << std::endl;
+        spdlog::set_pattern("  %v");
+        spdlog::info("--------- Opened console, 'exit' to return ----------");
+        spdlog::info("[copyright nipagames information systems corporation]");
+        std::cout << std::endl;
+        while (true) {
+            std::cout << ">";
+            std::getline(std::cin, line);
+            // trim whitespace from start
+            while (line.find(' ') == 0) {
+                line.erase(0, 1);
+            }
+            std::string commandName = line;
+            // get the name from the characters before space
+            size_t spacePos = commandName.find(' ');
+            if (spacePos != std::string::npos) {
+                commandName = commandName.substr(0, spacePos);
+            }
+            // to lowercase
+            for (int i = 0; i < commandName.length(); i++) {
+                commandName[i] = std::tolower(commandName.at(i));
+            }
+            std::string commandArgs = "";
+            if (spacePos != std::string::npos && spacePos < line.length()) {
+                commandArgs = line.substr(spacePos + 1);
+            }
+
+            // command interface coming somewhere in future
+            if (commandName == "exit") {
+                break;
+            }
+            else if (commandName == "crash") {
+                spdlog::info("byee!! :3");
+                // yeah could clean up or something before quitting
+                exit(0);
+            }
+            else if (commandName == "event") {
+                EVENT_PARSER.ParseCommand(commandArgs);
+            }
+            else if (commandName == "github") {
+                #ifdef _WIN32
+                ShellExecuteW(0, 0, L"https://github.com/NipaGames/opengl-game", 0, 0 , SW_SHOW);
+                #endif
+            }
+            else if (commandName == "hi") {
+                spdlog::info("haiii!! :3");
+            }
+            else {
+                spdlog::warn("Command not found!");
+            }
+        }
+        spdlog::set_pattern(SPDLOG_PATTERN);
+        std::cout << std::endl;
+        Input::IS_MOUSE_LOCKED = true;
+        Input::CURSOR_MODE_CHANGE_PENDING = true;
+        Input::WINDOW_FOCUS_PENDING = true;
     }
 }

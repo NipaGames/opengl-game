@@ -9,6 +9,11 @@
 #include <thread>
 #include <unordered_map>
 
+#ifdef _WIN32
+#undef APIENTRY
+#include "windows.h"
+#endif
+
 namespace Input {
     void KeyDown(int key){
         std::lock_guard<std::mutex> lock(keysMutex_);
@@ -152,6 +157,12 @@ void GameWindow::Update() {
         }
     }
 
+    if (Input::WINDOW_FOCUS_PENDING) {
+        Input::WINDOW_FOCUS_PENDING = false;
+        glfwShowWindow(window_);
+        glfwFocusWindow(window_);
+    }
+
     if (Input::IsKeyPressedDown(GLFW_KEY_ESCAPE)) {
         Input::IS_MOUSE_LOCKED = !Input::IS_MOUSE_LOCKED;
         Input::CURSOR_MODE_CHANGE_PENDING = true;
@@ -192,6 +203,7 @@ void GameWindow::SetupInputSystem() {
 void GameWindow::UpdateInputSystem() {
     glfwWaitEvents();
     if (Input::UPDATE_FULLSCREEN) {
+        Input::UPDATE_FULLSCREEN = false;
         isFullscreen_ = !isFullscreen_;
         glm::ivec2 windowSize;
         if (isFullscreen_) {
@@ -211,13 +223,20 @@ void GameWindow::UpdateInputSystem() {
             glfwGetWindowSize(window_, &windowSize.x, &windowSize.y);
             game->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
         }
-        Input::UPDATE_FULLSCREEN = false;
     }
     if (Input::CURSOR_MODE_CHANGE_PENDING) {
+        Input::CURSOR_MODE_CHANGE_PENDING = false;
         glfwSetInputMode(window_, GLFW_CURSOR, Input::IS_MOUSE_LOCKED ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
         if (Input::IS_MOUSE_LOCKED) {
             Input::FIRST_MOUSE = true;
         }
-        Input::CURSOR_MODE_CHANGE_PENDING = false;
+    }
+    if (Input::CONSOLE_FOCUS_PENDING) {
+        Input::CONSOLE_FOCUS_PENDING = false;
+        #ifdef _WIN32
+        HWND console = GetConsoleWindow();
+        SetForegroundWindow(console);
+        SetFocus(console);
+        #endif
     }
 }

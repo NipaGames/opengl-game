@@ -30,7 +30,7 @@ std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nul
                     continue;
                 }
                 for (const auto&[k, v] : cv.items()) {
-                    if (Serializer::SetJSONComponentValue(c, k, v)) {
+                    if (Serializer::SetJSONComponentValue(c, k, v, entity.id)) {
                         affectedValPtrs.push_back(c->data.vars.at(k));
                     }
                     else {

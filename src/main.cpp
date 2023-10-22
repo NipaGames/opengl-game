@@ -6,7 +6,7 @@
 #include "game/game.h"
 
 int main() {
-    spdlog::set_pattern("[%T] %-10l %v");
+    spdlog::set_pattern(SPDLOG_PATTERN);
     #ifdef DEBUG_BUILD
         spdlog::set_level(spdlog::level::debug);
     #endif

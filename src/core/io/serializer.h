@@ -120,7 +120,7 @@ namespace Serializer {
         return AddSerializer<JSONValueSerializer<T...>, IJSONValueSerializer, JSONSerializerFunction, T...>(JSON_COMPONENT_VAL_SERIALIZERS, f);
     }
 
-    bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&);
+    bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&, std::string = "");
     template<typename T>
     bool SetJSONPointerValue(T* ptr, const nlohmann::json& jsonVal) {
         auto it = std::find_if(Serializer::JSON_COMPONENT_VAL_SERIALIZERS.begin(), Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
@@ -184,6 +184,9 @@ namespace Serializer {
     class SerializationArgs {
     public:
         SerializerType type;
+
+        // metadata
+        std::string entityId;
 
         // SerializerType::COMPONENT_DATA
         ComponentData* ctData = nullptr;

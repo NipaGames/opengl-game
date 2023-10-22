@@ -14,6 +14,8 @@ namespace Input {
     inline std::atomic_bool FIRST_MOUSE(true);
     inline std::atomic_bool IS_MOUSE_LOCKED(false);
     inline std::atomic_bool VSYNC_POLL_RATE_CHANGE_PENDING(false);
+    inline std::atomic_bool WINDOW_FOCUS_PENDING(false);
+    inline std::atomic_bool CONSOLE_FOCUS_PENDING(false);
     inline bool UPDATE_FULLSCREEN = false;
 
     inline double MOUSE_MOVE_X;

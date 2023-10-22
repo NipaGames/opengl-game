@@ -10,5 +10,5 @@ cmake --build . --config %BUILD_TYPE% || exit 1
 echo [BUILD COMPLETE]
 echo.
 cd ../bin/%BUILD_TYPE%
-OpenGLProject
-cd ..
+start /wait OpenGLProject
+cd ../..
