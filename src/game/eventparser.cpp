@@ -11,5 +11,6 @@ bool EventParser::ParseCommand(const std::string& cmd) {
         return false;
     }
     event = groups[1];
+    std::string argsStr = groups[2].str();
     return manager_->CallEvent(event, args);
 }

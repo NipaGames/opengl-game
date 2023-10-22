@@ -167,7 +167,7 @@ void MonkeyGame::Update() {
         spdlog::info("[copyright nipagames information systems corporation]");
         std::cout << std::endl;
         while (true) {
-            std::cout << ">";
+            std::cout << "> ";
             std::getline(std::cin, line);
             // trim whitespace from start
             while (line.find(' ') == 0) {
