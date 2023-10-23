@@ -68,8 +68,8 @@ std::optional<Model> Resources::ModelManager::LoadResource(const std::fs::path& 
     Model model;
     model.LoadModel(path.string());
     std::string id = GetItemID();
-    if (game->resources.objectsFile.GetItems().count(id) != 0) {
-        const Object& objData = game->resources.objectsFile.GetItem(id);
+    if (GAME->resources.objectsFile.GetItems().count(id) != 0) {
+        const Object& objData = GAME->resources.objectsFile.GetItem(id);
         if (objData.defaultMaterial != nullptr) {
             for (auto& m : model.meshes) {
                 m->material = objData.defaultMaterial;

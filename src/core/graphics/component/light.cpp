@@ -7,12 +7,12 @@ using namespace Lights;
 namespace Lights {
     Light::~Light() {
         if (isAdded)
-            game->GetRenderer().RemoveLight(this);
+            GAME->GetRenderer().RemoveLight(this);
     }
 
     void Light::Start() {
         if (!isAdded)
-            game->GetRenderer().AddLight(this);
+            GAME->GetRenderer().AddLight(this);
     }
 
     void Light::ApplyLight(GLuint shader) const {
@@ -22,7 +22,7 @@ namespace Lights {
     }
 
     void Light::ApplyForAllShaders() const {
-        for (GLuint shader : game->GetRenderer().GetShaders()) {
+        for (GLuint shader : GAME->GetRenderer().GetShaders()) {
             glUseProgram(shader);
             ApplyLight(shader);
         }

@@ -134,7 +134,7 @@ void Renderer::UpdateLighting() {
 }
 
 void Renderer::CopyShadersFromResources() {
-    const auto& shaderMap = game->resources.shaderManager.GetAll();
+    const auto& shaderMap = GAME->resources.shaderManager.GetAll();
     shaders_.clear();
     std::transform(shaderMap.begin(), shaderMap.end(), std::back_inserter(shaders_), [](const auto& s) { return s.second; });
 }

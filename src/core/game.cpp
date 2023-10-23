@@ -33,7 +33,7 @@ void Game::GameThread() {
     srand(static_cast<unsigned int>(time(0)));
     glfwMakeContextCurrent(window_.GetWindow());
     PreLoad();
-    glfwShowWindow(game->GetGameWindow().GetWindow());
+    glfwShowWindow(GAME->GetGameWindow().GetWindow());
     Physics::Init();
     RegisterDefaultSerializers();
     resources.LoadAll();
@@ -60,7 +60,7 @@ void Game::GameThread() {
 
         if (Input::SET_FULLSCREEN_PENDING) {
             const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            game->GetRenderer().UpdateCameraProjection(mode->width, mode->height);
+            GAME->GetRenderer().UpdateCameraProjection(mode->width, mode->height);
             Input::SET_FULLSCREEN_PENDING = false;
             Input::WINDOW_SIZE_CHANGE_PENDING = false;
         }

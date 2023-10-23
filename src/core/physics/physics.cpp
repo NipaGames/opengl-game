@@ -14,7 +14,7 @@ void Physics::Init() {
 }
 
 void Physics::Update(double dt) {
-    dynamicsWorld->stepSimulation(btScalar(dt), 10, btScalar(game->GetFixedDeltaTime()));
+    dynamicsWorld->stepSimulation(btScalar(dt), 10, btScalar(GAME->GetFixedDeltaTime()));
 }
 
 void Physics::Destroy() {

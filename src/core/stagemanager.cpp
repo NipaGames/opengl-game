@@ -32,13 +32,13 @@ bool Stage::LoadStage(const std::string& id) {
 
     for (const Entity& e : s.entities) {
         if (e.id.empty()) {
-            Entity& instantiated = game->GetEntityManager().AddEntity(e);
+            Entity& instantiated = GAME->GetEntityManager().AddEntity(e);
             s.instantiatedEntities.insert(instantiated.GetHash());
             instantiated.Start();
         }
         else {
-            bool hasEntityAlready = game->GetEntityManager().CountEntities(e.id) > 0;
-            Entity& entity = game->GetEntityManager()[e.id];
+            bool hasEntityAlready = GAME->GetEntityManager().CountEntities(e.id) > 0;
+            Entity& entity = GAME->GetEntityManager()[e.id];
             entity.OverrideComponentValues(e);
             if (!hasEntityAlready) {
                 s.instantiatedEntities.insert(entity.GetHash());
@@ -48,8 +48,8 @@ bool Stage::LoadStage(const std::string& id) {
     }
     loadedStages.insert(loadedStages.begin(), s.id);
     spdlog::info("Loaded stage '" + id + "' (" + std::to_string(s.entities.size()) + " entities modified)");
-    game->GetRenderer().UpdateLighting();
-    game->GetRenderer().UpdateFrustum();
+    GAME->GetRenderer().UpdateLighting();
+    GAME->GetRenderer().UpdateFrustum();
     return true;
 }
 
@@ -60,11 +60,11 @@ bool Stage::UnloadStage(const std::string& id) {
     auto sIt = std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
     const Stage& s = *sIt;
     for (size_t hash : s.instantiatedEntities) {
-        game->GetEntityManager().RemoveEntity(hash);
+        GAME->GetEntityManager().RemoveEntity(hash);
     }
     loadedStages.erase(idIt);
-    game->GetRenderer().UpdateLighting();
-    game->GetRenderer().UpdateFrustum();
+    GAME->GetRenderer().UpdateLighting();
+    GAME->GetRenderer().UpdateFrustum();
     return true;
 }
 

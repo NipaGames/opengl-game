@@ -21,7 +21,7 @@ std::optional<ObjectPair> ParseObject(const json& objJson) {
         if (!objJson.at("defaultMaterial").is_string())
             return std::nullopt;
         defaultMaterialId = objJson.at("defaultMaterial");
-        obj.defaultMaterial = game->GetRenderer().GetMaterial(defaultMaterialId);
+        obj.defaultMaterial = GAME->GetRenderer().GetMaterial(defaultMaterialId);
     }
     if (objJson.contains("size")) {
         if (!SetJSONPointerValue(&obj.size, objJson.at("size")))
@@ -43,7 +43,7 @@ std::optional<ObjectPair> ParseObject(const json& objJson) {
             std::string matId = mat.value();
             if (matId.at(0) == ':' && !defaultMaterialId.empty())
                 matId = defaultMaterialId + matId;
-            obj.materials.insert({ i, game->GetRenderer().GetMaterial(matId) });   
+            obj.materials.insert({ i, GAME->GetRenderer().GetMaterial(matId) });   
         }
     }
     return std::make_optional<ObjectPair>(modelId, obj);

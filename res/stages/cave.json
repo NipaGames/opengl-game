@@ -37,9 +37,7 @@
                 "mass": 0,
                 "colliderFrom": "AABB"
             },
-            "Gate": {
-                "id": "0"
-            }
+            "Gate": { }
         },
         {
             "id": "lever_0",
@@ -51,7 +49,7 @@
                 "object": "OBJ_LEVER"
             },
             "Interactable": {
-                "event": [ "OpenGate(0)", "LeverAnimation(this)" ]
+                "event": [ "WhatIs(this)", "OpenGate('gate_0')", "LeverAnimation(this)" ]
             }
         },
         {

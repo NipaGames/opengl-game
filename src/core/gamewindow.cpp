@@ -221,7 +221,7 @@ void GameWindow::UpdateInputSystem() {
         else {
             glfwSetWindowMonitor(window_, nullptr,  prevWndPos_.x, prevWndPos_.y, prevWndSize_.x, prevWndSize_.y, 0);
             glfwGetWindowSize(window_, &windowSize.x, &windowSize.y);
-            game->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
+            GAME->GetRenderer().UpdateCameraProjection(windowSize.x, windowSize.y);
         }
     }
     if (Input::CURSOR_MODE_CHANGE_PENDING) {

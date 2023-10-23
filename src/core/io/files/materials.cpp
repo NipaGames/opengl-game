@@ -98,8 +98,8 @@ std::vector<std::pair<std::string, std::shared_ptr<Material>>> ParseMaterials(co
         const json& textureJson = materialJson["texture"];
         if (!textureJson.is_object() || !textureJson.contains("path") || !textureJson["path"].is_string())
             return ParsingException(invalidMaterials);
-        if (game->resources.textureManager.HasLoaded(textureJson["path"]))
-            m->SetTexture(game->resources.textureManager.Get(textureJson["path"]));
+        if (GAME->resources.textureManager.HasLoaded(textureJson["path"]))
+            m->SetTexture(GAME->resources.textureManager.Get(textureJson["path"]));
         else {
             spdlog::warn("Texture '{}' not found!", textureJson["path"]);
         }

@@ -10,19 +10,19 @@ Shader aabbShader = Shader(Shaders::ShaderID::UNLIT);
 
 MeshRenderer::~MeshRenderer() {
     if (isAdded)
-        game->GetRenderer().RemoveMeshRenderer(this);
+        GAME->GetRenderer().RemoveMeshRenderer(this);
 }
 
 void MeshRenderer::Start() {
     if (!object.empty()) {
-        for (auto mesh : game->resources.modelManager[object].meshes) {
+        for (auto mesh : GAME->resources.modelManager[object].meshes) {
             meshes.push_back(mesh);
         }
     }
     if (isStatic)
         CalculateModelMatrix();
     if (!isAdded)
-        game->GetRenderer().AddMeshRenderer(this);
+        GAME->GetRenderer().AddMeshRenderer(this);
     glm::vec3 aabbMin = glm::vec3(std::numeric_limits<float>::max());
     glm::vec3 aabbMax = glm::vec3(-std::numeric_limits<float>::max());
     for (const auto& mesh : meshes) {
@@ -64,7 +64,7 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
         shader->SetUniform("projection", projectionMatrix);
         shader->SetUniform("view", viewMatrix);
         shader->SetUniform("model", modelMatrix_);
-        shader->SetUniform("viewPos", game->GetRenderer().GetCamera().pos);
+        shader->SetUniform("viewPos", GAME->GetRenderer().GetCamera().pos);
         shader->SetUniform("time", (float) glfwGetTime());
         mesh->Render();
 
@@ -106,7 +106,7 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
         aabbShader.SetUniform("projection", projectionMatrix);
         aabbShader.SetUniform("view", viewMatrix);
         aabbShader.SetUniform("model", modelMatrix_);
-        aabbShader.SetUniform("viewPos", game->GetRenderer().GetCamera().pos);
+        aabbShader.SetUniform("viewPos", GAME->GetRenderer().GetCamera().pos);
         aabbShader.SetUniform("time", (float) glfwGetTime());
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -157,7 +157,7 @@ bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
 
 JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
     auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-    mesh->material = game->GetRenderer().GetMaterial("MAT_DEFAULT");
+    mesh->material = GAME->GetRenderer().GetMaterial("MAT_DEFAULT");
     args.Return(mesh);
     return true;
 }, std::shared_ptr<Mesh>);

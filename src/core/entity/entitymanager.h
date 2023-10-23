@@ -17,5 +17,6 @@ public:
     bool HasEntity(size_t);
     // also creates a new entity if it doesn't exist
     Entity& operator[](const std::string& id);
+    Entity& GetEntity(const std::string& id);
     friend class Game;
 };

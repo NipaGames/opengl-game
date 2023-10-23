@@ -21,8 +21,8 @@ void DebugTextContainer::AppendElement(const std::string& fmt, const std::string
     DebugTextElement e;
     e.var = var;
     e.format = fmt;
-    Entity& textEntity = game->GetEntityManager().CreateEntity();
-    e.textComponent = textEntity.AddComponent<UI::TextComponent>(&game->GetRenderer().GetCanvas(canvasId));
+    Entity& textEntity = GAME->GetEntityManager().CreateEntity();
+    e.textComponent = textEntity.AddComponent<UI::TextComponent>(&GAME->GetRenderer().GetCanvas(canvasId));
     e.textComponent->font = fontId;
     e.textComponent->AddToCanvas();
     textEntity.transform->position.x = pos.x;
@@ -42,7 +42,7 @@ int DebugTextContainer::GetWidth() {
 }
 
 void DebugOverlay::Start() {
-    Canvas& c = game->GetRenderer().CreateCanvas(canvasId);
+    Canvas& c = GAME->GetRenderer().CreateCanvas(canvasId);
     c.isVisible = false;
     c.bgColor = glm::vec4(.5f);
     c.offset = { 0, 720 };
@@ -86,16 +86,16 @@ void DebugOverlay::Update() {
 }
 
 void DebugOverlay::FixedUpdate() {
-    Canvas& c = game->GetRenderer().GetCanvas(canvasId);
+    Canvas& c = GAME->GetRenderer().GetCanvas(canvasId);
     if (Input::IsKeyPressedDown(GLFW_KEY_F3)) {
         c.isVisible = !c.isVisible;
     }
     if (!c.isVisible)
         return;
-    glm::vec3 camPos = game->GetRenderer().GetCamera().pos;
+    glm::vec3 camPos = GAME->GetRenderer().GetCamera().pos;
     textContainer_.SetValue("pos", camPos.x, camPos.y, camPos.z);
-    textContainer_.SetValue("entities", game->GetEntityManager().CountEntities());
-    textContainer_.SetValue("entitiesOnFrustum", game->GetRenderer().CountEntitiesOnFrustum());
+    textContainer_.SetValue("entities", GAME->GetEntityManager().CountEntities());
+    textContainer_.SetValue("entitiesOnFrustum", GAME->GetRenderer().CountEntitiesOnFrustum());
     const std::vector<std::string>& stages = Stage::GetLoadedStages();
     std::string stagesStr;
     if (stages.size() > 0) {
@@ -109,9 +109,9 @@ void DebugOverlay::FixedUpdate() {
     }
     textContainer_.SetValue("stages", stagesStr);
 
-    textContainer_.SetValue("normalsShown", game->GetRenderer().highlightNormals);
-    textContainer_.SetValue("hitboxesShown", game->GetRenderer().showHitboxes);
-    textContainer_.SetValue("aabbsShown", game->GetRenderer().showAabbs);
+    textContainer_.SetValue("normalsShown", GAME->GetRenderer().highlightNormals);
+    textContainer_.SetValue("hitboxesShown", GAME->GetRenderer().showHitboxes);
+    textContainer_.SetValue("aabbsShown", GAME->GetRenderer().showAabbs);
 
     #ifdef LOG_SYSTEM_RESOURCES_WIN32
     PROCESS_MEMORY_COUNTERS pmc;

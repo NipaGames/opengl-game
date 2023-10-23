@@ -52,4 +52,4 @@ public:
     virtual Renderer& GetRenderer() { return renderer_; }
 };
 
-inline std::unique_ptr<Game> game;
+inline std::unique_ptr<Game> GAME;

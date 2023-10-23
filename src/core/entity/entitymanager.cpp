@@ -33,6 +33,10 @@ bool EntityManager::HasEntity(size_t hash) {
     return std::count_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->GetHash() == hash; }) == 1;
 }
 
+Entity& EntityManager::GetEntity(const std::string& id) {
+     return **std::find_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->id == id; });
+}
+
 Entity& EntityManager::operator[](const std::string& id) {
     auto it = std::find_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->id == id; });
     if (it != entities_.end())

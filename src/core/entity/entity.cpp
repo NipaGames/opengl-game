@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <core/gamewindow.h>
 #include <core/graphics/renderer.h>
+#include <core/game.h>
 
 Entity::Entity(const Entity& e) {
     hash_ = GenerateHash();
@@ -57,6 +58,14 @@ void Entity::FixedUpdate() {
     for (auto component : components_) {
         component->IFixedUpdate();
     }
+}
+
+void Entity::Destroy(EntityManager& mgr) {
+    mgr.RemoveEntity(hash_);
+}
+
+void Entity::Destroy() {
+    Destroy(GAME->GetEntityManager());
 }
 
 std::unordered_set<size_t> usedHashes;

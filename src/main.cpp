@@ -11,9 +11,9 @@ int main() {
         spdlog::set_level(spdlog::level::debug);
     #endif
     srand(static_cast<unsigned int>(time(0)));    
-    game = std::make_unique<MonkeyGame>();
-    if(!game->InitWindow())
+    GAME = std::make_unique<MonkeyGame>();
+    if(!GAME->InitWindow())
         return EXIT_FAILURE;
-    game->Run();
+    GAME->Run();
     return EXIT_SUCCESS;
 }

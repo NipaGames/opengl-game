@@ -21,12 +21,11 @@ EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
     std::string argsStr = groups[2].str();
     while (!argsStr.empty()) {
         TrimWhitespace(argsStr);
-        if (argsStr.empty()) {
-            return EventReturnStatus::INVALID_SYNTAX;
-        }
-        if (argsStr.at(0) == '"') {
+        // string
+        if (argsStr.at(0) == '"' || argsStr.at(0) == '\'') {
+            char delim = argsStr.at(0);
             argsStr.erase(0, 1);
-            size_t close = argsStr.find('"');
+            size_t close = argsStr.find(delim);
             if (close == std::string::npos) {
                 return EventReturnStatus::INVALID_SYNTAX;
             }
@@ -36,20 +35,34 @@ EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
         }
         // number
         else if (std::isdigit(argsStr.at(0))) {
-            std::stringstream numStr;
+            std::stringstream num;
             while (!argsStr.empty() && std::isdigit(argsStr.at(0))) {
-                numStr << argsStr.at(0);
+                num << argsStr.at(0);
                 argsStr.erase(0, 1);
             }
             int n;
             try {
-                n = std::stoi(numStr.str());
+                n = std::stoi(num.str());
             }
             catch (std::exception& e) {
                 spdlog::warn(e.what());
                 return EventReturnStatus::INVALID_PARAMS;
             }
             args.push_back(n);
+        }
+        // keyword, can't start with a numeral
+        else if (std::isalpha(argsStr.at(0)) || argsStr.at(0) == '_') {
+            std::stringstream keyword;
+            while (!argsStr.empty() && (std::isalpha(argsStr.at(0)) || argsStr.at(0) == '_' || std::isdigit(argsStr.at(0)))) {
+                keyword << argsStr.at(0);
+                argsStr.erase(0, 1);
+            }
+            std::string keywordStr = keyword.str();
+            if (!HasKeywordDefined(keywordStr)) {
+                spdlog::warn("Invalid keyword '{}'!", keywordStr);
+                return EventReturnStatus::INVALID_PARAMS;
+            }
+            args.push_back(GetKeyword(keywordStr));
         }
         else {
             return EventReturnStatus::INVALID_SYNTAX;
@@ -61,6 +74,9 @@ EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
             return EventReturnStatus::INVALID_SYNTAX;
         }
         argsStr.erase(0, 1);
+        if (argsStr.empty())
+            return EventReturnStatus::INVALID_SYNTAX;
     }
     return manager_->CallEvent(event, args);
 }
+

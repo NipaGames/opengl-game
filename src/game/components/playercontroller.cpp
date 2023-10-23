@@ -12,7 +12,7 @@ PlayerController::~PlayerController() {
 
 void PlayerController::OnMouseMove() {
     float sensitivity = 0.1f;
-    auto& cam = game->GetRenderer().GetCamera();
+    auto& cam = GAME->GetRenderer().GetCamera();
 
     cam.yaw   += static_cast<float>(Input::MOUSE_MOVE_X) * sensitivity;
     cam.pitch += static_cast<float>(Input::MOUSE_MOVE_Y) * sensitivity;
@@ -41,14 +41,14 @@ void PlayerController::Start() {
     characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
     characterController_->setJumpSpeed(btScalar(jumpSpeed_));
     Physics::dynamicsWorld->addCollisionObject(ghostObject_, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
-    game->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
+    GAME->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
     Spawn();
 }
 
 void PlayerController::Update() {
-    auto& cam = game->GetRenderer().GetCamera();
+    auto& cam = GAME->GetRenderer().GetCamera();
     glm::vec3 front = cam.front;
     front.y = 0.0f;
     front = glm::normalize(front);
@@ -104,7 +104,7 @@ void PlayerController::Update() {
         movingSpeed *= 2.0f;
     }
     velocity *= movingSpeed;
-    characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * btScalar(game->GetDeltaTime()));
+    characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * btScalar(GAME->GetDeltaTime()));
 
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
 
@@ -124,7 +124,7 @@ void PlayerController::Update() {
         }
     }
 
-    characterController_->updateAction(Physics::dynamicsWorld, btScalar(game->GetDeltaTime()));
+    characterController_->updateAction(Physics::dynamicsWorld, btScalar(GAME->GetDeltaTime()));
 
     cam.pos.x = parent->transform->position.x;
     cam.pos.z = parent->transform->position.z;

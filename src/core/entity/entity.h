@@ -10,6 +10,7 @@ class Component;
 #include "transform.h"
 #include <core/graphics/mesh.h>
 
+class EntityManager;
 class Entity {
 private:
     std::vector<IComponent*> components_;
@@ -36,6 +37,8 @@ public:
     void Update();
     void FixedUpdate();
     void CopyFrom(const Entity&);
+    void Destroy(EntityManager& mgr);
+    void Destroy();
     size_t GetHash() const { return hash_; }
     IComponent* const GetComponent(const type_info* type) const {
         size_t hash = type->hash_code();

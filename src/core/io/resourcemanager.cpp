@@ -20,7 +20,7 @@ void Resources::LoadAll() {
     shaderManager.LoadAll();
 
     materialsFile.SerializeFile(Paths::MATERIALS_PATH.string());
-    materialsFile.Register(game->GetRenderer().GetMaterials());
+    materialsFile.Register(GAME->GetRenderer().GetMaterials());
 
     objectsFile.SerializeFile(Paths::OBJECTS_PATH.string());
     modelManager.LoadAll(imports->ListImports("models"));

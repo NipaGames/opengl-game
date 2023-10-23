@@ -15,6 +15,7 @@
 #include "components/playercontroller.h"
 #include "components/rotatecube.h"
 #include "components/debugoverlay.h"
+#include "components/gate.h"
 #include "event.h"
 #include "eventparser.h"
 
@@ -30,6 +31,7 @@
 #define LOG_FN() LOG_FN_(__FUNCTION__)
 
 Lights::PointLight* playerLight = nullptr;
+const std::string playerId = "Player";
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
@@ -44,8 +46,8 @@ void MonkeyGame::PreLoad() {
     LOG_FN();
 }
 
-void TestEvent(int n0, std::string testString) {
-    spdlog::info("{}; {}", testString, n0 * 2);
+void WhatIs(std::string str) {
+    spdlog::info(str);
 }
 
 void MonkeyGame::Start() {
@@ -53,9 +55,10 @@ void MonkeyGame::Start() {
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "cave.json"));
 
-    REGISTER_EVENT(TestEvent);
+    REGISTER_EVENT(WhatIs);
+    EVENT_MANAGER.RegisterEvent("OpenGate", Gate::OpenGate);
     
-    Entity& player = entityManager_.CreateEntity("Player");
+    Entity& player = entityManager_.CreateEntity(playerId);
     player.AddComponent<PlayerController>();
     playerLight = player.AddComponent<Lights::PointLight>();
     playerLight->intensity = .5f;
@@ -190,15 +193,18 @@ void MonkeyGame::Update() {
             }
 
             // command interface coming somewhere in future
+            if (commandName.empty())
+                continue;
             if (commandName == "exit") {
                 break;
             }
-            else if (commandName == "crash") {
+            else if (commandName == "quit") {
                 spdlog::info("byee!! :3");
                 // yeah could clean up or something before quitting
                 exit(0);
             }
             else if (commandName == "event") {
+                EVENT_PARSER.SetKeyword("this", playerId);
                 EventReturnStatus err = EVENT_PARSER.ParseCommand(commandArgs);
                 if (err != EventReturnStatus::OK) {
                     spdlog::warn("failed: {}", magic_enum::enum_name(err));

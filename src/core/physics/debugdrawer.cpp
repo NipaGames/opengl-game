@@ -21,7 +21,7 @@ void DebugDrawer::clearLines() {
 
 void DebugDrawer::flushLines() {
     shader_.Use();
-    Camera& cam = game->GetRenderer().GetCamera();
+    Camera& cam = GAME->GetRenderer().GetCamera();
     glm::mat4 viewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
     shader_.SetUniform("view", viewMatrix);
     shader_.SetUniform("projection", cam.projectionMatrix);

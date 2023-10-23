@@ -9,13 +9,6 @@
 
 #include <spdlog/spdlog.h>
 
-class Event {
-private:
-    std::vector<void(*)()> calls_;
-public:
-    void Trigger();
-};
-
 enum class EventReturnStatus : int {
     OK,
     INVALID_SYNTAX,
@@ -40,7 +33,7 @@ public:
     void RegisterEvent(const std::string& id, void(*va_event)(Args...)) {
         EventFn event = [=](const EventArgs& args) {
             if (sizeof...(Args) != args.size()) {
-                spdlog::warn("Wrong number of parameters given when calling '{}'!", id);
+                spdlog::warn("Wrong number of parameters given when calling '{}'! ({} given, {} expected)", id, args.size(), sizeof...(Args));
                 return EventReturnStatus::INVALID_PARAMS;
             }
             int i = 0;
@@ -92,19 +85,8 @@ public:
         };
         events_[id] = event;
     }
-    void RegisterEvent(const std::string& id, void(*event)(const EventArgs&)) {
-        events_[id] = [=](const EventArgs& args) {
-            event(args);
-            return EventReturnStatus::OK;
-        };
-    }
-    EventReturnStatus CallEvent(const std::string& id, const EventArgs& args) {
-        if (!events_.count(id)) {
-            spdlog::warn("Event '{}' not found!", id);
-            return EventReturnStatus::EVENT_NOT_FOUND;
-        }
-        return events_[id](args);
-    }
+    void RegisterEvent(const std::string&, void(*)(const EventArgs&));
+    EventReturnStatus CallEvent(const std::string&, const EventArgs&);
     template <typename... Args>
     EventReturnStatus CallEvent(const std::string& id, Args... va_args) {
         EventArgs args;
@@ -123,3 +105,19 @@ inline EventManager EVENT_MANAGER;
 // might as well add a call macro too
 #define CALL_EVENT_(event, mgr, ...) mgr.CallEvent(event, __VA_ARGS__)
 #define CALL_EVENT(event, ...) CALL_EVENT_(event, EVENT_MANAGER, __VA_ARGS__)
+
+class EventParser;
+extern EventParser EVENT_PARSER;
+class Event {
+private:
+    std::vector<std::string> commands_;
+    EventParser* parser_;
+public:
+    Event() {
+        parser_ = &EVENT_PARSER;
+    }
+    Event(EventParser* p) : parser_(p) { }
+    EventParser* GetParser() const { return parser_; }
+    void Trigger();
+    void AddCommand(const std::string&);
+};
