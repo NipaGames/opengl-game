@@ -95,6 +95,7 @@ public:
         } (), ...);
         return CallEvent(id, args);
     }
+    std::vector<std::string> ListEvents() const;
 };
 // yeah fuck singletons whatever
 // this class approach could be handy if we wan't to have multiple event pools in future

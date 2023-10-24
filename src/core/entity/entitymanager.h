@@ -18,5 +18,6 @@ public:
     // also creates a new entity if it doesn't exist
     Entity& operator[](const std::string& id);
     Entity& GetEntity(const std::string& id);
+    const std::list<std::unique_ptr<Entity>>& GetEntities();
     friend class Game;
 };

@@ -1,5 +1,6 @@
 #include "event.h"
 #include "eventparser.h"
+#include "strutils.h"
 
 void EventManager::RegisterEvent(const std::string& id, void(*event)(const EventArgs&)) {
     events_[id] = [=](const EventArgs& args) {
@@ -13,6 +14,9 @@ EventReturnStatus EventManager::CallEvent(const std::string& id, const EventArgs
         return EventReturnStatus::EVENT_NOT_FOUND;
     }
     return events_[id](args);
+}
+std::vector<std::string> EventManager::ListEvents() const {
+    return ListKeys(events_);
 }
 
 void Event::Trigger() {

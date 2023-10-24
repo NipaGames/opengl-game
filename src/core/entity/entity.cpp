@@ -68,6 +68,19 @@ void Entity::Destroy() {
     Destroy(GAME->GetEntityManager());
 }
 
+std::vector<std::string> Entity::ListComponentNames() const {
+    std::vector<std::string> names;
+    for (const auto& c : components_) {
+        for (auto& t : IComponent::COMPONENT_TYPES_) {
+            if (t.type->hash_code() == c->typeHash) {
+                names.push_back(t.name);
+                break;
+            }
+        }
+    }
+    return names;
+}
+
 std::unordered_set<size_t> usedHashes;
 size_t Entity::GenerateHash() {
     size_t hash;

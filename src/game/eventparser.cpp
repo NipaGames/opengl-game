@@ -1,14 +1,9 @@
 #include "eventparser.h"
+#include "strutils.h"
 
 #include <regex>
 #include <sstream>
 #include <iostream>
-
-void TrimWhitespace(std::string& str) {
-    while (!str.empty() && str.at(0) == ' ') {
-        str.erase(0, 1);
-    }
-}
 
 EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
     std::smatch groups;
@@ -19,8 +14,8 @@ EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
     }
     event = groups[1];
     std::string argsStr = groups[2].str();
+    TrimWhitespace(argsStr);
     while (!argsStr.empty()) {
-        TrimWhitespace(argsStr);
         // string
         if (argsStr.at(0) == '"' || argsStr.at(0) == '\'') {
             char delim = argsStr.at(0);
@@ -70,10 +65,10 @@ EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
         TrimWhitespace(argsStr);
         if (argsStr.empty())
             break;
-        if (argsStr[0] != ',') {
+        if (argsStr[0] != ',')
             return EventReturnStatus::INVALID_SYNTAX;
-        }
         argsStr.erase(0, 1);
+        TrimWhitespace(argsStr);
         if (argsStr.empty())
             return EventReturnStatus::INVALID_SYNTAX;
     }

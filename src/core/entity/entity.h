@@ -132,6 +132,7 @@ public:
         }
         return nullptr;
     }
+    std::vector<std::string> ListComponentNames() const;
     void OverrideComponentValues(const Entity& e) {
         for (auto c : e.components_) {
             IComponent* mc = GetComponent(c->typeHash);

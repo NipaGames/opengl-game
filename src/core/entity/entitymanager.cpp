@@ -37,6 +37,10 @@ Entity& EntityManager::GetEntity(const std::string& id) {
      return **std::find_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->id == id; });
 }
 
+const std::list<std::unique_ptr<Entity>>& EntityManager::GetEntities() {
+    return entities_;
+}
+
 Entity& EntityManager::operator[](const std::string& id) {
     auto it = std::find_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->id == id; });
     if (it != entities_.end())

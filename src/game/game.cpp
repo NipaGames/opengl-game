@@ -18,6 +18,7 @@
 #include "components/gate.h"
 #include "event.h"
 #include "eventparser.h"
+#include "console.h"
 
 #ifdef _WIN32
 #undef APIENTRY
@@ -32,6 +33,8 @@
 
 Lights::PointLight* playerLight = nullptr;
 const std::string playerId = "Player";
+
+Console console;
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
@@ -50,6 +53,93 @@ void WhatIs(std::string str) {
     spdlog::info(str);
 }
 
+void RegisterCommands() {
+    console.RegisterCommand("quit", [](const std::string&) {
+        spdlog::info("byee!! :3");
+        // yeah could clean up or something before quitting
+        exit(0);
+    });
+    console.RegisterCommand("event", [](const std::string& args) {
+        EVENT_PARSER.SetKeyword("this", playerId);
+        EventReturnStatus err = EVENT_PARSER.ParseCommand(args);
+        if (err != EventReturnStatus::OK) {
+            spdlog::warn("failed: {}", magic_enum::enum_name(err));
+        }
+    });
+    console.RegisterCommand("github", [](const std::string&) {
+        #ifdef _WIN32
+        ShellExecuteW(0, 0, L"https://github.com/NipaGames/opengl-game", 0, 0 , SW_SHOW);
+        #endif
+    });
+    console.RegisterCommand("hi", [](const std::string&) {
+        spdlog::info("haiii!! :3");
+    });
+    // the cis male command
+    console.RegisterCommand("goodgirl", [](const std::string&) {
+        spdlog::info("you're such a good girl <3");
+    });
+    console.RegisterCommand("list", [](const std::string& strArgs) {
+        std::vector<std::string> args = Console::SplitArgs(strArgs);
+        bool listCommands = std::find(args.begin(), args.end(), "commands") != args.end();
+        bool listEvents = std::find(args.begin(), args.end(), "events") != args.end();
+        bool listEntityComponents = std::find(args.begin(), args.end(), "entities+c") != args.end();
+        bool listEntities = listEntityComponents || std::find(args.begin(), args.end(), "entities") != args.end();
+        if (args.empty()) {
+            listCommands = true;
+            listEvents = true;
+            listEntities = true;
+        }
+        bool needsHeaders = args.size() != 1;
+        if (listCommands) {
+            if (needsHeaders)
+                spdlog::info("COMMANDS");
+            for (const std::string& c : console.ListCommands()) {
+                spdlog::info("- {}", c);
+            }
+        }
+        if (listEvents) {
+            if (needsHeaders)
+                spdlog::info("EVENTS");
+            for (const std::string& c : EVENT_MANAGER.ListEvents()) {
+                spdlog::info("- {}", c);
+            }
+        }
+        if (listEntities) {
+            if (needsHeaders)
+                spdlog::info("ENTITIES");
+            const auto& entities = GAME->GetEntityManager().GetEntities();
+            size_t entityCount = entities.size();
+            if (args.empty())
+                entityCount = 5;
+            size_t i = 0;
+            for (const auto& e : entities) {
+                spdlog::info("- {} {}", e->GetHash(), e->id);
+                if (listEntityComponents) {
+                    for (const std::string& c : e->ListComponentNames()) {
+                        spdlog::info("    {}", c);
+                    }
+                }
+                if (++i >= entityCount)
+                    break;
+            }
+            if (entityCount < entities.size())
+                spdlog::info("...");
+        }
+    });
+    console.RegisterCommand("load", [](const std::string& stage) {
+        if (!Stage::LoadStage(stage))
+            spdlog::warn("Stage '{}' not found!", stage);
+    });
+    console.RegisterCommand("unload", [](const std::string& stage) {
+        if (stage == "all") {
+            Stage::UnloadAllStages();
+            return;
+        }
+        if (!Stage::UnloadStage(stage))
+            spdlog::warn("Stage '{}' not loaded!", stage);
+    });
+}
+
 void MonkeyGame::Start() {
     LOG_FN();
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
@@ -57,6 +147,8 @@ void MonkeyGame::Start() {
 
     REGISTER_EVENT(WhatIs);
     EVENT_MANAGER.RegisterEvent("OpenGate", Gate::OpenGate);
+
+    RegisterCommands();
     
     Entity& player = entityManager_.CreateEntity(playerId);
     player.AddComponent<PlayerController>();
@@ -170,56 +262,17 @@ void MonkeyGame::Update() {
         spdlog::info("--------- Opened console, 'exit' to return ----------");
         spdlog::info("[copyright nipagames information systems corporation]");
         std::cout << std::endl;
-        while (true) {
+        bool exit = false;
+        while (!exit) {
             std::cout << "> ";
             std::getline(std::cin, line);
-            // trim whitespace from start
-            while (!line.empty() && line.at(0) == ' ') {
-                line.erase(0, 1);
-            }
-            std::string commandName = line;
-            // get the name from the characters before space
-            size_t spacePos = commandName.find(' ');
-            if (spacePos != std::string::npos) {
-                commandName.resize(spacePos);
-            }
-            // to lowercase
-            for (int i = 0; i < commandName.length(); i++) {
-                commandName[i] = std::tolower(commandName.at(i));
-            }
-            std::string commandArgs = "";
-            if (spacePos != std::string::npos && spacePos < line.length()) {
-                commandArgs = line.substr(spacePos + 1);
-            }
-
-            // command interface coming somewhere in future
-            if (commandName.empty())
-                continue;
-            if (commandName == "exit") {
-                break;
-            }
-            else if (commandName == "quit") {
-                spdlog::info("byee!! :3");
-                // yeah could clean up or something before quitting
-                exit(0);
-            }
-            else if (commandName == "event") {
-                EVENT_PARSER.SetKeyword("this", playerId);
-                EventReturnStatus err = EVENT_PARSER.ParseCommand(commandArgs);
-                if (err != EventReturnStatus::OK) {
-                    spdlog::warn("failed: {}", magic_enum::enum_name(err));
-                }
-            }
-            else if (commandName == "github") {
-                #ifdef _WIN32
-                ShellExecuteW(0, 0, L"https://github.com/NipaGames/opengl-game", 0, 0 , SW_SHOW);
-                #endif
-            }
-            else if (commandName == "hi") {
-                spdlog::info("haiii!! :3");
-            }
-            else {
-                spdlog::warn("Command not found!");
+            switch (console.ExecuteCommandInput(line)) {
+                case CommandReturnStatus::EXIT_CONSOLE:
+                    exit = true;
+                    break;
+                case CommandReturnStatus::COMMAND_NOT_FOUND:
+                    spdlog::warn("Command not found!");
+                    break;
             }
         }
         spdlog::set_pattern(SPDLOG_PATTERN);
