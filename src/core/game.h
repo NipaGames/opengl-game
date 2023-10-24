@@ -30,6 +30,7 @@ protected:
     int limitFps_ = 0;
     // fixed updates per second
     int fixedUpdateRate_ = 60;
+    bool freezeDeltaTime_ = false;
 public:
     Resources resources;
     virtual bool InitWindow();
@@ -46,6 +47,7 @@ public:
 
     virtual double GetDeltaTime() { return deltaTime_; }
     virtual double GetFixedDeltaTime() { return 1.0 / fixedUpdateRate_; }
+    virtual void FreezeDeltaTime() { freezeDeltaTime_ = true; }
     virtual bool IsCurrentlyFixedUpdate() { return isFixedUpdate_; }
     virtual EntityManager& GetEntityManager() { return entityManager_; }
     virtual GameWindow& GetGameWindow() { return window_; }

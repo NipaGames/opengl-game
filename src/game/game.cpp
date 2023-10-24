@@ -138,6 +138,9 @@ void RegisterCommands() {
         if (!Stage::UnloadStage(stage))
             spdlog::warn("Stage '{}' not loaded!", stage);
     });
+    console.RegisterCommand("spawn", [](const std::string& stage) {
+        GAME->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
+    });
 }
 
 void MonkeyGame::Start() {
@@ -263,6 +266,7 @@ void MonkeyGame::Update() {
         spdlog::info("[copyright nipagames information systems corporation]");
         std::cout << std::endl;
         bool exit = false;
+        FreezeDeltaTime();
         while (!exit) {
             std::cout << "> ";
             std::getline(std::cin, line);

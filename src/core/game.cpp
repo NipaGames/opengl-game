@@ -56,6 +56,10 @@ void Game::GameThread() {
             continue;
         // don't skip too big intervals (>.5s)
         deltaTime_ = std::min(currentTime - prevUpdate_, .5);
+        if (freezeDeltaTime_) {
+            deltaTime_ = 0;
+            freezeDeltaTime_ = false;
+        }
         prevUpdate_ = currentTime;
 
         if (Input::SET_FULLSCREEN_PENDING) {
