@@ -30,6 +30,7 @@ namespace Physics {
         void FixedUpdate();
         void SetPos(const glm::vec3&);
         void UpdateTransform();
+        void CopyTransform();
         void EnableDebugVisualization(bool);
         void EnableRotation(bool);
     };

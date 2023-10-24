@@ -55,8 +55,6 @@ void RigidBody::Start() {
 }
 
 void RigidBody::UpdateTransform() {
-    if (!overwriteTransform)
-        return;
     Transform* t = parent->transform;
     btTransform transform;
     rigidBody->getMotionState()->getWorldTransform(transform);
@@ -65,14 +63,35 @@ void RigidBody::UpdateTransform() {
     t->rotation = Physics::BtQuatToGLMQuat(transform.getRotation());
 }
 
+void RigidBody::CopyTransform() {
+    Transform* t = parent->transform;
+    btTransform transform;
+    btMotionState* ms = rigidBody->getMotionState();
+    ms->getWorldTransform(transform);
+    
+    transform.setOrigin(Physics::GLMVectorToBtVector3(t->position + colliderOriginOffset_ * t->size));
+    transform.setRotation(t->btGetRotation());
+
+    ms->setWorldTransform(transform);
+    rigidBody->setMotionState(ms);
+}
+
 void RigidBody::Update() {
-    if (interpolate)
-        UpdateTransform();
+    if (interpolate) {
+        if (overwriteTransform)
+            UpdateTransform();
+        else
+            CopyTransform();
+    }
 }
 
 void RigidBody::FixedUpdate() {
-    if (!interpolate)
-        UpdateTransform();
+    if (!interpolate) {
+        if (overwriteTransform)
+            UpdateTransform();
+        else
+            CopyTransform();
+    }
     //rigidBody->getCollisionShape()->setLocalScaling(btVector3(t->size.x, t->size.y, t->size.z));
 }
 
