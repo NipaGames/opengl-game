@@ -35,7 +35,8 @@
             },
             "Physics::RigidBody": {
                 "mass": 0,
-                "colliderFrom": "AABB"
+                "colliderFrom": "AABB",
+                "overwriteTransform": false
             },
             "Gate": { }
         },

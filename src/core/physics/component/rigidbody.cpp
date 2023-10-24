@@ -55,6 +55,8 @@ void RigidBody::Start() {
 }
 
 void RigidBody::UpdateTransform() {
+    if (!overwriteTransform)
+        return;
     Transform* t = parent->transform;
     btTransform transform;
     rigidBody->getMotionState()->getWorldTransform(transform);

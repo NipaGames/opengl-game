@@ -10,6 +10,7 @@ namespace Physics {
         MESH
     };
 
+    // would be great to have a separate collider component
     class RigidBody : public Component<RigidBody> {
     private:
         bool enableDebugVisualization_ = true;
@@ -21,6 +22,7 @@ namespace Physics {
         DEFINE_COMPONENT_DATA_VALUE(ColliderConstructor, colliderFrom, ColliderConstructor::TRANSFORM);
         DEFINE_COMPONENT_DATA_VALUE(float, mass, 1.0f);
         DEFINE_COMPONENT_DATA_VALUE(bool, interpolate, false);
+        DEFINE_COMPONENT_DATA_VALUE(bool, overwriteTransform, true);
         DEFINE_COMPONENT_DATA_VALUE(bool, doesMassAffectGravity, false);
         ~RigidBody();
         void Start();
