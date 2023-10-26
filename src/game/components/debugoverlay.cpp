@@ -17,69 +17,48 @@
 #endif
 #endif
 
-void DebugTextContainer::AppendElement(const std::string& fmt, const std::string& var) {
-    DebugTextElement e;
-    e.var = var;
-    e.format = fmt;
-    Entity& textEntity = GAME->GetEntityManager().CreateEntity();
-    e.textComponent = textEntity.AddComponent<UI::TextComponent>(&GAME->GetRenderer().GetCanvas(canvasId));
-    e.textComponent->font = fontId;
-    e.textComponent->AddToCanvas();
-    textEntity.transform->position.x = pos.x;
-    textEntity.transform->position.y = pos.y - spacing / 2 - lines++ * spacing;
-    textEntity.transform->size.z = .5f;
-    texts.push_back(e);
-}
-
-void DebugTextContainer::AppendNewline() {
-    lines++;
-}
-
-int DebugTextContainer::GetWidth() {
-    return std::max_element(texts.begin(), texts.end(), [] (const DebugTextElement& lhs, const DebugTextElement& rhs) {
-        return lhs.textComponent->GetTextSize().x < rhs.textComponent->GetTextSize().x;
-    })->textComponent->GetTextSize().x;
-}
-
 void DebugOverlay::Start() {
     Canvas& c = GAME->GetRenderer().CreateCanvas(canvasId);
     c.isVisible = false;
     c.bgColor = glm::vec4(.5f);
     c.offset = { 0, 720 };
-    textContainer_ = DebugTextContainer(canvasId, fontId);
-    textContainer_.pos = { 10, -10 };
+    textComponent_ = parent->AddComponent<TextComponent>(&c);
+    textComponent_->font = fontId;
+    textComponent_->lineSpacing = 15;
+    textComponent_->AddToCanvas();
+    textComponent_->Start();
 
-    textContainer_.AppendElement("build v{}.{}", "version");
+    AppendElement("build v{}.{}", "version");
     #ifdef VERSION_SPECIFIED
-    textContainer_.SetValue("version", VERSION_MAJ, VERSION_MIN);
+    SetValue("version", VERSION_MAJ, VERSION_MIN);
     #endif
-    textContainer_.AppendNewline();
+    AppendNewline();
 
-    textContainer_.AppendElement("pos: [ {:.2f}, {:.2f}, {:.2f} ]", "pos");
-    textContainer_.AppendElement("entities: {}", "entities");
-    textContainer_.AppendElement("rendered entities: {}", "entitiesOnFrustum");
-    textContainer_.AppendElement("stages: [ {} ]", "stages");
-    textContainer_.AppendNewline();
+    AppendElement("pos: [ {:.2f}, {:.2f}, {:.2f} ]", "pos");
+    AppendElement("entities: {}", "entities");
+    AppendElement("rendered entities: {}", "entitiesOnFrustum");
+    AppendElement("stages: [ {} ]", "stages");
+    AppendNewline();
 
-    textContainer_.AppendElement("fps: {}", "fps");
+    AppendElement("fps: {}", "fps");
     lastTime_ = glfwGetTime();
     frames_ = 0;
-    textContainer_.SetValue("fps", frames_);
+    SetValue("fps", frames_);
     #ifdef LOG_SYSTEM_RESOURCES
-    textContainer_.AppendElement("RAM usage: {:.2f} MB", "ram");
-    //textContainer_.AppendElement("CPU %: {0:f}{0:%}", "res");
+    AppendElement("RAM usage: {:.2f} MB", "ram");
+    //AppendElement("CPU %: {0:f}{0:%}", "res");
     #endif
-    textContainer_.AppendNewline();
+    AppendNewline();
 
-    textContainer_.AppendElement("normals shown: {}", "normalsShown");
-    textContainer_.AppendElement("hitboxes shown: {}", "hitboxesShown");
-    textContainer_.AppendElement("aabbs shown: {}", "aabbsShown");
+    AppendElement("normals shown: {}", "normalsShown");
+    AppendElement("hitboxes shown: {}", "hitboxesShown");
+    AppendElement("aabbs shown: {}", "aabbsShown");
 }
 
 void DebugOverlay::Update() {
     frames_++;
     if (glfwGetTime() - lastTime_ >= 1.0) {
-        textContainer_.SetValue("fps", frames_);
+        SetValue("fps", frames_);
         frames_ = 0;
         lastTime_ += 1.0;
     }
@@ -93,9 +72,9 @@ void DebugOverlay::FixedUpdate() {
     if (!c.isVisible)
         return;
     glm::vec3 camPos = GAME->GetRenderer().GetCamera().pos;
-    textContainer_.SetValue("pos", camPos.x, camPos.y, camPos.z);
-    textContainer_.SetValue("entities", GAME->GetEntityManager().CountEntities());
-    textContainer_.SetValue("entitiesOnFrustum", GAME->GetRenderer().CountEntitiesOnFrustum());
+    SetValue("pos", camPos.x, camPos.y, camPos.z);
+    SetValue("entities", GAME->GetEntityManager().CountEntities());
+    SetValue("entitiesOnFrustum", GAME->GetRenderer().CountEntitiesOnFrustum());
     const std::vector<std::string>& stages = Stage::GetLoadedStages();
     std::string stagesStr;
     if (stages.size() > 0) {
@@ -107,16 +86,36 @@ void DebugOverlay::FixedUpdate() {
     else {
         stagesStr = "empty";
     }
-    textContainer_.SetValue("stages", stagesStr);
+    SetValue("stages", stagesStr);
 
-    textContainer_.SetValue("normalsShown", GAME->GetRenderer().highlightNormals);
-    textContainer_.SetValue("hitboxesShown", GAME->GetRenderer().showHitboxes);
-    textContainer_.SetValue("aabbsShown", GAME->GetRenderer().showAabbs);
+    SetValue("normalsShown", GAME->GetRenderer().highlightNormals);
+    SetValue("hitboxesShown", GAME->GetRenderer().showHitboxes);
+    SetValue("aabbsShown", GAME->GetRenderer().showAabbs);
 
     #ifdef LOG_SYSTEM_RESOURCES_WIN32
     PROCESS_MEMORY_COUNTERS pmc;
     GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-    textContainer_.SetValue("ram", (float) pmc.WorkingSetSize / 0x100000);
+    SetValue("ram", (float) pmc.WorkingSetSize / 0x100000);
     #endif
-    c.bgSize = glm::vec2(textContainer_.GetWidth() + textContainer_.pos.x * 2, textContainer_.lines * textContainer_.spacing + textContainer_.pos.x);
+    UpdateText();
+    auto size = textComponent_->GetTextSize();
+    c.bgSize = glm::vec2(size.x + parent->transform->position.x * 2, size.y - parent->transform->position.y);
+}
+
+void DebugOverlay::AppendElement(const std::string& fmt, const std::string& var) {
+    texts_.push_back({ var, fmt });
+}
+
+void DebugOverlay::AppendNewline() {
+    texts_.push_back({ "", "" });
+}
+
+void DebugOverlay::UpdateText() {
+    std::stringstream ss;
+    for (int i = 0; i < texts_.size(); i++) {
+        ss << texts_.at(i).str;
+        if (i < texts_.size() - 1)
+            ss << "\n";
+    }
+    textComponent_->SetText(ss.str());
 }

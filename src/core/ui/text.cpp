@@ -95,7 +95,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
         Character c = font.charMap.at(*it);
         if (*it == '\n') {
             pos.x = startPos.x;
-            pos.y -= font.fontHeight * size + lineSpacing;
+            pos.y -= (font.fontHeight * size + lineSpacing);
             continue;
         }
 
@@ -104,7 +104,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
         float h = c.size.y * size;
 
         float vertices[6][4] = {
-            { actualPos.x,     actualPos.y + h,   0.0f, 0.0f },            
+            { actualPos.x,     actualPos.y + h,   0.0f, 0.0f },
             { actualPos.x,     actualPos.y,       0.0f, 1.0f },
             { actualPos.x + w, actualPos.y,       1.0f, 1.0f },
 

@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <core/game.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
 
 UI::TextComponent::~TextComponent() {
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
@@ -37,7 +39,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
     if (renderingMethod_ == TextRenderingMethod::RENDER_EVERY_FRAME) {
-        UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size, modifier);
+        UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size, modifier, lineSpacing * size);
     }
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         float w = textSize_.x * size * modifier;
@@ -68,7 +70,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
 void UI::TextComponent::ResizeText() {
     auto& f = GAME->resources.fontManager.Get(font);
     padding_ = UI::Text::GetVerticalPadding(f, text_);
-    textSize_ = glm::ivec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_));
+    textSize_ = glm::ivec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_, (int) lineSpacing));
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glBindTexture(GL_TEXTURE_2D, texture_);
@@ -89,6 +91,15 @@ void UI::TextComponent::ResizeText() {
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     shader_.SetUniform("projection", glm::ortho(0.0f, (float) windowSize.x, 0.0f, (float) windowSize.y));
     UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0]), 1.0f, 1.0f, lineSpacing);
+
+    /*
+    uint8_t* pixels = new uint8_t[textSize_.x * textSize_.y * 4];
+    glBindTexture(GL_TEXTURE_2D, texture_);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    stbi_flip_vertically_on_write(true);
+    stbi_write_bmp("text.bmp", textSize_.x, textSize_.y, 4, pixels);
+    delete[] pixels;
+    */
 }
 
 void UI::TextComponent::SetText(const std::string& t) {

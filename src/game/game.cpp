@@ -216,6 +216,8 @@ void MonkeyGame::Start() {
     
     if (resources.fontManager.HasLoaded("firacode-regular.ttf")) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
+        debugOverlay->parent->transform->size.z = .5f;
+        debugOverlay->parent->transform->position = glm::vec3(10, -30, 0);
         debugOverlay->fontId = "firacode-regular.ttf";
 
         // super text rendering benchmark 9000
