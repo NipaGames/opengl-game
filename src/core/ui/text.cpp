@@ -151,6 +151,10 @@ glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& tex
     int max = 0;
     int min = 0;
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
+        if (*it == '\n') {
+            min = 0;
+            max = 0;
+        }
         Character c = font.charMap.at(*it);
         int cMax = c.bearing.y;
         int cMin = c.bearing.y - c.size.y;

@@ -42,7 +42,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         float w = textSize_.x * size * modifier;
         float h = textSize_.y * size;
-        float marginY = additionalRowsHeight_ * size - padding_[0];
+        float marginY = additionalRowsHeight_ * size + padding_[0];
         actualTextSize_ = { w, h };
         glActiveTexture(GL_TEXTURE0);
         float vertices[] = {
