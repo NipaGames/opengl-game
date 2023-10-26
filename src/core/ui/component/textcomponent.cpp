@@ -29,7 +29,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     shader_.Use();
     shader_.SetUniform("textColor", color);
     shader_.SetUniform("projection", projection);
-    glm::vec2 pos(parent->transform->position.x, parent->transform->position.y + padding_[0] / 2);
+    glm::vec2 pos(parent->transform->position.x, parent->transform->position.y);
     // janky ass way to determine the size
     float size = parent->transform->size.z;
 
@@ -42,11 +42,11 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         float w = textSize_.x * size * modifier;
         float h = textSize_.y * size;
-        float marginY = additionalRowsHeight_ * size + padding_[0];
+        float marginY = (additionalRowsHeight_ + padding_[0]) * size;
         actualTextSize_ = { w, h };
         glActiveTexture(GL_TEXTURE0);
         float vertices[] = {
-            pos.x,     pos.y - marginY + h,   0.0f, 1.0f,          
+            pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
             pos.x,     pos.y - marginY,       0.0f, 0.0f,
             pos.x + w, pos.y - marginY,       1.0f, 0.0f,
 
