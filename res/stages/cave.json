@@ -50,7 +50,7 @@
                 "object": "OBJ_LEVER"
             },
             "Interactable": {
-                "event": [ "WhatIs(this)", "OpenGate('gate_0')", "LeverAnimation(this)" ]
+                "event": [ "OpenGate('gate_0')", "LeverAnimation(this)" ]
             }
         },
         {

@@ -219,8 +219,14 @@ void MonkeyGame::Start() {
         debugOverlay->fontId = "firacode-regular.ttf";
 
         // super text rendering benchmark 9000
-        /*UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
-        for (int i = 0; i < 100; i++) {
+        UI::Canvas& canvas = GetRenderer().CreateCanvas("test");
+        Entity& textEntity = GAME->GetEntityManager().CreateEntity();
+        UI::TextComponent* textComponent = textEntity.AddComponent<UI::TextComponent>(&GAME->GetRenderer().GetCanvas("test"));
+        textComponent->font = "firacode-regular.ttf";
+        textComponent->AddToCanvas();
+        textComponent->SetText("teohnsfohasoiuhadsf\nuusi rivi\n\nviela uudempi rivi");
+        textEntity.transform->position.y = 720 - 100;
+        /*for (int i = 0; i < 100; i++) {
             Entity& testText = entityManager_.CreateEntity();
             auto textComponent = testText.AddComponent<UI::TextComponent>(&canvas);
             textComponent->AddToCanvas();

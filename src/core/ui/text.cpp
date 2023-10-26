@@ -27,6 +27,7 @@ bool UI::Text::Init() {
 
 bool RenderGlyphs(Font& font) {
     FT_Face& face = font.fontFace;
+    font.fontHeight = face->height >> 6;
     bool warn = false;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     for (WCHAR c = 0; c < font.fontFace->num_glyphs; c++) {
@@ -86,12 +87,17 @@ void Resources::FontManager::SetFontSize(int size) {
     SetFontSize(glm::ivec2(fontSize_.x, size));
 }
 
-void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size, float modifier) {    
+void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size, float modifier, float lineSpacing) {    
     glActiveTexture(GL_TEXTURE0);
     charShape.Bind();
-
+    glm::vec2 startPos = pos;
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
+        if (*it == '\n') {
+            pos.x = startPos.x;
+            pos.y -= font.fontHeight * size + lineSpacing;
+            continue;
+        }
 
         glm::vec2 actualPos(pos.x + c.bearing.x * size, pos.y - (c.size.y - c.bearing.y) * size);
         float w = c.size.x * size * modifier;
@@ -122,6 +128,17 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
 
 
 int UI::Text::GetTextWidth(const Font& font, const std::string& text) {
+    if (std::count(text.begin(), text.end(), '\n') > 0) {
+        std::stringstream ss(text);
+        std::string ln;
+        int max = 0;
+        while(std::getline(ss, ln, '\n')){
+            int w = GetTextWidth(font, ln);
+            if (w > max)
+                max = w;
+        }
+        return max;
+    }
     int width = 0;
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
@@ -143,7 +160,18 @@ glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& tex
     return glm::ivec2(-min, max);
 }
 
-int UI::Text::GetTextHeight(const Font& font, const std::string& text) {
-    auto padding = GetVerticalPadding(font, text);
-    return padding[1] + padding[0];
+int UI::Text::GetTextHeight(const Font& font, const std::string& text, int lineSpacing) {
+    int h = 0;
+    int additionalRows = (int) std::count(text.begin(), text.end(), '\n');
+    glm::ivec2 padding;
+    if (additionalRows > 0) {
+        h += additionalRows * (font.fontHeight + lineSpacing);
+        std::string lastRow = text.substr(text.find_last_of('\n'));
+        padding = GetVerticalPadding(font, lastRow);
+    }
+    else {
+        padding = GetVerticalPadding(font, text);
+    }
+    h += padding[1] + padding[0];
+    return h;
 }

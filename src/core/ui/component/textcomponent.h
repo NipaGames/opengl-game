@@ -24,12 +24,15 @@ namespace UI {
         glm::ivec2 textSize_ = glm::vec2(0.0f);
         glm::ivec2 actualTextSize_ = glm::vec2(0.0f);
         glm::ivec2 padding_ = glm::vec2(0.0f);
+        int additionalRows_ = 0;
+        float additionalRowsHeight_ = 0;
         TextRenderingMethod renderingMethod_;
         bool hasStarted_ = false;
         Shape shape_;
         void ResizeText();
     public:
         std::string font;
+        float lineSpacing = 5.0f;
         glm::vec4 color = glm::vec4(1.0f);
         TextRenderingMethod renderingMethod = TextRenderingMethod::RENDER_TO_TEXTURE; // Must be declared before start, no effect otherwise
         

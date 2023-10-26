@@ -36,23 +36,23 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     glm::ivec2 windowSize;
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
-
     if (renderingMethod_ == TextRenderingMethod::RENDER_EVERY_FRAME) {
         UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size, modifier);
     }
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         float w = textSize_.x * size * modifier;
         float h = textSize_.y * size;
+        float marginY = additionalRowsHeight_ * size - padding_[0];
         actualTextSize_ = { w, h };
         glActiveTexture(GL_TEXTURE0);
         float vertices[] = {
-            pos.x,     pos.y - padding_[0] + h,   0.0f, 1.0f,          
-            pos.x,     pos.y - padding_[0],       0.0f, 0.0f,
-            pos.x + w, pos.y - padding_[0],       1.0f, 0.0f,
+            pos.x,     pos.y - marginY + h,   0.0f, 1.0f,          
+            pos.x,     pos.y - marginY,       0.0f, 0.0f,
+            pos.x + w, pos.y - marginY,       1.0f, 0.0f,
 
-            pos.x,     pos.y - padding_[0] + h,   0.0f, 1.0f,
-            pos.x + w, pos.y - padding_[0],       1.0f, 0.0f,
-            pos.x + w, pos.y - padding_[0] + h,   1.0f, 1.0f
+            pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
+            pos.x + w, pos.y - marginY,       1.0f, 0.0f,
+            pos.x + w, pos.y - marginY + h,   1.0f, 1.0f
         };
         shape_.SetVertexData(vertices);
         shape_.Bind();
@@ -68,7 +68,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
 void UI::TextComponent::ResizeText() {
     auto& f = GAME->resources.fontManager.Get(font);
     padding_ = UI::Text::GetVerticalPadding(f, text_);
-    textSize_ = glm::ivec2(UI::Text::GetTextWidth(f, text_), padding_[1] + padding_[0]);
+    textSize_ = glm::ivec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_));
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glBindTexture(GL_TEXTURE_2D, texture_);
@@ -88,11 +88,13 @@ void UI::TextComponent::ResizeText() {
     glm::ivec2 windowSize;
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     shader_.SetUniform("projection", glm::ortho(0.0f, (float) windowSize.x, 0.0f, (float) windowSize.y));
-    UI::Text::RenderText(f, text_, glm::vec2(0, padding_[0]), 1.0f, 1.0f);
+    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0]), 1.0f, 1.0f, lineSpacing);
 }
 
 void UI::TextComponent::SetText(const std::string& t) {
     text_ = t;
+    additionalRows_ = (int) std::count(text_.begin(), text_.end(), '\n');
+    additionalRowsHeight_ = additionalRows_ * (GAME->resources.fontManager.Get(font).fontHeight + lineSpacing);
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE && hasStarted_) {
         ResizeText();
     }
