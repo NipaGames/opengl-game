@@ -74,8 +74,16 @@ void UI::TextComponent::ResizeText() {
     glm::ivec2 windowSize;
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     textSize_ = glm::vec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_, (int) lineSpacing));
-    float m = textureResolutionModifier * parent->transform->size.z;
-    glm::ivec2 texSize = (glm::vec2) windowSize * m;
+    glm::ivec2 texSize;
+    float m = textureResolutionModifier;
+    bool renderWndSizeTextures = textSize_.x * m > windowSize.x || textSize_.y * m > windowSize.y;
+    if (renderWndSizeTextures) {
+        m *= parent->transform->size.z;
+        texSize = (glm::vec2) windowSize * m;
+    }
+    else {
+        texSize = (glm::vec2) textSize_ * m;
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glBindTexture(GL_TEXTURE_2D, texture_);
@@ -92,7 +100,12 @@ void UI::TextComponent::ResizeText() {
     // finally drawing
     shader_.Use();
     shader_.SetUniform("textColor", glm::vec4(1.0f));
-    shader_.SetUniform("projection", glm::ortho(0.0f, (float) textSize_.x, 0.0f, (float) textSize_.y));
+    if (renderWndSizeTextures) {
+        shader_.SetUniform("projection", glm::ortho(0.0f, (float) textSize_.x, 0.0f, (float) textSize_.y));
+    }
+    else {
+        shader_.SetUniform("projection", glm::ortho(0.0f, (float) windowSize.x, 0.0f, (float) windowSize.y));
+    }
     UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0] * m) * m, m, 1.0f, lineSpacing * m);
 }
 
