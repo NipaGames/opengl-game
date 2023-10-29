@@ -35,6 +35,7 @@ namespace UI {
         float lineSpacing = 5.0f;
         glm::vec4 color = glm::vec4(1.0f);
         TextRenderingMethod renderingMethod = TextRenderingMethod::RENDER_TO_TEXTURE; // Must be declared before start, no effect otherwise
+        float textureResolutionModifier = 1.0f;
         
         virtual ~TextComponent();
         TextComponent() = default;

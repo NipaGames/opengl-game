@@ -73,9 +73,9 @@ void UI::TextComponent::ResizeText() {
 
     glm::ivec2 windowSize;
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
-    textSize_ = glm::ivec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_, (int) lineSpacing));
-    float size = (float) textSize_.y / windowSize.y;
-    glm::ivec2 texSize = (glm::vec2) textSize_ / size;
+    textSize_ = glm::vec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_, (int) lineSpacing));
+    float m = textureResolutionModifier * parent->transform->size.z;
+    glm::ivec2 texSize = (glm::vec2) windowSize * m;
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glBindTexture(GL_TEXTURE_2D, texture_);
@@ -93,16 +93,7 @@ void UI::TextComponent::ResizeText() {
     shader_.Use();
     shader_.SetUniform("textColor", glm::vec4(1.0f));
     shader_.SetUniform("projection", glm::ortho(0.0f, (float) textSize_.x, 0.0f, (float) textSize_.y));
-    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0]), 1.0f, ((float) textSize_.x / textSize_.y) * ((float) windowSize.y / windowSize.x), lineSpacing);
-
-    /*
-    uint8_t* pixels = new uint8_t[texSize.x * texSize.y * 4];
-    glBindTexture(GL_TEXTURE_2D, texture_);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    stbi_flip_vertically_on_write(true);
-    stbi_write_bmp("text.bmp", texSize.x, texSize.y, 4, pixels);
-    delete[] pixels;
-    */
+    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0] * m) * m, m, 1.0f, lineSpacing * m);
 }
 
 void UI::TextComponent::SetText(const std::string& t) {
