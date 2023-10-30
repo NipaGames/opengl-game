@@ -179,7 +179,21 @@
         "uniforms": {
             "specularHighlight": 4,
             "specularStrength": 1.0,
-            "color": [ 0.0, 0.0, 1.0 ]
+            "color": [ 0.0, 0.0, 1.0 ],
+            "ambientColor": [ 0.0, 0.0, 0.5 ]
+        }
+    },
+    {
+        "id": "MAT_INSTRUCTIONS",
+        "shader": "LIT",
+        "texture": {
+            "path": "instructions.jpg"
+        },
+        "uniforms": {
+            "specularHighlight": 8,
+            "specularStrength": 0,
+            "color": 1.0,
+            "ambientColor": 0.5
         }
     }
 ]

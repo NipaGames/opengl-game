@@ -190,6 +190,16 @@ void MonkeyGame::Start() {
     spawnInteractable->event = spawnEvent;
     spawnInteractable->trigger = TriggerType::IN_PROXIMITY;
 
+    Entity& board = entityManager_.CreateEntity();
+    auto boardRenderer = board.AddComponent<MeshRenderer>();
+    boardRenderer->meshes = resources.modelManager["OBJ_BOARD"].meshes;
+    boardRenderer->isStatic = true;
+    board.transform->position = glm::vec3(15.0f, -.4f, 0.0f);
+    board.transform->rotation = glm::quat(glm::vec3(0.0f, M_PI, 0.0f));
+    auto boardRigidbody = board.AddComponent<Physics::RigidBody>();
+    boardRigidbody->colliderFrom = Physics::ColliderConstructor::AABB;
+    boardRigidbody->mass = 0.0f;
+
     float range = 4.0f;
     int monkeyCount = 6;
     Model& monkeyModel = resources.modelManager["chimp.fbx"];
