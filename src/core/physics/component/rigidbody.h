@@ -16,6 +16,8 @@ namespace Physics {
         bool enableDebugVisualization_ = true;
         bool enableRotation_ = true;
         glm::vec3 colliderOriginOffset_ = glm::vec3(0.0f);
+        btTriangleIndexVertexArray* meshData_ = nullptr;
+        btCollisionShape* CreateMeshCollider();
     public:
         btRigidBody* rigidBody = nullptr;
         DEFINE_COMPONENT_DATA_VALUE(btCollisionShape*, collider, nullptr);

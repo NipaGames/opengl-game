@@ -10,6 +10,70 @@ RigidBody::~RigidBody() {
     if (rigidBody != nullptr)
         dynamicsWorld->removeRigidBody(rigidBody);
     delete collider;
+    if (meshData_ != nullptr) {
+        for (int i = 0; i < meshData_->getIndexedMeshArray().size(); i++) {
+            delete[] meshData_->getIndexedMeshArray()[i].m_vertexBase;
+            delete[] meshData_->getIndexedMeshArray()[i].m_triangleIndexBase;
+        }
+        delete meshData_;
+    }
+}
+
+
+// really not feeling it right now, just copied here
+// (this even comes with 16 bit optimizations!!!)
+// https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=7802
+btCollisionShape* RigidBody::CreateMeshCollider() {
+    meshData_ = new btTriangleIndexVertexArray();
+    const std::vector<std::shared_ptr<Mesh>>& meshes = parent->GetComponent<MeshRenderer>()->meshes;
+    for (int meshIndex = 0; meshIndex < meshes.size(); meshIndex++) {
+        const std::shared_ptr<Mesh>& m = meshes.at(meshIndex);
+        btIndexedMesh tempMesh;
+        meshData_->addIndexedMesh(tempMesh, PHY_FLOAT);
+
+        btIndexedMesh& mesh = meshData_->getIndexedMeshArray()[meshIndex];
+
+        size_t numIndices = m->indices.size();
+        mesh.m_numTriangles = (int) numIndices / 3;
+        
+        if (numIndices < std::numeric_limits<int16_t>::max()) {
+            // we can use 16-bit indices
+            mesh.m_triangleIndexBase = new unsigned char[sizeof(int16_t) * (size_t) numIndices];
+            mesh.m_indexType = PHY_SHORT;
+            mesh.m_triangleIndexStride = 3 * sizeof(int16_t);
+        } else {
+            // we need 32-bit indices
+            mesh.m_triangleIndexBase = new unsigned char[sizeof(int32_t) * (size_t) numIndices];
+            mesh.m_indexType = PHY_INTEGER;
+            mesh.m_triangleIndexStride = 3 * sizeof(int32_t);
+        }
+
+        mesh.m_numVertices = (int) m->vertices.size();
+        mesh.m_vertexBase = new unsigned char[3 * sizeof(btScalar) * (size_t) mesh.m_numVertices];
+        mesh.m_vertexStride = 3 * sizeof(btScalar);
+
+        // copy vertices into mesh
+        btScalar* vertexData = static_cast<btScalar*>((void*)(mesh.m_vertexBase));
+        for (int32_t i = 0; i < mesh.m_numVertices * 3; i++) {
+            vertexData[i] = m->vertices[i];
+        }
+        // copy indices into mesh
+        if (numIndices < std::numeric_limits<int16_t>::max()) {
+            // 16-bit case
+            int16_t* indices = static_cast<int16_t*>((void*) (mesh.m_triangleIndexBase));
+            for (int32_t i = 0; i < numIndices; i++) {
+                indices[i] = (int16_t) m->indices[i];
+            }
+        } else {
+            // 32-bit case
+            int32_t* indices = static_cast<int32_t*>((void*) (mesh.m_triangleIndexBase));
+            for (int32_t i = 0; i < numIndices; i++) {
+                indices[i] = m->indices[i];
+            }
+        }
+    }
+    btBvhTriangleMeshShape* colliderShape = new btBvhTriangleMeshShape(meshData_, true);
+    return colliderShape;
 }
 
 void RigidBody::Start() {
@@ -30,6 +94,7 @@ void RigidBody::Start() {
                 transform.setOrigin(Physics::GLMVectorToBtVector3(colliderOriginOffset_ * t->size));
                 break;
             case ColliderConstructor::MESH:
+                collider = CreateMeshCollider();
                 break;
         }
     }

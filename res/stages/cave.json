@@ -28,6 +28,10 @@
                 "object": "OBJ_CAVE",
                 "isStatic": true,
                 "alwaysOnFrustum": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "MESH"
             }
         },
         {
