@@ -120,6 +120,19 @@ namespace Serializer {
         return AddSerializer<JSONValueSerializer<T...>, IJSONValueSerializer, JSONSerializerFunction, T...>(JSON_COMPONENT_VAL_SERIALIZERS, f);
     }
 
+    template<typename T>
+    void* AddJSONEnumSerializer() {
+        return AddSerializer<JSONValueSerializer<T>, IJSONValueSerializer, JSONSerializerFunction, T>(JSON_COMPONENT_VAL_SERIALIZERS, [](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+            if (!j.is_string())
+                return false;
+            auto e = magic_enum::enum_cast<T>((std::string) j);
+            if (!e.has_value())
+                return false;
+            args.Return(e.value());
+            return true;
+        });
+    }
+
     bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&, const std::string& = "");
     template<typename T>
     bool SetJSONPointerValue(T* ptr, const nlohmann::json& jsonVal) {

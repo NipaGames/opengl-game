@@ -128,15 +128,7 @@ void RigidBody::EnableRotation(bool enabled) {
 #include <core/io/serializer.h>
 #include <core/io/serializetypes.h>
 
-JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
-    if (!j.is_string())
-        return false;
-    auto constructor = magic_enum::enum_cast<ColliderConstructor>((std::string) j);
-    if (!constructor.has_value())
-        return false;
-    args.Return(constructor.value());
-    return true;
-}, ColliderConstructor);
+JSON_SERIALIZE_ENUM(ColliderConstructor);
 
 // TODO: create colliders from scratch
 JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {

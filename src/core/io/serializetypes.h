@@ -11,5 +11,6 @@
 // Return true if successful,
 // Return value with (Serializer::SerializationArgs&) args.Return(val);
 #define JSON_SERIALIZE_TYPES(f, ...) static const void* _UNIQUE_VAR_NAME(_json_serialization_init_val_) = Serializer::AddJSONSerializer<__VA_ARGS__>(f)
+#define JSON_SERIALIZE_ENUM(E) static const void* _UNIQUE_VAR_NAME(_json_serialization_init_val_) = Serializer::AddJSONEnumSerializer<E>()
 
 void RegisterDefaultSerializers();

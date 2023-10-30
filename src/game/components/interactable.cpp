@@ -36,12 +36,4 @@ void Interactable::Update() {
 #include <core/io/serializer.h>
 #include <core/io/serializetypes.h>
 
-JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
-    if (!j.is_string())
-        return false;
-    auto trigger = magic_enum::enum_cast<TriggerType>((std::string) j);
-    if (!trigger.has_value())
-        return false;
-    args.Return(trigger.value());
-    return true;
-}, TriggerType);
+JSON_SERIALIZE_ENUM(TriggerType);
