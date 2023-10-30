@@ -16,6 +16,7 @@
 #include "components/rotatecube.h"
 #include "components/debugoverlay.h"
 #include "components/gate.h"
+#include "components/interactable.h"
 #include "event.h"
 #include "eventparser.h"
 
@@ -52,6 +53,10 @@ void MonkeyGame::PreLoad() {
 
 void WhatIs(std::string str) {
     spdlog::info(str);
+}
+
+void SpawnPlayer() {
+    GAME->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
 }
 
 void RegisterCommands(Console& console) {
@@ -140,7 +145,7 @@ void RegisterCommands(Console& console) {
             spdlog::warn("Stage '{}' not loaded!", stage);
     });
     console.RegisterCommand("spawn", [](const std::string& stage) {
-        GAME->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
+        SpawnPlayer();
     });
 }
 
@@ -150,12 +155,10 @@ void MonkeyGame::Start() {
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "cave.json"));
 
     REGISTER_EVENT(WhatIs);
+    EVENT_MANAGER.RegisterEvent("Spawn", SpawnPlayer);
     EVENT_MANAGER.RegisterEvent("OpenGate", Gate::OpenGate);
 
     RegisterCommands(console);
-
-    hud.fontId = "firacode-regular.ttf";
-    hud.CreateHUDElements();
     
     Entity& player = entityManager_.CreateEntity(playerId);
     player.AddComponent<PlayerController>();
@@ -174,6 +177,18 @@ void MonkeyGame::Start() {
         "graycloud_bk.jpg"
     };
     renderer_.skyboxTexture = Cubemap::LoadTextureFromFaces("cloud-skybox", faces, true);
+
+    Entity& spawn = entityManager_.CreateEntity();
+    auto spawnRenderer = spawn.AddComponent<MeshRenderer>();
+    spawnRenderer->meshes = resources.modelManager["OBJ_SPAWN"].meshes;
+    spawnRenderer->isStatic = true;
+    spawn.transform->position = glm::vec3(0.0f, 2.0f, -20.0f);
+    spawn.transform->size = glm::vec3(.5f);
+    auto spawnInteractable = spawn.AddComponent<Interactable>();
+    Event spawnEvent;
+    spawnEvent.AddCommand("Spawn()");
+    spawnInteractable->event = spawnEvent;
+    spawnInteractable->trigger = TriggerType::IN_PROXIMITY;
 
     float range = 4.0f;
     int monkeyCount = 6;
@@ -238,6 +253,10 @@ void MonkeyGame::Start() {
             textComponent->SetText(std::to_string(i));
         }
         */
+    }
+    if (resources.fontManager.HasLoaded("Augusta.ttf")) {
+        hud.fontId = "Augusta.ttf";
+        hud.CreateHUDElements();
     }
     Stage::LoadStage("teststage");
 }

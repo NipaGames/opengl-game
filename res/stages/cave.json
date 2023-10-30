@@ -2,6 +2,12 @@
     "id": "cave",
     "entities": [
         {
+            "id": "Player",
+            "PlayerController": {
+                "spawnPosition": [ 0, -5, 105.5 ]
+            }
+        },
+        {
             "Transform": {
                 "position": [ 12, 20, 5 ]
             },
@@ -50,7 +56,9 @@
                 "object": "OBJ_LEVER"
             },
             "Interactable": {
-                "event": [ "OpenGate('gate_0')", "LeverAnimation(this)" ]
+                "event": [ "OpenGate('gate_0')", "LeverAnimation(this)" ],
+                "message": "OPEN_GATE",
+                "oneUse": true
             }
         },
         {

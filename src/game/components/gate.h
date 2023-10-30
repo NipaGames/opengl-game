@@ -11,7 +11,7 @@ private:
     float startHeight_;
 public:
     DEFINE_COMPONENT_DATA_VALUE(double, openingSeconds, 2.0);
-    DEFINE_COMPONENT_DATA_VALUE(float, openingHeight, 4.0f);
+    DEFINE_COMPONENT_DATA_VALUE(float, openingHeight, 4.5f);
     bool isOpened = false;
     static void OpenGate(std::string);
     void Open();

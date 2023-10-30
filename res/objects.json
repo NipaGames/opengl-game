@@ -35,6 +35,11 @@
         }
     },
     {
+        "model": "OBJ_SPAWN",
+        "size": 2.0,
+        "defaultMaterial": "MAT_SPAWN"
+    },
+    {
         "model": "OBJ_LEVER",
         "size": 0.1,
         "defaultMaterial": "MAT_WOOD",

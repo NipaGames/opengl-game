@@ -9,6 +9,6 @@ public:
     std::string fontId;
     UI::TextComponent* interactMsg = nullptr;
     void CreateHUDElements();
-    void ShowInteractMessage(const std::string&);
+    void ShowInteractMessage(const std::string&, int = -1);
     void HideInteractMessage();
 };

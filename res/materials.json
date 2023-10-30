@@ -172,5 +172,14 @@
                 "opacity": 0.5
             }
         }
+    },
+    {
+        "id": "MAT_SPAWN",
+        "shader": "LIT",
+        "uniforms": {
+            "specularHighlight": 4,
+            "specularStrength": 1.0,
+            "color": [ 0.0, 0.0, 1.0 ]
+        }
     }
 ]

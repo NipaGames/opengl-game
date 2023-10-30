@@ -6,6 +6,12 @@
 #include <core/game.h>
 #include <core/input.h>
 
+Interactable::~Interactable() {
+    if (previouslyInProximity_) {
+        MonkeyGame::GetGame()->hud.HideInteractMessage();
+    }
+}
+
 void Interactable::Start() {
     playerTransform_ = GAME->GetEntityManager().GetEntity("Player").transform;
 }
@@ -16,16 +22,24 @@ void Interactable::Trigger() {
 }
 
 void Interactable::Update() {
+    if (oneUse && hasBeenUsed_)
+        return;
     inProximity_ = glm::distance(parent->transform->position, playerTransform_->position) < range;
     if (inProximity_) {
-        if (trigger == TriggerType::INTERACT && Input::IsKeyPressedDown(GLFW_KEY_E)) {
+        if (trigger == TriggerType::INTERACT && Input::IsKeyPressedDown(keyCode)) {
             Trigger();
+            hasBeenUsed_ = true;
+            if (oneUse)
+                MonkeyGame::GetGame()->hud.HideInteractMessage();
         }
         if (!previouslyInProximity_) {
             if (trigger == TriggerType::IN_PROXIMITY) {
                 Trigger();
+                hasBeenUsed_ = true;
             }
-            MonkeyGame::GetGame()->hud.ShowInteractMessage("OPEN");
+            else {
+                MonkeyGame::GetGame()->hud.ShowInteractMessage(message, keyCode);
+            }
             previouslyInProximity_ = true;
         }
     }
