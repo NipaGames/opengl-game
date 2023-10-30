@@ -36,6 +36,7 @@ namespace UI {
         glm::vec4 color = glm::vec4(1.0f);
         TextRenderingMethod renderingMethod = TextRenderingMethod::RENDER_TO_TEXTURE; // Must be declared before start, no effect otherwise
         float textureResolutionModifier = 1.0f;
+        bool isVisible = true;
         
         virtual ~TextComponent();
         TextComponent() = default;

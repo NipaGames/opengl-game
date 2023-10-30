@@ -18,7 +18,6 @@
 #include "components/gate.h"
 #include "event.h"
 #include "eventparser.h"
-#include "console.h"
 
 #ifdef _WIN32
 #undef APIENTRY
@@ -34,7 +33,9 @@
 Lights::PointLight* playerLight = nullptr;
 const std::string playerId = "Player";
 
-Console console;
+MonkeyGame* MonkeyGame::GetGame() {
+    return static_cast<MonkeyGame*>(GAME.get());
+}
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
@@ -53,7 +54,7 @@ void WhatIs(std::string str) {
     spdlog::info(str);
 }
 
-void RegisterCommands() {
+void RegisterCommands(Console& console) {
     console.RegisterCommand("quit", [](const std::string&) {
         spdlog::info("byee!! :3");
         // yeah could clean up or something before quitting
@@ -78,7 +79,7 @@ void RegisterCommands() {
     console.RegisterCommand("goodgirl", [](const std::string&) {
         spdlog::info("you're such a good girl <3");
     });
-    console.RegisterCommand("list", [](const std::string& strArgs) {
+    console.RegisterCommand("list", [&](const std::string& strArgs) {
         std::vector<std::string> args = Console::SplitArgs(strArgs);
         bool listCommands = std::find(args.begin(), args.end(), "commands") != args.end();
         bool listEvents = std::find(args.begin(), args.end(), "events") != args.end();
@@ -151,7 +152,10 @@ void MonkeyGame::Start() {
     REGISTER_EVENT(WhatIs);
     EVENT_MANAGER.RegisterEvent("OpenGate", Gate::OpenGate);
 
-    RegisterCommands();
+    RegisterCommands(console);
+
+    hud.fontId = "firacode-regular.ttf";
+    hud.CreateHUDElements();
     
     Entity& player = entityManager_.CreateEntity(playerId);
     player.AddComponent<PlayerController>();

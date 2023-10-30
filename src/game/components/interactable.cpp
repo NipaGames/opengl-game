@@ -1,5 +1,6 @@
 #include "interactable.h"
 #include "../eventparser.h"
+#include "../game.h"
 
 #include <core/entity/entity.h>
 #include <core/game.h>
@@ -24,10 +25,14 @@ void Interactable::Update() {
             if (trigger == TriggerType::IN_PROXIMITY) {
                 Trigger();
             }
+            MonkeyGame::GetGame()->hud.ShowInteractMessage("OPEN");
             previouslyInProximity_ = true;
         }
     }
     else {
+        if (previouslyInProximity_) {
+            MonkeyGame::GetGame()->hud.HideInteractMessage();
+        }
         previouslyInProximity_ = false;
     }
 }

@@ -28,6 +28,8 @@ void UI::TextComponent::Start() {
 }
 
 void UI::TextComponent::Render(const glm::mat4& projection) {
+    if (!isVisible)
+        return;
     shader_.Use();
     shader_.SetUniform("textColor", color);
     shader_.SetUniform("projection", projection);
