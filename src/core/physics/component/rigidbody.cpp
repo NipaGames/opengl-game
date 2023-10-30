@@ -9,7 +9,6 @@ using namespace Physics;
 RigidBody::~RigidBody() {
     if (rigidBody != nullptr)
         dynamicsWorld->removeRigidBody(rigidBody);
-    delete collider;
     if (meshData_ != nullptr) {
         for (int i = 0; i < meshData_->getIndexedMeshArray().size(); i++) {
             delete[] meshData_->getIndexedMeshArray()[i].m_vertexBase;
@@ -17,12 +16,13 @@ RigidBody::~RigidBody() {
         }
         delete meshData_;
     }
+    delete collider;
 }
 
 
-// really not feeling it right now, just copied here
-// (this even comes with 16 bit optimizations!!!)
+// really not feeling it right now, just copied from here
 // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=7802
+// (this even comes with 16 bit optimizations!!!)
 btCollisionShape* RigidBody::CreateMeshCollider() {
     meshData_ = new btTriangleIndexVertexArray();
     const std::vector<std::shared_ptr<Mesh>>& meshes = parent->GetComponent<MeshRenderer>()->meshes;
