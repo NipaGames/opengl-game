@@ -42,41 +42,45 @@ btCollisionShape* RigidBody::CreateMeshCollider() {
         size_t numIndices = m->indices.size();
         mesh.m_numTriangles = (int) numIndices / 3;
         
+        unsigned char* indices = nullptr;
+        unsigned char* vertices = nullptr;
         if (numIndices < std::numeric_limits<int16_t>::max()) {
             // we can use 16-bit indices
-            mesh.m_triangleIndexBase = new unsigned char[sizeof(int16_t) * (size_t) numIndices];
+            indices = new unsigned char[sizeof(int16_t) * (size_t) numIndices];
             mesh.m_indexType = PHY_SHORT;
             mesh.m_triangleIndexStride = 3 * sizeof(int16_t);
         } else {
             // we need 32-bit indices
-            mesh.m_triangleIndexBase = new unsigned char[sizeof(int32_t) * (size_t) numIndices];
+            vertices = new unsigned char[sizeof(int32_t) * (size_t) numIndices];
             mesh.m_indexType = PHY_INTEGER;
             mesh.m_triangleIndexStride = 3 * sizeof(int32_t);
         }
 
         mesh.m_numVertices = (int) m->vertices.size();
-        mesh.m_vertexBase = new unsigned char[sizeof(btScalar) * (size_t) mesh.m_numVertices];
+        vertices = new unsigned char[sizeof(btScalar) * (size_t) mesh.m_numVertices];
         mesh.m_vertexStride = 3 * sizeof(btScalar);
 
         // copy vertices into mesh
-        btScalar* vertexData = (btScalar*) mesh.m_vertexBase;
+        btScalar* scalarVertices = reinterpret_cast<btScalar*>(vertices);
         for (int32_t i = 0; i < mesh.m_numVertices; i++) {
-            vertexData[i] = m->vertices[i];
+            scalarVertices[i] = m->vertices[i];
         }
         // copy indices into mesh
         if (numIndices < std::numeric_limits<int16_t>::max()) {
             // 16-bit case
-            int16_t* indices = (int16_t*) mesh.m_triangleIndexBase;
+            int16_t* indices_16 = reinterpret_cast<int16_t*>(indices);
             for (int32_t i = 0; i < numIndices; i++) {
-                indices[i] = (int16_t) m->indices[i];
+                indices_16[i] = (int16_t) m->indices[i];
             }
         } else {
             // 32-bit case
-            int32_t* indices = (int32_t*) mesh.m_triangleIndexBase;
+            int32_t* indices_32 = reinterpret_cast<int32_t*>(indices);
             for (int32_t i = 0; i < numIndices; i++) {
-                indices[i] = m->indices[i];
+                indices_32[i] = m->indices[i];
             }
         }
+        mesh.m_vertexBase = vertices;
+        mesh.m_triangleIndexBase = indices;
     }
     btBvhTriangleMeshShape* colliderShape = new btBvhTriangleMeshShape(meshData_, true);
     return colliderShape;

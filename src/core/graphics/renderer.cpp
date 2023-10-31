@@ -80,7 +80,7 @@ bool Renderer::Init() {
     framebufferShape_.numVertexAttributes = 4;
     framebufferShape_.GenerateVAO();
     framebufferShape_.Bind();
-    float quadVertices[] = {
+    const float quadVertices[] = {
         // positions   // texCoords
         -1.0f,  1.0f,  0.0f, 1.0f,
         -1.0f, -1.0f,  0.0f, 0.0f,
