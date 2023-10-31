@@ -7,16 +7,22 @@
 using namespace Physics;
 
 RigidBody::~RigidBody() {
-    if (rigidBody != nullptr)
-        dynamicsWorld->removeRigidBody(rigidBody);
     if (meshData_ != nullptr) {
         for (int i = 0; i < meshData_->getIndexedMeshArray().size(); i++) {
             delete[] meshData_->getIndexedMeshArray()[i].m_vertexBase;
             delete[] meshData_->getIndexedMeshArray()[i].m_triangleIndexBase;
         }
-        delete meshData_;
+        meshData_->getIndexedMeshArray().clear();
     }
+    if (rigidBody != nullptr && dynamicsWorld != nullptr) {
+        dynamicsWorld->removeRigidBody(rigidBody);
+    }
+    delete rigidBody;
     delete collider;
+    delete meshData_;
+    collider = nullptr;
+    rigidBody = nullptr;
+    meshData_ = nullptr;
 }
 
 
@@ -49,24 +55,24 @@ btCollisionShape* RigidBody::CreateMeshCollider() {
         }
 
         mesh.m_numVertices = (int) m->vertices.size();
-        mesh.m_vertexBase = new unsigned char[3 * sizeof(btScalar) * (size_t) mesh.m_numVertices];
+        mesh.m_vertexBase = new unsigned char[sizeof(btScalar) * (size_t) mesh.m_numVertices];
         mesh.m_vertexStride = 3 * sizeof(btScalar);
 
         // copy vertices into mesh
-        btScalar* vertexData = static_cast<btScalar*>((void*)(mesh.m_vertexBase));
-        for (int32_t i = 0; i < mesh.m_numVertices * 3; i++) {
+        btScalar* vertexData = (btScalar*) mesh.m_vertexBase;
+        for (int32_t i = 0; i < mesh.m_numVertices; i++) {
             vertexData[i] = m->vertices[i];
         }
         // copy indices into mesh
         if (numIndices < std::numeric_limits<int16_t>::max()) {
             // 16-bit case
-            int16_t* indices = static_cast<int16_t*>((void*) (mesh.m_triangleIndexBase));
+            int16_t* indices = (int16_t*) mesh.m_triangleIndexBase;
             for (int32_t i = 0; i < numIndices; i++) {
                 indices[i] = (int16_t) m->indices[i];
             }
         } else {
             // 32-bit case
-            int32_t* indices = static_cast<int32_t*>((void*) (mesh.m_triangleIndexBase));
+            int32_t* indices = (int32_t*) mesh.m_triangleIndexBase;
             for (int32_t i = 0; i < numIndices; i++) {
                 indices[i] = m->indices[i];
             }
@@ -80,6 +86,8 @@ void RigidBody::Start() {
     Transform* t = parent->transform;
     btTransform transform;
     transform.setIdentity();
+    meshData_ = nullptr;
+    rigidBody = nullptr;
 
     MeshRenderer* meshRenderer;
     if (collider == nullptr) {

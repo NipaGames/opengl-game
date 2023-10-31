@@ -24,4 +24,10 @@ void Physics::Destroy() {
     delete dispatcher;
     delete collisionConfiguration;
     delete debugDrawer;
+    dynamicsWorld = nullptr;
+    solver = nullptr;
+    axisSweep = nullptr;
+    dispatcher = nullptr;
+    collisionConfiguration = nullptr;
+    debugDrawer = nullptr;
 }
