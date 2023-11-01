@@ -51,7 +51,7 @@ btCollisionShape* RigidBody::CreateMeshCollider() {
             mesh.m_triangleIndexStride = 3 * sizeof(int16_t);
         } else {
             // we need 32-bit indices
-            vertices = new unsigned char[sizeof(int32_t) * (size_t) numIndices];
+            indices = new unsigned char[sizeof(int32_t) * (size_t) numIndices];
             mesh.m_indexType = PHY_INTEGER;
             mesh.m_triangleIndexStride = 3 * sizeof(int32_t);
         }

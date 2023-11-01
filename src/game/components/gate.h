@@ -11,7 +11,7 @@ private:
 public:
     DEFINE_COMPONENT_DATA_VALUE(float, height, 4.5f);
     void Interpolate(float) override;
-    void Play();
-    void Start();
+    void Play() override;
+    void Start() override;
 };
 REGISTER_COMPONENT(Gate);

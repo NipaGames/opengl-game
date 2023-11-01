@@ -14,8 +14,8 @@ public:
     static void PlayAnimation(std::string, std::string);
     virtual void Interpolate(float) { }
     virtual void Play();
-    void Start();
-    void Update();
+    virtual void Start();
+    virtual void Update();
 };
 
 class MeshTransformAnimation : public AnimationComponent {
@@ -29,8 +29,8 @@ public:
     virtual glm::mat4 Transform(float) { return baseTransform_; }
     void Interpolate(float) override;
     void UpdateTransforms(const glm::mat4&);
-    void Play();
-    void Update();
+    void Play() override;
+    void Update() override;
 };
 REGISTER_COMPONENT(MeshTransformAnimation);
 
