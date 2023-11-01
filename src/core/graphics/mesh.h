@@ -16,6 +16,7 @@ public:
     GLuint ebo = NULL;
     GLuint normalBuffer = NULL;
     GLuint texCoordBuffer = NULL;
+    glm::mat4 transformMatrix = glm::mat4(1.0f);
     ViewFrustum::AABB aabb;
     Mesh() = default;
     Mesh(const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& t, const std::vector<float>& n) : vertices(v), indices(i), texCoords(t), normals(n) { }

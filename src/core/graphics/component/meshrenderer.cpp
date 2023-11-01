@@ -16,7 +16,15 @@ MeshRenderer::~MeshRenderer() {
 void MeshRenderer::Start() {
     if (!object.empty()) {
         for (auto mesh : GAME->resources.modelManager[object].meshes) {
-            meshes.push_back(mesh);
+            if (copyMeshes) {
+                std::shared_ptr<Mesh> meshCopy = std::make_shared<Mesh>(*mesh);
+                meshCopy->material = mesh->material;
+                meshCopy->GenerateVAO();
+                meshes.push_back(meshCopy);
+            }
+            else {
+                meshes.push_back(mesh);
+            }
         }
     }
     if (isStatic)
@@ -63,7 +71,7 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
 
         shader->SetUniform("projection", projectionMatrix);
         shader->SetUniform("view", viewMatrix);
-        shader->SetUniform("model", modelMatrix_);
+        shader->SetUniform("model", modelMatrix_ * mesh->transformMatrix);
         shader->SetUniform("viewPos", GAME->GetRenderer().GetCamera().pos);
         shader->SetUniform("time", (float) glfwGetTime());
         mesh->Render();

@@ -57,12 +57,19 @@
                 "rotation": [ 0, 93, 0 ]
             },
             "MeshRenderer": {
-                "object": "OBJ_LEVER"
+                "object": "OBJ_LEVER",
+                "copyMeshes": true
             },
             "Interactable": {
-                "event": [ "OpenGate('gate_0')", "LeverAnimation(this)" ],
+                "event": [ "OpenGate('gate_0')", "RotationAnimation(this)" ],
                 "message": "OPEN_GATE",
                 "oneUse": true
+            },
+            "RotationAnimationComponent": {
+                "meshTransforms": [
+                    3, 4
+                ],
+                "animationLength": 0.5
             }
         },
         {
