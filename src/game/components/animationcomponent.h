@@ -11,9 +11,9 @@ public:
     DEFINE_COMPONENT_DATA_VALUE(float, animationLength, 1.0f);
     DEFINE_COMPONENT_DATA_VALUE(float, animationDelay, 0.0f);
     // start and negative end angle
-    static void PlayAnimation(std::string);
+    static void PlayAnimation(std::string, std::string);
     virtual void Interpolate(float) { }
-    void Play();
+    virtual void Play();
     void Start();
     void Update();
 };
@@ -28,9 +28,9 @@ public:
 
     virtual glm::mat4 Transform(float) { return baseTransform_; }
     void Interpolate(float) override;
-    void Update();
     void UpdateTransforms(const glm::mat4&);
     void Play();
+    void Update();
 };
 REGISTER_COMPONENT(MeshTransformAnimation);
 

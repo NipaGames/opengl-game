@@ -1,14 +1,14 @@
 #include "animationcomponent.h"
 #include <core/game.h>
 
-void AnimationComponent::PlayAnimation(std::string entityId) {
+void AnimationComponent::PlayAnimation(std::string entityId, std::string componentName) {
     if (GAME->GetEntityManager().CountEntities(entityId) == 0) {
         spdlog::warn("Entity '{}' not found!", entityId);
         return;
     }
-    MeshRotationAnimation* animationComponent = GAME->GetEntityManager().GetEntity(entityId).GetComponent<MeshRotationAnimation>();
+    AnimationComponent* animationComponent = dynamic_cast<AnimationComponent*>(GAME->GetEntityManager().GetEntity(entityId).GetComponent(componentName));
     if (animationComponent == nullptr) {
-        spdlog::warn("Entity '{}' does not have an animation component!", entityId);
+        spdlog::warn("Entity '{}' does not have an animation component '{}'!", entityId, componentName);
         return;
     }
     animationComponent->Play();

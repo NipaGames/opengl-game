@@ -56,15 +56,6 @@ void WhatIs(std::string str) {
     spdlog::info(str);
 }
 
-void LeverAnimation(std::string leverId) {
-    Entity& leverEntity = GAME->GetEntityManager().GetEntity(leverId);
-    //leverEntity.GetComponent<MeshRenderer>()->meshes.clear();
-    glm::mat4 identity = glm::mat4(1.0f);
-    glm::mat4 rotationMatrix = glm::rotate(identity, glm::radians(60.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    leverEntity.GetComponent<MeshRenderer>()->meshes.at(3)->transformMatrix = rotationMatrix;
-    leverEntity.GetComponent<MeshRenderer>()->meshes.at(4)->transformMatrix = rotationMatrix;
-}
-
 void SpawnPlayer() {
     GAME->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
 }
@@ -165,10 +156,8 @@ void MonkeyGame::Start() {
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "cave.json"));
 
     REGISTER_EVENT(WhatIs);
-    REGISTER_EVENT(LeverAnimation);
     EVENT_MANAGER.RegisterEvent("Spawn", SpawnPlayer);
-    EVENT_MANAGER.RegisterEvent("OpenGate", Gate::OpenGate);
-    EVENT_MANAGER.RegisterEvent("RotationAnimation", AnimationComponent::PlayAnimation);
+    EVENT_MANAGER.RegisterEvent("PlayAnimation", AnimationComponent::PlayAnimation);
 
     RegisterCommands(console);
     

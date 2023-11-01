@@ -48,7 +48,10 @@
                 "colliderFrom": "AABB",
                 "overwriteTransform": false
             },
-            "Gate": { }
+            "Gate": {
+                "animationLength": 2.0,
+                "animationDelay": 0.75
+            }
         },
         {
             "id": "lever_0",
@@ -61,7 +64,10 @@
                 "copyMeshes": true
             },
             "Interactable": {
-                "event": [ "OpenGate('gate_0')", "RotationAnimation(this)" ],
+                "event": [
+                    "PlayAnimation('gate_0', 'Gate')",
+                    "PlayAnimation(this, 'MeshRotationAnimation')"
+                ],
                 "message": "OPEN_GATE",
                 "oneUse": true
             },
