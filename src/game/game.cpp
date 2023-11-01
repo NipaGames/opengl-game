@@ -16,7 +16,7 @@
 #include "components/rotatecube.h"
 #include "components/debugoverlay.h"
 #include "components/gate.h"
-#include "components/rotationanimation.h"
+#include "components/animationcomponent.h"
 #include "components/interactable.h"
 #include "event.h"
 #include "eventparser.h"
@@ -168,7 +168,7 @@ void MonkeyGame::Start() {
     REGISTER_EVENT(LeverAnimation);
     EVENT_MANAGER.RegisterEvent("Spawn", SpawnPlayer);
     EVENT_MANAGER.RegisterEvent("OpenGate", Gate::OpenGate);
-    EVENT_MANAGER.RegisterEvent("RotationAnimation", RotationAnimationComponent::RotationAnimation);
+    EVENT_MANAGER.RegisterEvent("RotationAnimation", AnimationComponent::PlayAnimation);
 
     RegisterCommands(console);
     
