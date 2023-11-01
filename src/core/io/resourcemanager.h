@@ -7,6 +7,7 @@
 #include <map>
 #include <filesystem>
 #include <optional>
+#include <variant>
 #include <spdlog/spdlog.h>
 
 #include "paths.h"
@@ -27,9 +28,11 @@ namespace CFG {
 
 class Resources {
 public:
+    using AdditionalImportData = std::vector<std::variant<std::string, float>>;
     struct Import {
         std::string path;
         std::string id;
+        AdditionalImportData additionalData;
     };
     template <typename T>
     class ResourceManager {
@@ -45,12 +48,15 @@ public:
         };
         std::string itemID_;
         std::string typeStr_;
+        AdditionalImportData additionalData_;
     protected:
         std::map<std::string, T, ItemComp> items_;
         std::fs::path path_;
         virtual std::optional<T> LoadResource(const std::fs::path&) = 0;
         void SetItemID(const std::string& id) { itemID_ = id; }
+        void SetAdditionalData(const AdditionalImportData& data) { additionalData_ = data; }
         const std::string& GetItemID() { return itemID_; }
+        const AdditionalImportData& GetAdditionalData() { return additionalData_; }
     public:
         ResourceManager(const std::fs::path& p, const std::string& t = "resource") : path_(p), typeStr_(t) { }
         virtual void LoadAll() {
@@ -63,6 +69,7 @@ public:
                     SetItemID(std::fs::proximate(f.path, path_).generic_string());
                 else
                     SetItemID(f.id);
+                SetAdditionalData(f.additionalData);
                 Load(path_ / f.path);
             }
         }

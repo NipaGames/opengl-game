@@ -71,9 +71,14 @@ bool RenderGlyphs(Font& font) {
 std::optional<Font> Resources::FontManager::LoadResource(const std::fs::path& path) {
     std::string pathStr = path.string();
     Font font;
+    const auto& additional = GetAdditionalData();
+    glm::ivec2 fontSize = fontSize_;
+    if (!additional.empty()) {
+        fontSize = { 0, std::get<float>(GetAdditionalData().at(0)) };
+    }
     if (FT_New_Face(freeType, pathStr.c_str(), 0, &font.fontFace))
         return std::nullopt;
-    FT_Set_Pixel_Sizes(font.fontFace, fontSize_.x, fontSize_.y);
+    FT_Set_Pixel_Sizes(font.fontFace, fontSize.x, fontSize.y);
     if (RenderGlyphs(font))
         spdlog::warn("Some glyphs not loaded!", pathStr);
     return std::optional<Font>(font);

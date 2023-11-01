@@ -244,11 +244,11 @@ void MonkeyGame::Start() {
     terrainRb->mass = 0.0f;
     terrainRb->collider = plane->CreateBtCollider();
     
-    if (resources.fontManager.HasLoaded("firacode-regular.ttf")) {
+    if (resources.fontManager.HasLoaded("FONT_FIRACODE")) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
         debugOverlay->parent->transform->size.z = .5f;
         debugOverlay->parent->transform->position = glm::vec3(10, -30, 0);
-        debugOverlay->fontId = "firacode-regular.ttf";
+        debugOverlay->fontId = "FONT_FIRACODE";
 
         // super text rendering benchmark 9000
         /*
@@ -257,7 +257,7 @@ void MonkeyGame::Start() {
             Entity& testText = entityManager_.CreateEntity();
             auto textComponent = testText.AddComponent<UI::TextComponent>(&canvas);
             textComponent->AddToCanvas();
-            textComponent->font = "firacode-regular.ttf";
+            textComponent->font = "FONT_FIRACODE";
             testText.transform->position.x = (float) ((i / 10) % 1280 * 128);
             testText.transform->position.y = (float) (720 - 72 - (i % 10) * 72);
             testText.transform->size.x = 1.0f;
@@ -265,8 +265,8 @@ void MonkeyGame::Start() {
         }
         */
     }
-    if (resources.fontManager.HasLoaded("MorrisRoman.ttf")) {
-        hud.fontId = "MorrisRoman.ttf";
+    if (resources.fontManager.HasLoaded("FONT_MORRIS")) {
+        hud.fontId = "FONT_MORRIS";
         hud.CreateHUDElements();
     }
     Stage::LoadStage("teststage");

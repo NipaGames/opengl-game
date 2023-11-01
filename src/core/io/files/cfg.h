@@ -14,12 +14,15 @@ namespace CFG {
         NUMBER,
         ARRAY,
         STRUCT,
-        STRUCT_MEMBER_REQUIRED
+        STRUCT_MEMBER_REQUIRED,
+        AMBIGUOUS
     };
     #define CFG_ARRAY(type) CFG::CFGFieldType::ARRAY, type
     #define CFG_REQUIRE(type) CFG::CFGFieldType::STRUCT_MEMBER_REQUIRED, type
     #define CFG_STRUCT(...) CFG::CFGFieldType::STRUCT, __VA_ARGS__
-    #define CFG_IMPORT_ARRAY CFG_ARRAY(CFG_STRUCT(CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING))
+    #define CFG_IMPORT CFG_STRUCT(CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING)
+    #define CFG_FONT_STRUCT CFG_STRUCT(CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING, CFG::CFGFieldType::NUMBER)
+    #define CFG_IMPORT_ARRAY CFG_ARRAY(CFG_IMPORT)
     
     struct CFGStructuredField {
         std::string name;
@@ -46,6 +49,7 @@ namespace CFG {
         std::string name;
         CFGFieldType type;
         CFGField<std::vector<ICFGField*>>* parent;
+        bool automaticallyCreated = false;
         ICFGField() = default;
         ICFGField(CFGFieldType t) : type(t) { }
         ICFGField(const std::string& n, CFGFieldType t) : name(n), type(t) { }
@@ -73,11 +77,14 @@ namespace CFG {
                 return nullptr;
             return static_cast<CFGField<F>*>(*it);
         }
-        template<typename F>
-        const CFGField<F>* GetItemByIndex(int i) const {
+        const ICFGField* GetItemByIndex(int i) const {
             if (i >= GetItems().size())
                 return nullptr;
-            return static_cast<CFGField<F>*>(GetItems().at(i));
+            return GetItems().at(i);
+        }
+        template<typename F>
+        const CFGField<F>* GetItemByIndex(int i) const {
+            return static_cast<const CFGField<F>*>(GetItemByIndex(i));
         }
         const CFGField<std::vector<ICFGField*>>* GetObjectByName(const std::string& name) const {
             return GetItemByName<std::vector<CFG::ICFGField*>>(name);
@@ -119,7 +126,23 @@ namespace CFG {
                 const auto* idField = import->GetItemByIndex<std::string>(1);
                 if (pathField == nullptr || idField == nullptr)
                     continue;
-                imports.push_back({ pathField->GetValue(), idField->GetValue() });
+                Resources::Import importStruct;
+                importStruct.id = idField->GetValue();
+                importStruct.path = pathField->GetValue();
+                for (int i = 2; i < import->GetItems().size(); i++) {
+                    const ICFGField* additional = import->GetItemByIndex(i);
+                    if (additional->automaticallyCreated)
+                        continue;
+                    switch(additional->type) {
+                        case CFGFieldType::STRING:
+                            importStruct.additionalData.push_back(import->GetItemByIndex<std::string>(i)->GetValue());
+                            break;
+                        case CFGFieldType::NUMBER:
+                            importStruct.additionalData.push_back(import->GetItemByIndex<float>(i)->GetValue());
+                            break;
+                    }
+                }
+                imports.push_back(importStruct);
             }
             return imports;
         }
@@ -153,7 +176,7 @@ namespace CFG {
     class ImportsFile : public CFGFile {
         CFGStructuredFields DefineFields() const override {
             return {
-                { "fonts", CFG_IMPORT_ARRAY },
+                { "fonts", CFG_ARRAY(CFG_FONT_STRUCT) },
                 { "models", CFG_IMPORT_ARRAY },
                 { "shaders", CFG_IMPORT_ARRAY },
                 { "stages", CFG_IMPORT_ARRAY },
