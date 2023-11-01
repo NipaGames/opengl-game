@@ -15,7 +15,7 @@ void HUD::CreateHUDElements() {
     Canvas& c = GAME->GetRenderer().CreateCanvas(canvasId);
     Entity& interactMsgEntity = GAME->GetEntityManager().CreateEntity();
     interactMsgEntity.transform->position.x = 10;
-    interactMsgEntity.transform->position.y = 20;
+    interactMsgEntity.transform->position.y = 15;
     interactMsgEntity.transform->size.z = .75f;
     interactMsg = interactMsgEntity.AddComponent<TextComponent>(&c);
     interactMsg->font = fontId;

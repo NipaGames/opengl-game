@@ -56,7 +56,7 @@
         {
             "id": "lever_0",
             "Transform": {
-                "position": [ 38.5, -4, 51.8 ],
+                "position": [ 38.5, -4.5, 51.8 ],
                 "rotation": [ 0, 93, 0 ]
             },
             "MeshRenderer": {

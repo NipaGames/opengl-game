@@ -129,6 +129,7 @@ void RigidBody::Start() {
     rigidBody->setDamping(0.0f, 1.0f);
     if (doesMassAffectGravity)
         rigidBody->setGravity(rigidBody->getGravity() * mass);
+    rigidBody->isKinematicObject();
 }
 
 void RigidBody::UpdateTransform() {

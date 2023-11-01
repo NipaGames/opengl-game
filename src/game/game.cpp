@@ -265,8 +265,8 @@ void MonkeyGame::Start() {
         }
         */
     }
-    if (resources.fontManager.HasLoaded("Augusta.ttf")) {
-        hud.fontId = "Augusta.ttf";
+    if (resources.fontManager.HasLoaded("MorrisRoman.ttf")) {
+        hud.fontId = "MorrisRoman.ttf";
         hud.CreateHUDElements();
     }
     Stage::LoadStage("teststage");

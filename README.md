@@ -133,8 +133,7 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 ![a gate opening](/images/gate.gif)
 
-*added a cool event system*  
-1.11.2023
+*added a cool event system* 1.11.2023
 
  
 

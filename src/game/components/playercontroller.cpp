@@ -37,7 +37,7 @@ void PlayerController::Start() {
 	ghostObject_->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
     ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
     characterController_ = new btKinematicCharacterController(ghostObject_, capsuleCollider, stepHeight_, btVector3(0.0f, 1.0f, 0.0f));
-    characterController_->setMaxPenetrationDepth(.2f);
+    characterController_->setMaxPenetrationDepth(stepHeight_);
     characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
     characterController_->setJumpSpeed(btScalar(jumpSpeed_));
     Physics::dynamicsWorld->addCollisionObject(ghostObject_, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
@@ -54,7 +54,7 @@ void PlayerController::Update() {
     front = glm::normalize(front);
 
     btVector3 rayFrom(parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
-    btVector3 rayTo(rayFrom.getX(), rayFrom.getY() - 2.0f, rayFrom.getZ());
+    btVector3 rayTo(rayFrom.getX(), rayFrom.getY() - 1.5f, rayFrom.getZ());
     btCollisionWorld::ClosestRayResultCallback res(rayFrom, rayTo);
     Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
     bool isOnGround = res.hasHit() || characterController_->onGround();
@@ -87,6 +87,14 @@ void PlayerController::Update() {
                 characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
                 ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
             }
+        }
+        if (isOnGround) {
+            characterController_->setStepHeight(stepHeight_);
+            characterController_->setMaxPenetrationDepth(stepHeight_);
+        }
+        else {
+            characterController_->setStepHeight(0.0f);
+            characterController_->setMaxPenetrationDepth(0.05f);
         }
         if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && isOnGround && !isFlying_) {
             characterController_->jump();
