@@ -21,6 +21,10 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 ###  Version history:
 
+-  **v0.7:** event system, console
+
+-  **v0.6:** added some actual content (a cave level)
+
 -  **v0.5:** more serialization (for example materials.json and objects.json)
 
 -  **v0.4:** bullet physics engine
@@ -124,6 +128,13 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
 *now it actually looks like a game*  
 10.10.2023
+
+ 
+
+![a gate opening](/images/gate.gif)
+
+*added a cool event system*  
+1.11.2023
 
  
 
