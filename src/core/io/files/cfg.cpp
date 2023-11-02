@@ -196,7 +196,7 @@ bool IsValidType(CFGFieldType in, CFGFieldType expected, bool allowCasts = true)
 
 bool ValidateSubItems(ICFGField* node, const std::vector<CFGFieldType>& types) {
     const CFGObject* arrayObject = static_cast<const CFGObject*>(node);
-        // yeah could just as well be a raw loop but will keep this for now
+    // yeah could just as well be a raw loop but will keep this for now
     auto validate = [&](CFG::ICFGField* f) {
         return !ValidateCFGFieldType(f, { types.begin() + 1, types.end() });
     };
@@ -369,13 +369,14 @@ CFGObject* CFGSerializer::ParseCFG(std::stringstream& buffer, const CFGFile* fil
     if (fileFormat != nullptr) {
         if (!ValidateCFG(root, fileFormat)) {
             spdlog::warn("Field validation failed!");
+            delete root;
             return nullptr;
         }
     }
     return root;
 }
 
-void CFGSerializer::ParseContents(std::ifstream& f) {
+bool CFGSerializer::ParseContents(std::ifstream& f) {
     std::stringstream buffer;
     buffer << f.rdbuf();
     root_ = ParseCFG(buffer, file_);
@@ -383,5 +384,7 @@ void CFGSerializer::ParseContents(std::ifstream& f) {
         // create an empty object, don't wan't to null check every time
         root_ = new CFGObject();
         spdlog::warn("({}) CFG parsing failed!", path_);
+        return false;
     }
+    return true;
 }

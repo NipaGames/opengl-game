@@ -47,7 +47,7 @@ void IFileSerializer::SerializeFile() {
         spdlog::error("Cannot read file '" + path_ + "'!");
         return;
     }
-    ParseContents(f);
+    status_ = ParseContents(f) ? SerializationStatus::OK : SerializationStatus::FAILED;
 }
 
 void IFileSerializer::SerializeFile(const std::string& p) {
@@ -55,14 +55,14 @@ void IFileSerializer::SerializeFile(const std::string& p) {
     SerializeFile();
 }
 
-void JSONFileSerializer::ParseContents(std::ifstream& f) {
+bool JSONFileSerializer::ParseContents(std::ifstream& f) {
     try {
         jsonData_ = nlohmann::json::parse(f);
     }
     catch (std::exception& e) {
         spdlog::error("[" + path_ + "] Invalid JSON syntax!");
         spdlog::debug(e.what());
-        return;
+        return false;
     }
-    ParseJSON();
+    return ParseJSON();
 }

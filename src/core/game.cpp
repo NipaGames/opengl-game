@@ -37,7 +37,11 @@ void Game::GameThread() {
     Physics::Init();
     RegisterDefaultSerializers();
     resources.LoadAll();
-    renderer_.UpdateFramebufferVideoSettings(resources.videoSettings);
+    renderer_.UpdateVideoSettings(resources.videoSettings);
+    window_.UseVsync(resources.videoSettings.useVsync);
+    glfwSetWindowSize(window_.GetWindow(), resources.videoSettings.resolution.x, resources.videoSettings.resolution.y);
+    if (resources.videoSettings.fullscreen)
+        Input::UPDATE_FULLSCREEN = true;
     Start();
     for (const auto& entity : entityManager_.entities_) {
         entity->Start();

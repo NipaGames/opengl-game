@@ -200,6 +200,11 @@ void GameWindow::SetupInputSystem() {
     glfwSetCursorPosCallback(window_, MouseCallback);
 }
 
+void GameWindow::UseVsync(bool enabled) {
+    useVsync_ = enabled;
+    Input::VSYNC_POLL_RATE_CHANGE_PENDING = true;
+}
+
 void GameWindow::UpdateInputSystem() {
     glfwWaitEvents();
     if (Input::UPDATE_FULLSCREEN) {
@@ -209,12 +214,18 @@ void GameWindow::UpdateInputSystem() {
         if (isFullscreen_) {
             GLFWmonitor* monitor = glfwGetPrimaryMonitor();
             const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+            int fullscreenWidth = GAME->resources.videoSettings.fullscreenResolution.x;
+            int fullscreenHeight = GAME->resources.videoSettings.fullscreenResolution.y;
+            if (fullscreenWidth <= 0)
+                fullscreenWidth = mode->width;
+            if (fullscreenHeight <= 0)
+                fullscreenHeight = mode->height;
             glfwGetWindowPos(window_, &prevWndPos_.x, &prevWndPos_.y);
             glfwGetWindowSize(window_, &prevWndSize_.x, &prevWndSize_.y);
             if (useVsync_)
-                glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+                glfwSetWindowMonitor(window_, monitor, 0, 0, fullscreenWidth, fullscreenHeight, mode->refreshRate);
             else
-                glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+                glfwSetWindowMonitor(window_, monitor, 0, 0, fullscreenWidth, fullscreenHeight, GLFW_DONT_CARE);
             Input::VSYNC_POLL_RATE_CHANGE_PENDING = true;
             Input::SET_FULLSCREEN_PENDING = true;
         }

@@ -6,6 +6,6 @@
 namespace Serializer {
     class ObjectSerializer : public JSONFileSerializer, public SerializerItemInterface<Object> {
     protected:
-        void ParseJSON() override;
+        bool ParseJSON() override;
     };
 };

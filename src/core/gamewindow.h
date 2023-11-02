@@ -41,5 +41,6 @@ public:
     void ResetCursorPos();
     void OnEvent(EventType, std::function<void()>);
     bool IsUsingVsync() { return useVsync_; }
+    void UseVsync(bool);
     GLFWwindow* const GetWindow() { return window_; }
 };

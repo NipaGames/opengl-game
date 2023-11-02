@@ -35,6 +35,7 @@ namespace CFG {
     #define CFG_REQUIRE(type) CFG::CFGFieldType::STRUCT_MEMBER_REQUIRED, type
     #define CFG_STRUCT(...) CFG::CFGFieldType::STRUCT, __VA_ARGS__
     #define CFG_IMPORT CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING
+    #define CFG_VEC2(type) CFG_STRUCT(CFG_REQUIRE(type), CFG_REQUIRE(type))
     
     struct CFGStructuredField {
         std::string name;
@@ -56,6 +57,22 @@ namespace CFG {
         { }
         CFGStructuredField(const std::string& n, const std::vector<CFGStructuredField>& v) : CFGStructuredField(n, false, v) { }
     };
+
+    inline CFGStructuredField Mandatory(const std::string& n, const std::vector<CFGStructuredField>& v) {
+        return CFGStructuredField {n, true, v};
+    }
+    template<typename... Field>
+    inline CFGStructuredField Mandatory(const std::string& n, const Field&... t) {
+        return CFGStructuredField {n, true, t...};
+    }
+
+    inline CFGStructuredField Optional(const std::string& n, const std::vector<CFGStructuredField>& v) {
+        return CFGStructuredField {n, false, v};
+    }
+    template<typename... Field>
+    inline CFGStructuredField Optional(const std::string& n, const Field&... t) {
+        return CFGStructuredField {n, false, t...};
+    }
 
     class ICFGField {
     public:
@@ -207,11 +224,11 @@ namespace CFG {
     class ImportsFile : public CFGFile {
         CFGStructuredFields DefineFields() const override {
             return {
-                { "fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::INTEGER)) },
-                { "models", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
-                { "shaders", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
-                { "stages", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
-                { "textures", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) }
+                Optional("fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::INTEGER))),
+                Optional("models", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
+                Optional("shaders", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
+                Optional("stages", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
+                Optional("textures", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)))
             };
         }
     };
@@ -219,24 +236,28 @@ namespace CFG {
     class VideoSettingsFile : public CFGFile {
         CFGStructuredFields DefineFields() const override {
             return {
-                { "gamma", CFGFieldType::NUMBER }
+                Mandatory("gamma", CFGFieldType::FLOAT),
+                Mandatory("use_vsync", CFGFieldType::INTEGER),
+                Mandatory("fullscreen", CFGFieldType::INTEGER),
+                Mandatory("resolution", CFG_VEC2(CFGFieldType::INTEGER))
             };
         }
     };
 }
 
-namespace Serializer {    
+namespace Serializer {
     class CFGSerializer : public IFileSerializer {
     private:
         const CFG::CFGFile* file_ = nullptr;
         CFG::CFGObject* root_ = nullptr;
+
     public:
         ~CFGSerializer();
         CFGSerializer(const CFG::CFGFile* f) : file_(f) { }
         CFGSerializer(const CFG::CFGFile& f) : file_(&f) { }
         CFGSerializer() = default;
         static CFG::CFGObject* ParseCFG(std::stringstream&, const CFG::CFGFile* = nullptr);
-        void ParseContents(std::ifstream&) override;
+        bool ParseContents(std::ifstream&) override;
         CFG::CFGObject* GetRoot() { return root_; }
         void SetCFGFile(const CFG::CFGFile* f) { file_ = f; }
     };

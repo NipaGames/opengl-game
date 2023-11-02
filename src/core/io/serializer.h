@@ -147,17 +147,23 @@ namespace Serializer {
         return (serializer->fn)(args, jsonVal);
     }
 
-
+    enum class SerializationStatus {
+        OK,
+        FAILED
+    };
     class IFileSerializer {
     protected:
         std::string path_;
-        virtual void ParseContents(std::ifstream&) = 0;
+        SerializationStatus status_;
+        virtual bool ParseContents(std::ifstream&) = 0;
     public:
         virtual ~IFileSerializer() = default;
         virtual void SerializeFile();
         virtual void SerializeFile(const std::string&);
         IFileSerializer(const std::string& p) : path_(p) { }
         IFileSerializer() = default;
+        SerializationStatus GetReturnStatus() { return status_; }
+        bool Success() { return GetReturnStatus() == SerializationStatus::OK; }
     };
 
     template<typename T>
@@ -184,8 +190,8 @@ namespace Serializer {
     using IFileSerializer::IFileSerializer;
     protected:
         nlohmann::json jsonData_;
-        virtual void ParseJSON() = 0;
-        virtual void ParseContents(std::ifstream&) override;
+        virtual bool ParseJSON() = 0;
+        virtual bool ParseContents(std::ifstream&) override;
     public:
         virtual ~JSONFileSerializer() = default;
     };

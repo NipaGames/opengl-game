@@ -59,10 +59,10 @@ std::list<Entity> ParseEntities(const json& entities, int* invalidEntities = nul
     return parsedEntities;
 }
 
-void StageSerializer::ParseJSON() {
+bool StageSerializer::ParseJSON() {
     if (!jsonData_.contains("id")|| !jsonData_["id"].is_string()) {
         spdlog::error("[" + path_ + "] Missing 'id'!");
-        return;
+        return false;
     }
     stage_.id = jsonData_["id"];
     int invalidEntities = 0;
@@ -77,6 +77,7 @@ void StageSerializer::ParseJSON() {
     if (invalidEntities > 0) {
         spdlog::warn("[" + path_ + "] " + std::to_string(invalidEntities) + " invalid entities!");
     }
+    return true;
 }
 
 Stage::Stage& StageSerializer::GetStage() {

@@ -7,6 +7,6 @@ namespace Serializer {
     class MaterialSerializer : public JSONFileSerializer, public SerializerItemInterface<std::shared_ptr<Material>> {
     using JSONFileSerializer::JSONFileSerializer;
     protected:
-        void ParseJSON() override;
+        bool ParseJSON() override;
     };
 };

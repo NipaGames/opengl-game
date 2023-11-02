@@ -251,7 +251,7 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     }
 }
 
-void Renderer::UpdateFramebufferVideoSettings(const Resources::VideoSettings& settings) {
+void Renderer::UpdateVideoSettings(const Resources::VideoSettings& settings) {
     framebufferShader_.Use();
     framebufferShader_.SetUniform("cfg.gamma", settings.gamma);
     glUseProgram(0);

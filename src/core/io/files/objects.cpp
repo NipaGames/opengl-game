@@ -49,14 +49,15 @@ std::optional<ObjectPair> ParseObject(const json& objJson) {
     return std::make_optional<ObjectPair>(modelId, obj);
 }
 
-void ObjectSerializer::ParseJSON() {
+bool ObjectSerializer::ParseJSON() {
     if (!jsonData_.is_array()) {
         spdlog::error("[" + path_ + "] Must be an array!");
-        return;
+        return false;
     }
     for (const auto& obj : jsonData_.items()) {
         auto parsed = ParseObject(obj.value());
         if (parsed.has_value())
             items_.insert(parsed.value());
     }
+    return true;
 }

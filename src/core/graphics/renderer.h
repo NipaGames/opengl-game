@@ -62,7 +62,7 @@ public:
     void CopyShadersFromResources();
     void UpdateFrustum();
     void SortMeshesByDistance();
-    void UpdateFramebufferVideoSettings(const Resources::VideoSettings&);
+    void UpdateVideoSettings(const Resources::VideoSettings&);
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
     size_t CountEntitiesOnFrustum() { return entitiesOnFrustum_.size(); }

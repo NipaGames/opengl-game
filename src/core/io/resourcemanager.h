@@ -141,6 +141,10 @@ public:
 
     struct VideoSettings {
         float gamma;
+        bool useVsync;
+        bool fullscreen;
+        glm::ivec2 resolution;
+        glm::ivec2 fullscreenResolution;
     };
 
     const CFG::CFGObject* imports;
@@ -154,6 +158,7 @@ public:
     FontManager fontManager;
     ModelManager modelManager;
 
+    void RestoreDefaultVideoSettings();
     void ParseVideoSettings(CFG::CFGObject*);
     void LoadAll();
 };

@@ -73,6 +73,19 @@ void RegisterCommands(Console& console) {
             spdlog::warn("failed: {}", magic_enum::enum_name(err));
         }
     });
+    console.RegisterCommand("build", [](const std::string&) {
+        bool debug = false;
+        #ifdef DEBUG_BUILD
+        debug = true;
+        #endif
+        #ifdef VERSION_SPECIFIED
+        spdlog::info("v{}.{} [{}]", VERSION_MAJ, VERSION_MIN, debug ? "Debug" : "Release");
+        // yeah this is actually the timestamp of this file, would have to recompile this specifically every time
+        spdlog::info("built {}", __DATE__);
+        #else
+        spdlog::warn("can't get version info");
+        #endif
+    });
     console.RegisterCommand("github", [](const std::string&) {
         #ifdef _WIN32
         ShellExecuteW(0, 0, L"https://github.com/NipaGames/opengl-game", 0, 0 , SW_SHOW);

@@ -127,10 +127,10 @@ std::vector<std::pair<std::string, std::shared_ptr<Material>>> ParseMaterials(co
     return materials;
 }
 
-void MaterialSerializer::ParseJSON() {
+bool MaterialSerializer::ParseJSON() {
     if (!jsonData_.is_array()) {
         spdlog::error("[" + path_ + "] Must be an array!");
-        return;
+        return false;
     }
     int invalidMaterials = 0;
     for (const auto& m : jsonData_.items()) {
@@ -141,4 +141,5 @@ void MaterialSerializer::ParseJSON() {
     if (invalidMaterials > 0) {
         spdlog::warn("[" + path_ + "] " + std::to_string(invalidMaterials) + " invalid materials!");
     }
+    return true;
 }
