@@ -20,15 +20,15 @@
 
 // forward declarations
 namespace CFG {
-    struct ICFGField;
+    class ICFGField;
     template<typename>
-    struct CFGField;
+    class CFGField;
     typedef CFGField<std::vector<ICFGField*>> CFGObject;
 };
 
 class Resources {
 public:
-    using AdditionalImportData = std::vector<std::variant<std::string, float>>;
+    using AdditionalImportData = std::vector<std::variant<std::string, float, int>>;
     struct Import {
         std::string path;
         std::string id;

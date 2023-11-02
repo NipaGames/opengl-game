@@ -45,15 +45,29 @@ CFGParseTreeNode<std::string>* CreateIndentationTree(std::stringstream& buffer) 
     return root;
 }
 
-const std::string MATCH_NUMBER = "(\\d*\\.?\\d+)";
-const std::string MATCH_STRING = "(\\w+|\"(.*)\")";
+const std::string MATCH_NUMBER = "(-?\\d*\\.?\\d+)";
+const std::string MATCH_STRING = "([a-zA-Z_]\\w*|\"(.*)\")";
 
 ICFGField* ParseField(const std::string& val) {
     std::smatch groups;
     // number
     if (std::regex_search(val, std::regex("^" + MATCH_NUMBER + "$"))) {
-        CFGField<float>* thisNode = new CFGField<float>(CFGFieldType::NUMBER);
-        thisNode->value = std::stof(val);
+        ICFGField* thisNode = nullptr;
+        try {
+            if (val.find('.') == std::string::npos) {
+                CFGField<int>* intNode = new CFGField<int>(CFGFieldType::INTEGER);
+                intNode->value = std::stoi(val);
+                thisNode = intNode;
+            }
+            else {
+                CFGField<float>* floatNode = new CFGField<float>(CFGFieldType::FLOAT);
+                floatNode->value = std::stof(val);
+                thisNode = floatNode;
+            }
+        }
+        catch (std::exception){
+            return nullptr;
+        }
         return thisNode;
     }
     // string
@@ -101,7 +115,7 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
         // basically a hack around the fact that c++ regex provides no lookarounds
         // check that the next char is space or end
         if (groups.suffix().first != val.cend() && !std::isspace(*groups.suffix().first))
-            break;
+            return nullptr;
         searchStart = groups.suffix().first;
     }
     if (vals.empty())
@@ -124,7 +138,6 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
         field->name = name;
         return field;
     }
-
     return nullptr;
 }
 
@@ -144,7 +157,11 @@ ICFGField* CreateNewCFGObject(CFGFieldType type, ICFGField* copyFrom = nullptr) 
             field = CreateNewCFGObject<std::string>(copyFrom);
             break;
         case CFGFieldType::NUMBER:
+        case CFGFieldType::FLOAT:
             field = CreateNewCFGObject<float>(copyFrom);
+            break;
+        case CFGFieldType::INTEGER:
+            field = CreateNewCFGObject<int>(copyFrom);
             break;
         case CFGFieldType::ARRAY:
             field = CreateNewCFGObject<std::vector<ICFGField*>>(copyFrom);
@@ -163,6 +180,15 @@ ICFGField* CreateNewCFGObject(ICFGField* copyFrom) {
 
 
 bool ValidateCFGFieldType(ICFGField*, std::vector<CFGFieldType>);
+bool IsValidType(CFGFieldType in, CFGFieldType expected) {
+    if (in == expected)
+        return true;
+    if (in == CFGFieldType::FLOAT && (expected == CFGFieldType::NUMBER || expected == CFGFieldType::FLOAT))
+        return true;
+    if (in == CFGFieldType::INTEGER && (expected == CFGFieldType::NUMBER || expected == CFGFieldType::FLOAT || expected == CFGFieldType::INTEGER))
+        return true;
+    return false;
+}
 
 bool ValidateSubItems(ICFGField* node, const std::vector<CFGFieldType>& types) {
     const CFGObject* arrayObject = static_cast<const CFGObject*>(node);
@@ -197,7 +223,7 @@ bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
     while (!typesQueue.empty()) {
         if (typesQueue.front() == CFGFieldType::STRUCT_MEMBER_REQUIRED) {
             typesQueue.pop();
-            if (structTypesQueue.empty() || typesQueue.front() != structTypesQueue.front())
+            if (structTypesQueue.empty() || !IsValidType(typesQueue.front(), structTypesQueue.front()))
                 return false;
         }
         else {
@@ -206,7 +232,7 @@ bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
                 field->automaticallyCreated = true;
                 structNode->AddItem(field);
             }
-            else if (typesQueue.front() != structTypesQueue.front())
+            else if (!IsValidType(typesQueue.front(), structTypesQueue.front()))
                 return false;
         }
         typesQueue.pop();
@@ -252,7 +278,7 @@ bool ValidateCFGFieldType(ICFGField* node, std::vector<CFGFieldType> types) {
         }
         return success;
     }
-    if (node->type != types.at(0)) {
+    if (!IsValidType(node->type, types.at(0))) {
         spdlog::warn("Invalid field type for '{}'! (Expected {} but received {})",
             !node->name.empty() ? node->name : "UNNAMED_FIELD",
             magic_enum::enum_name(types.at(0)),

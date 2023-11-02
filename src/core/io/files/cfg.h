@@ -12,10 +12,11 @@ namespace CFG {
     enum class CFGFieldType {
         STRING,
         NUMBER,
+        INTEGER,
+        FLOAT,
         ARRAY,
         STRUCT,
-        STRUCT_MEMBER_REQUIRED,
-        AMBIGUOUS
+        STRUCT_MEMBER_REQUIRED
     };
     #define CFG_ARRAY(type) CFG::CFGFieldType::ARRAY, type
     #define CFG_REQUIRE(type) CFG::CFGFieldType::STRUCT_MEMBER_REQUIRED, type
@@ -43,7 +44,8 @@ namespace CFG {
         CFGStructuredField(const std::string& n, const std::vector<CFGStructuredField>& v) : CFGStructuredField(n, false, v) { }
     };
 
-    struct ICFGField {
+    class ICFGField {
+    public:
         std::string name;
         CFGFieldType type;
         CFGField<std::vector<ICFGField*>>* parent;
@@ -51,11 +53,17 @@ namespace CFG {
         ICFGField() = default;
         ICFGField(CFGFieldType t) : type(t) { }
         ICFGField(const std::string& n, CFGFieldType t) : name(n), type(t) { }
+        virtual bool HasType(const std::type_info&) const { return false; }
+        template<typename Type>
+        bool HasType() const {
+            return HasType(typeid(Type));
+        }
     };
 
     template<typename T>
-    struct CFGField : ICFGField {
-    using ICFGField::ICFGField;
+    class CFGField : public ICFGField {
+    public:
+        using ICFGField::ICFGField;
         T value;
         CFGField(const T& val) : value(val) { }
         const std::vector<ICFGField*>& GetItems() const { return static_cast<const std::vector<ICFGField*>&>(value); }
@@ -136,6 +144,15 @@ namespace CFG {
                             importStruct.additionalData.push_back(import->GetItemByIndex<std::string>(i)->GetValue());
                             break;
                         case CFGFieldType::NUMBER:
+                            if (import->GetItemByIndex(i)->HasType<int>())
+                                importStruct.additionalData.push_back(import->GetItemByIndex<int>(i)->GetValue());
+                            else
+                                importStruct.additionalData.push_back(import->GetItemByIndex<float>(i)->GetValue());
+                            break;
+                        case CFGFieldType::INTEGER:
+                            importStruct.additionalData.push_back(import->GetItemByIndex<int>(i)->GetValue());
+                            break;
+                        case CFGFieldType::FLOAT:
                             importStruct.additionalData.push_back(import->GetItemByIndex<float>(i)->GetValue());
                             break;
                     }
@@ -143,6 +160,9 @@ namespace CFG {
                 imports.push_back(importStruct);
             }
             return imports;
+        }
+        bool HasType(const std::type_info& type) const override {
+            return typeid(T).hash_code() == type.hash_code();
         }
     };
 
@@ -174,7 +194,7 @@ namespace CFG {
     class ImportsFile : public CFGFile {
         CFGStructuredFields DefineFields() const override {
             return {
-                { "fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::NUMBER)) },
+                { "fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::INTEGER)) },
                 { "models", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
                 { "shaders", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
                 { "stages", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },

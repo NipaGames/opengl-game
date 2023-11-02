@@ -74,7 +74,7 @@ std::optional<Font> Resources::FontManager::LoadResource(const std::fs::path& pa
     const auto& additional = GetAdditionalData();
     glm::ivec2 fontSize = fontSize_;
     if (!additional.empty()) {
-        fontSize = { 0, std::get<float>(GetAdditionalData().at(0)) };
+        fontSize = { 0, std::get<int>(GetAdditionalData().at(0)) };
     }
     if (FT_New_Face(freeType, pathStr.c_str(), 0, &font.fontFace))
         return std::nullopt;

@@ -5,6 +5,7 @@
 
 void Resources::ParseVideoSettings(CFG::CFGObject* root) {
     videoSettings.gamma = root->GetItemByName<float>("gamma")->value;
+    std::cout << videoSettings.gamma << std::endl;
 }
 
 void Resources::LoadAll() {
