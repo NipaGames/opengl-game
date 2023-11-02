@@ -163,9 +163,9 @@ void MonkeyGame::Start() {
     
     Entity& player = entityManager_.CreateEntity(playerId);
     player.AddComponent<PlayerController>();
-    playerLight = player.AddComponent<Lights::PointLight>();
+    /*playerLight = player.AddComponent<Lights::PointLight>();
     playerLight->intensity = .5f;
-    playerLight->range = 5.0f;
+    playerLight->range = 5.0f;*/
 
     renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE_WITHOUT_TEXCOORDS);
     renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
@@ -246,8 +246,8 @@ void MonkeyGame::Start() {
     
     if (resources.fontManager.HasLoaded("FONT_FIRACODE")) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
-        debugOverlay->parent->transform->size.z = .5f;
-        debugOverlay->parent->transform->position = glm::vec3(10, -30, 0);
+        debugOverlay->parent->transform->size.z = .35f;
+        debugOverlay->parent->transform->position = glm::vec3(10, -20, 0);
         debugOverlay->fontId = "FONT_FIRACODE";
 
         // super text rendering benchmark 9000
@@ -273,7 +273,8 @@ void MonkeyGame::Start() {
 }
 
 void MonkeyGame::Update() {
-    playerLight->ApplyForAllShaders();
+    if (playerLight != nullptr)
+        playerLight->ApplyForAllShaders();
     if (Input::IsKeyPressedDown(GLFW_KEY_F6))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
 
