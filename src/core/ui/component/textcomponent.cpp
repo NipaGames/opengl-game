@@ -37,6 +37,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     // janky ass way to determine the size
     float size = parent->transform->size.z;
 
+    auto& f = GAME->resources.fontManager.Get(font);
     glm::ivec2 windowSize;
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
@@ -44,7 +45,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size, modifier, lineSpacing * size);
     }
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
-        float w = textSize_.x * size * modifier;
+        float w = textSize_.x * size * modifier * (BASE_FONT_SIZE / (float) f.size.y);
         float h = textSize_.y * size;
         float marginY = (additionalRowsHeight_ + padding_[0]) * size;
         actualTextSize_ = { w, h };
@@ -78,7 +79,8 @@ void UI::TextComponent::ResizeText() {
     textSize_ = glm::vec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_, (int) lineSpacing));
     glm::ivec2 texSize;
     float m = textureResolutionModifier;
-    bool renderWndSizeTextures = textSize_.x * m > windowSize.x || textSize_.y * m > windowSize.y;
+    float fontModifier = f.size.y / (float) BASE_FONT_SIZE;
+    bool renderWndSizeTextures = textSize_.x * m * fontModifier > windowSize.x || textSize_.y * m * fontModifier > windowSize.y;
     if (renderWndSizeTextures) {
         m *= parent->transform->size.z;
         texSize = (glm::vec2) windowSize * m;
@@ -86,6 +88,7 @@ void UI::TextComponent::ResizeText() {
     else {
         texSize = (glm::vec2) textSize_ * m;
     }
+    texSize.y = (int) ((float) texSize.y * fontModifier);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glBindTexture(GL_TEXTURE_2D, texture_);
@@ -108,7 +111,7 @@ void UI::TextComponent::ResizeText() {
     else {
         shader_.SetUniform("projection", glm::ortho(0.0f, (float) windowSize.x, 0.0f, (float) windowSize.y));
     }
-    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0] * m) * m, m, 1.0f, lineSpacing * m);
+    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0] * m) * m * fontModifier, m, 1.0f, lineSpacing * m);
 }
 
 void UI::TextComponent::SetText(const std::string& t) {

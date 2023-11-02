@@ -21,6 +21,7 @@ namespace UI::Text {
     struct Font {
         FT_Face fontFace;
         int fontHeight;
+        glm::ivec2 size;
         std::unordered_map<WCHAR, Character> charMap;
     };
     

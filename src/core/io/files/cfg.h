@@ -20,9 +20,7 @@ namespace CFG {
     #define CFG_ARRAY(type) CFG::CFGFieldType::ARRAY, type
     #define CFG_REQUIRE(type) CFG::CFGFieldType::STRUCT_MEMBER_REQUIRED, type
     #define CFG_STRUCT(...) CFG::CFGFieldType::STRUCT, __VA_ARGS__
-    #define CFG_IMPORT CFG_STRUCT(CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING)
-    #define CFG_FONT_STRUCT CFG_STRUCT(CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING, CFG::CFGFieldType::NUMBER)
-    #define CFG_IMPORT_ARRAY CFG_ARRAY(CFG_IMPORT)
+    #define CFG_IMPORT CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING
     
     struct CFGStructuredField {
         std::string name;
@@ -176,11 +174,11 @@ namespace CFG {
     class ImportsFile : public CFGFile {
         CFGStructuredFields DefineFields() const override {
             return {
-                { "fonts", CFG_ARRAY(CFG_FONT_STRUCT) },
-                { "models", CFG_IMPORT_ARRAY },
-                { "shaders", CFG_IMPORT_ARRAY },
-                { "stages", CFG_IMPORT_ARRAY },
-                { "textures", CFG_IMPORT_ARRAY }
+                { "fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::NUMBER)) },
+                { "models", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
+                { "shaders", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
+                { "stages", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) },
+                { "textures", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)) }
             };
         }
     };

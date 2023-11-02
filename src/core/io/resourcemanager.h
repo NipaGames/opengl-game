@@ -121,10 +121,11 @@ public:
         GLuint& Get(const std::string& s) { return ResourceManager::Get(s); }
     };
 
+    #define BASE_FONT_SIZE 48
     class FontManager : public ResourceManager<UI::Text::Font> {
     protected:
         std::optional<UI::Text::Font> LoadResource(const std::fs::path&) override;
-        glm::ivec2 fontSize_ = { 0, 48 };
+        glm::ivec2 fontSize_ = { 0, BASE_FONT_SIZE };
     public:
         FontManager() : ResourceManager<UI::Text::Font>(Paths::FONTS_DIR, "font") { }
         void SetFontSize(const glm::ivec2&);

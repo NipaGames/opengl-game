@@ -81,6 +81,7 @@ std::optional<Font> Resources::FontManager::LoadResource(const std::fs::path& pa
     FT_Set_Pixel_Sizes(font.fontFace, fontSize.x, fontSize.y);
     if (RenderGlyphs(font))
         spdlog::warn("Some glyphs not loaded!", pathStr);
+    font.size = fontSize;
     return std::optional<Font>(font);
 }
 
@@ -100,7 +101,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
         Character c = font.charMap.at(*it);
         if (*it == '\n') {
             pos.x = startPos.x;
-            pos.y -= (font.fontHeight * size + lineSpacing);
+            pos.y -= (font.fontHeight * size + lineSpacing) * ((float) font.size.y / BASE_FONT_SIZE);
             continue;
         }
 
@@ -177,6 +178,8 @@ int UI::Text::GetTextHeight(const Font& font, const std::string& text, int lineS
         h += additionalRows * (font.fontHeight + lineSpacing);
         std::string lastRow = text.substr(text.find_last_of('\n'));
         padding = GetVerticalPadding(font, lastRow);
+        padding.x = (int) (padding.x * ((float) BASE_FONT_SIZE / font.size.y));
+        padding.y = (int) (padding.y * ((float) BASE_FONT_SIZE / font.size.y));
     }
     else {
         padding = GetVerticalPadding(font, text);
