@@ -9,6 +9,19 @@
 #include <magic_enum/magic_enum.hpp>
 
 namespace CFG {
+    /*
+    * CFGFieldType::NUMBER is kind of weird, you could argue
+    * that a FLOAT will do in any case a NUMBER would, but they
+    * are actually a bit different.
+    * Both of them will accept INTEGER inputs, but FLOAT will
+    * cast INTEGERs into floats at the validation stage. However,
+    * NUMBER will keep the original type. NUMBER's type can be checked
+    * with HasType<float/int>.
+    * 
+    * now, what i don't know is if there's actually any practical uses
+    * for NUMBER where FLOAT wouldn't work since you'll have to cast it
+    * anyway when retrieving the value.
+    */
     enum class CFGFieldType {
         STRING,
         NUMBER,

@@ -143,14 +143,14 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
 
 // ONLY COPIES THE VALUE, DOES NOT RETURN ANY TYPE OR NAME!
 template<typename T>
-ICFGField* CreateNewCFGObject(ICFGField* copyFrom = nullptr) {
+ICFGField* CreateNewCFGObject(const ICFGField* copyFrom = nullptr) {
     CFGField<T>* field = new CFGField<T>();
     if (copyFrom != nullptr)
-        field->value = static_cast<CFGField<T>*>(copyFrom)->value;
+        field->value = static_cast<const CFGField<T>*>(copyFrom)->value;
     return field;
 }
 
-ICFGField* CreateNewCFGObject(CFGFieldType type, ICFGField* copyFrom = nullptr) {
+ICFGField* CreateNewCFGObject(CFGFieldType type, const ICFGField* copyFrom = nullptr) {
     ICFGField* field;
     switch (type) {
         case CFGFieldType::STRING:
@@ -174,19 +174,23 @@ ICFGField* CreateNewCFGObject(CFGFieldType type, ICFGField* copyFrom = nullptr) 
     return field;
 }
 
-ICFGField* CreateNewCFGObject(ICFGField* copyFrom) {
+ICFGField* CreateNewCFGObject(const ICFGField* copyFrom) {
     return CreateNewCFGObject(copyFrom->type, copyFrom);
 }
 
-
 bool ValidateCFGFieldType(ICFGField*, std::vector<CFGFieldType>);
-bool IsValidType(CFGFieldType in, CFGFieldType expected) {
+
+bool IsValidType(CFGFieldType in, CFGFieldType expected, bool allowCasts = true) {
     if (in == expected)
         return true;
-    if (in == CFGFieldType::FLOAT && (expected == CFGFieldType::NUMBER || expected == CFGFieldType::FLOAT))
-        return true;
-    if (in == CFGFieldType::INTEGER && (expected == CFGFieldType::NUMBER || expected == CFGFieldType::FLOAT || expected == CFGFieldType::INTEGER))
-        return true;
+    if (!allowCasts)
+        return false;
+    switch (expected) {
+        case CFGFieldType::NUMBER:
+            return in == CFGFieldType::INTEGER || in == CFGFieldType::FLOAT;
+        case CFGFieldType::FLOAT:
+            return in == CFGFieldType::INTEGER || in == CFGFieldType::NUMBER;
+    }
     return false;
 }
 
@@ -217,29 +221,43 @@ bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
     else
         structNode = static_cast<CFGObject*>(node);
     std::queue<CFGFieldType> typesQueue(std::deque<CFGFieldType>(types.begin(), types.end()));
-    std::queue<CFGFieldType> structTypesQueue;
+    std::queue<CFGFieldType> receivedTypes;
     for (const auto& item : structNode->GetItems())
-        structTypesQueue.push(item->type);
+        receivedTypes.push(item->type);
+    int memberIndex = 0;
     while (!typesQueue.empty()) {
         if (typesQueue.front() == CFGFieldType::STRUCT_MEMBER_REQUIRED) {
             typesQueue.pop();
-            if (structTypesQueue.empty() || !IsValidType(typesQueue.front(), structTypesQueue.front()))
+            if (receivedTypes.empty())
                 return false;
         }
         else {
-            if (structTypesQueue.empty()) {
+            if (receivedTypes.empty()) {
                 ICFGField* field = CreateNewCFGObject(typesQueue.front());
                 field->automaticallyCreated = true;
                 structNode->AddItem(field);
             }
-            else if (!IsValidType(typesQueue.front(), structTypesQueue.front()))
+        }
+        if (!receivedTypes.empty()) {
+            if (!IsValidType(receivedTypes.front(), typesQueue.front()))
                 return false;
+            if ((receivedTypes.front() == CFGFieldType::INTEGER && typesQueue.front() == CFGFieldType::FLOAT)) {
+                // cast integer into float
+                const CFGField<int>* intField = structNode->GetItemByIndex<int>(memberIndex);
+                CFGField<float>* floatField = dynamic_cast<CFGField<float>*>(CreateNewCFGObject<float>(intField));
+                floatField->value = (float) intField->value;
+                floatField->type = CFGFieldType::FLOAT;
+                delete structNode->GetItemByIndex(memberIndex);
+                structNode->GetItems()[memberIndex] = floatField;
+            }
         }
         typesQueue.pop();
-        if (!structTypesQueue.empty())
-            structTypesQueue.pop();
+        if (!receivedTypes.empty()) {
+            receivedTypes.pop();
+            ++memberIndex;
+        }
     }
-    if (!structTypesQueue.empty())
+    if (!receivedTypes.empty())
         return false;
     return true;
 }
