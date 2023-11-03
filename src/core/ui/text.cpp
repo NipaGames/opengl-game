@@ -200,12 +200,10 @@ int UI::Text::GetTextHeight(const Font& font, const std::string& text, int lineS
         h += additionalRows * (font.fontHeight + lineSpacing);
         std::string lastRow = text.substr(text.find_last_of('\n'));
         padding = GetVerticalPadding(font, lastRow);
-        padding.x = (int) (padding.x * ((float) BASE_FONT_SIZE / font.size.y));
-        padding.y = (int) (padding.y * ((float) BASE_FONT_SIZE / font.size.y));
     }
     else {
         padding = GetVerticalPadding(font, text);
     }
-    h += padding[1] + padding[0];
+    h += (int) ((float) (padding[1] + padding[0]) * ((float) BASE_FONT_SIZE / font.size.y));
     return h;
 }

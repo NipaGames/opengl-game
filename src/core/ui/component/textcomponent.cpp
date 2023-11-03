@@ -129,7 +129,7 @@ void UI::TextComponent::ResizeText() {
     else {
         shader_.SetUniform("projection", glm::ortho(0.0f, (float) windowSize.x, 0.0f, (float) windowSize.y));
     }
-    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0] * m) * m * fontModifier, m, 1.0f, alignment, lineSpacing * m);
+    UI::Text::RenderText(f, text_, glm::vec2(0, (additionalRowsHeight_ * fontModifier + padding_[0]) * m), m, 1.0f, alignment, lineSpacing * m);
 }
 
 void UI::TextComponent::SetText(const std::string& t) {
