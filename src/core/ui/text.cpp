@@ -104,7 +104,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
         Character c = font.charMap.at(*it);
         if (*it == '\n') {
             pos.x = startPos.x;
-            pos.y -= (font.fontHeight * size + lineSpacing) * ((float) font.size.y / BASE_FONT_SIZE);
+            pos.y -= (font.fontHeight * ((float) font.size.y / BASE_FONT_SIZE) * size + lineSpacing);
             ++line;
             continue;
         }
@@ -128,7 +128,7 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
 
             { actualPos.x,     actualPos.y + h,   0.0f, 0.0f },
             { actualPos.x + w, actualPos.y,       1.0f, 1.0f },
-            { actualPos.x + w, actualPos.y + h,   1.0f, 0.0f }   
+            { actualPos.x + w, actualPos.y + h,   1.0f, 0.0f }
         };
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
 
@@ -150,7 +150,7 @@ int UI::Text::GetLineWidth(const Font& font, const std::string& text) {
         Character c = font.charMap.at(*it);
         width += (c.advance >> 6);
     }
-    return width;
+    return width * ((float) BASE_FONT_SIZE / font.size.y);
 }
 
 

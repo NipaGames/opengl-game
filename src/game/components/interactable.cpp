@@ -38,7 +38,7 @@ void Interactable::Update() {
                 hasBeenUsed_ = true;
             }
             else {
-                MonkeyGame::GetGame()->hud.ShowInteractMessage(message, keyCode);
+                MonkeyGame::GetGame()->hud.ShowInteractText(message, keyCode);
             }
             previouslyInProximity_ = true;
         }

@@ -13,18 +13,29 @@ const std::unordered_map<std::string, std::string> INTERACT_MESSAGES = {
 
 void HUD::CreateHUDElements() {
     Canvas& c = GAME->GetRenderer().CreateCanvas(canvasId);
-    Entity& interactMsgEntity = GAME->GetEntityManager().CreateEntity();
-    interactMsgEntity.transform->position.x = 10;
-    interactMsgEntity.transform->position.y = 15;
-    interactMsgEntity.transform->size.z = .5f;
-    interactMsg = interactMsgEntity.AddComponent<TextComponent>(&c);
-    interactMsg->font = fontId;
-    interactMsg->isVisible = false;
-    interactMsg->AddToCanvas();
-    interactMsg->Start();
+    Entity& interactTextEntity = GAME->GetEntityManager().CreateEntity();
+    interactTextEntity.transform->position.x = 10;
+    interactTextEntity.transform->position.y = 15;
+    interactTextEntity.transform->size.z = .5f;
+    interactText = interactTextEntity.AddComponent<TextComponent>(&c);
+    interactText->font = fontId;
+    interactText->isVisible = false;
+    interactText->AddToCanvas();
+    interactText->Start();
+
+    Entity& areaTextEntity = GAME->GetEntityManager().CreateEntity();
+    areaTextEntity.transform->position.x = 1270;
+    areaTextEntity.transform->position.y = 25;
+    areaTextEntity.transform->size.z = 2.5f;
+    areaText = areaTextEntity.AddComponent<TextComponent>(&c);
+    areaText->font = fontId;
+    areaText->alignment = Text::TextAlignment::RIGHT;
+    areaText->SetText("humongous text");
+    areaText->AddToCanvas();
+    areaText->Start();
 }
 
-void HUD::ShowInteractMessage(const std::string& msgId, int keyCode) {
+void HUD::ShowInteractText(const std::string& msgId, int keyCode) {
     std::string msgPart;
     if (INTERACT_MESSAGES.count(msgId) == 0)
         msgPart = msgId;
@@ -52,10 +63,10 @@ void HUD::ShowInteractMessage(const std::string& msgId, int keyCode) {
         msgStream << "] ";
     }
     msgStream << msgPart;
-    interactMsg->SetText(msgStream.str());
-    interactMsg->isVisible = true;
+    interactText->SetText(msgStream.str());
+    interactText->isVisible = true;
 }
 
 void HUD::HideInteractMessage() {
-    interactMsg->isVisible = false;
+    interactText->isVisible = false;
 }

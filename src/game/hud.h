@@ -7,8 +7,9 @@ class HUD {
 public:
     std::string canvasId = "hud";
     std::string fontId;
-    UI::TextComponent* interactMsg = nullptr;
+    UI::TextComponent* interactText = nullptr;
+    UI::TextComponent* areaText = nullptr;
     void CreateHUDElements();
-    void ShowInteractMessage(const std::string&, int = -1);
+    void ShowInteractText(const std::string&, int = -1);
     void HideInteractMessage();
 };
