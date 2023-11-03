@@ -24,10 +24,17 @@ namespace UI::Text {
         glm::ivec2 size;
         std::unordered_map<WCHAR, Character> charMap;
     };
+    enum class TextAlignment {
+        LEFT,
+        RIGHT
+    };
     
     bool Init();
-    void RenderText(const Font&, const std::string&, glm::vec2, float, float, float = 5);
+    // this apparently takes a shit ton of parameters, will have to make a struct or smth
+    void RenderText(const Font&, const std::string&, glm::vec2, float, float, TextAlignment = TextAlignment::LEFT, float = 5);
     glm::ivec2 GetVerticalPadding(const Font&, const std::string&);
+    int GetLineWidth(const Font&, const std::string&);
+    std::vector<int> GetLineWidths(const Font&, const std::string&);
     int GetTextWidth(const Font&, const std::string&);
     int GetTextHeight(const Font&, const std::string&, int = 5);
 };

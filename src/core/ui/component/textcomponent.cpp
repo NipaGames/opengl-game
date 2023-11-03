@@ -42,7 +42,10 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
     if (renderingMethod_ == TextRenderingMethod::RENDER_EVERY_FRAME) {
-        UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size, modifier, lineSpacing * size);
+        if (alignment == Text::TextAlignment::RIGHT) {
+            pos.x -= Text::GetTextWidth(f, text_) * size;
+        }
+        UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size, modifier, alignment, lineSpacing * size);
     }
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         float w = textSize_.x * size * modifier * (BASE_FONT_SIZE / (float) f.size.y);
@@ -50,16 +53,31 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         float marginY = (additionalRowsHeight_ + padding_[0]) * size;
         actualTextSize_ = { w, h };
         glActiveTexture(GL_TEXTURE0);
-        float vertices[] = {
-            pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
-            pos.x,     pos.y - marginY,       0.0f, 0.0f,
-            pos.x + w, pos.y - marginY,       1.0f, 0.0f,
 
-            pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
-            pos.x + w, pos.y - marginY,       1.0f, 0.0f,
-            pos.x + w, pos.y - marginY + h,   1.0f, 1.0f
-        };
-        shape_.SetVertexData(vertices);
+        switch (alignment) {
+            case Text::TextAlignment::LEFT:
+                shape_.SetVertexData(new float[24] {
+                    pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
+                    pos.x,     pos.y - marginY,       0.0f, 0.0f,
+                    pos.x + w, pos.y - marginY,       1.0f, 0.0f,
+
+                    pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
+                    pos.x + w, pos.y - marginY,       1.0f, 0.0f,
+                    pos.x + w, pos.y - marginY + h,   1.0f, 1.0f
+                }, false);
+                break;
+            case Text::TextAlignment::RIGHT:
+                shape_.SetVertexData(new float[24] {
+                    pos.x - w,     pos.y - marginY + h,   0.0f, 1.0f,
+                    pos.x - w,     pos.y - marginY,       0.0f, 0.0f,
+                    pos.x, pos.y - marginY,       1.0f, 0.0f,
+
+                    pos.x - w,     pos.y - marginY + h,   0.0f, 1.0f,
+                    pos.x, pos.y - marginY,       1.0f, 0.0f,
+                    pos.x, pos.y - marginY + h,   1.0f, 1.0f
+                }, false);
+                break;
+        }
         shape_.Bind();
 
         glBindTexture(GL_TEXTURE_2D, texture_);
@@ -111,7 +129,7 @@ void UI::TextComponent::ResizeText() {
     else {
         shader_.SetUniform("projection", glm::ortho(0.0f, (float) windowSize.x, 0.0f, (float) windowSize.y));
     }
-    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0] * m) * m * fontModifier, m, 1.0f, lineSpacing * m);
+    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ + padding_[0] * m) * m * fontModifier, m, 1.0f, alignment, lineSpacing * m);
 }
 
 void UI::TextComponent::SetText(const std::string& t) {

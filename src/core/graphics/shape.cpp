@@ -52,14 +52,23 @@ Shape::~Shape() {
         delete[] vertexData;
 }
 
-void Shape::SetVertexData(const float* f) {
+void Shape::SetVertexData(float* f, bool copy) {
     size_t s = sizeof(float) * numVertices * numVertexAttributes;
     if (vertexData != nullptr)
         delete[] vertexData;
-    vertexData = new float[s];
-    memcpy_s(vertexData, s, f, s);
+    if (copy) {
+        vertexData = new float[s];
+        memcpy_s(vertexData, s, f, s);
+    }
+    else {
+        vertexData = f;
+    }
     Bind();
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertices * numVertexAttributes, f, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+void Shape::SetVertexData(const float* f) {
+    SetVertexData(const_cast<float*>(f), true);
 }

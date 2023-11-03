@@ -16,5 +16,6 @@ public:
     Shape(Shape&&);
     void GenerateVAO();
     void Bind();
+    void SetVertexData(float*, bool);
     void SetVertexData(const float*);
 };

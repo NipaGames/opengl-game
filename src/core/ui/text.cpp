@@ -93,19 +93,31 @@ void Resources::FontManager::SetFontSize(int size) {
     SetFontSize(glm::ivec2(fontSize_.x, size));
 }
 
-void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size, float modifier, float lineSpacing) {    
+void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 pos, float size, float modifier, TextAlignment alignment, float lineSpacing) {    
     glActiveTexture(GL_TEXTURE0);
     charShape.Bind();
+    std::vector<int> lineWidths = GetLineWidths(font, text);
+    int textWidth = *std::max_element(lineWidths.begin(), lineWidths.end());
+    int line = 0;
     glm::vec2 startPos = pos;
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
         if (*it == '\n') {
             pos.x = startPos.x;
             pos.y -= (font.fontHeight * size + lineSpacing) * ((float) font.size.y / BASE_FONT_SIZE);
+            ++line;
             continue;
         }
 
-        glm::vec2 actualPos(pos.x + c.bearing.x * size, pos.y - (c.size.y - c.bearing.y) * size);
+        glm::vec2 actualPos;
+        switch (alignment) {
+            case TextAlignment::LEFT:
+                actualPos = glm::vec2(pos.x + c.bearing.x * size, pos.y - (c.size.y - c.bearing.y) * size);
+                break;
+            case TextAlignment::RIGHT:
+                actualPos = glm::vec2(pos.x + (c.bearing.x + textWidth - lineWidths.at(line)) * size, pos.y - (c.size.y - c.bearing.y) * size);
+                break;
+        }
         float w = c.size.x * size * modifier;
         float h = c.size.y * size;
 
@@ -132,25 +144,35 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
-int UI::Text::GetTextWidth(const Font& font, const std::string& text) {
-    if (std::count(text.begin(), text.end(), '\n') > 0) {
-        std::stringstream ss(text);
-        std::string ln;
-        int max = 0;
-        while(std::getline(ss, ln, '\n')){
-            int w = GetTextWidth(font, ln);
-            if (w > max)
-                max = w;
-        }
-        return max;
-    }
+int UI::Text::GetLineWidth(const Font& font, const std::string& text) {
     int width = 0;
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
         width += (c.advance >> 6);
     }
     return width;
+}
+
+
+std::vector<int> UI::Text::GetLineWidths(const Font& font, const std::string& text) {
+    std::vector<int> widths;
+    if (std::count(text.begin(), text.end(), '\n') > 0) {
+        std::stringstream ss(text);
+        std::string ln;
+        while(std::getline(ss, ln, '\n')){
+            widths.push_back(GetLineWidth(font, ln));
+        }
+    }
+    else {
+        widths.push_back(GetLineWidth(font, text));
+    }
+    return widths;
+}
+
+
+int UI::Text::GetTextWidth(const Font& font, const std::string& text) {
+    std::vector<int> widths = GetLineWidths(font, text);
+    return *std::max_element(widths.begin(), widths.end());
 }
 
 glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& text) {
