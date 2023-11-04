@@ -16,23 +16,36 @@ void HUD::CreateHUDElements() {
     Entity& interactTextEntity = GAME->GetEntityManager().CreateEntity();
     interactTextEntity.transform->position.x = 10;
     interactTextEntity.transform->position.y = 15;
-    interactTextEntity.transform->size.z = .5f;
+    interactTextEntity.transform->size.z = .75f;
     interactText = interactTextEntity.AddComponent<TextComponent>(&c);
-    interactText->font = fontId;
+    interactText->font = "FONT_MORRIS";
     interactText->isVisible = false;
     interactText->AddToCanvas();
-    interactText->Start();
+    interactTextEntity.Start();
 
     Entity& areaTextEntity = GAME->GetEntityManager().CreateEntity();
     areaTextEntity.transform->position.x = 1270;
     areaTextEntity.transform->position.y = 25;
-    areaTextEntity.transform->size.z = 2.5f;
+    areaTextEntity.transform->size.z = 2.0f;
     areaText = areaTextEntity.AddComponent<TextComponent>(&c);
-    areaText->font = fontId;
+    areaText->font = "FONT_ENCHANTED";
+    areaText->SetShader(Shaders::ShaderID::AREA_TEXT);
     areaText->alignment = Text::TextAlignment::RIGHT;
-    areaText->SetText("humongous text");
+    areaText->color = glm::vec4(glm::vec3(0.75f), 0.0f);
     areaText->AddToCanvas();
-    areaText->Start();
+
+    areaAnimation = areaTextEntity.AddComponent<FloatAnimation>();
+    areaAnimation->ptr = &areaText->color.w;
+    areaAnimation->allowInterruptions = true;
+    areaTextEntity.Start();
+}
+
+void HUD::Update() {
+    if (isAreaTextShown_ && glfwGetTime() >= fadeAreaTextAway_) {
+        isAreaTextShown_ = false;
+        areaAnimation->playReverse = true;
+        areaAnimation->Play();
+    }
 }
 
 void HUD::ShowInteractText(const std::string& msgId, int keyCode) {
@@ -69,4 +82,12 @@ void HUD::ShowInteractText(const std::string& msgId, int keyCode) {
 
 void HUD::HideInteractMessage() {
     interactText->isVisible = false;
+}
+
+void HUD::ShowAreaMessage(const std::string& area) {
+    areaText->SetText(area);
+    areaAnimation->playReverse = false;
+    areaAnimation->Play();
+    isAreaTextShown_ = true;
+    fadeAreaTextAway_ = (float) glfwGetTime() + areaTextSeconds_;
 }

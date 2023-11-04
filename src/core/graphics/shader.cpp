@@ -128,6 +128,7 @@ void Resources::ShaderManager::LoadAll() {
     LoadStandardShader(ShaderID::LINE, "line", ShaderType::VERT_FRAG_GEOM);
     LoadStandardShader(ShaderID::STROBE_UNLIT, "unlit", "strobe_unlit");
     LoadStandardShader(ShaderID::SKYBOX, "skybox", ShaderType::VERT_FRAG);
+    LoadStandardShader(ShaderID::AREA_TEXT, "areatext", ShaderType::VERT_FRAG);
 }
 
 GLuint& Resources::ShaderManager::Get(ShaderID shader) {

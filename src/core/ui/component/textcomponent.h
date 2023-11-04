@@ -17,7 +17,8 @@ namespace UI {
 
     class TextComponent : public UIComponent {
     protected:
-        Shader shader_;
+        Shader shader_ = Shader(Shaders::ShaderID::UI_TEXT);
+        Shader textureShader_ = Shader(Shaders::ShaderID::UI_TEXT);
         std::string text_ = "";
         GLuint fbo_ = NULL;
         GLuint texture_ = NULL;
@@ -29,7 +30,7 @@ namespace UI {
         TextRenderingMethod renderingMethod_;
         bool hasStarted_ = false;
         Shape shape_;
-        void ResizeText();
+        void RenderTexture();
     public:
         std::string font;
         float lineSpacing = 5.0f;
@@ -47,6 +48,7 @@ namespace UI {
         void Render(const glm::mat4&);
         void UpdateWindowSize();
         void SetText(const std::string&);
+        void SetShader(Shaders::ShaderID);
         const std::string& GetText() const;
         const glm::ivec2& GetTextSize() const;
     };

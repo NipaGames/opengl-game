@@ -1,5 +1,6 @@
 {
     "id": "cave",
+    "location": "OCEAN_PASSAGE",
     "entities": [
         {
             "id": "Player",

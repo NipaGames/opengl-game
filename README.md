@@ -137,6 +137,12 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
  
 
+![a gate opening](/images/screenshot15.png)
+
+*cool area message and also authentic 640p experience* 4.11.2023
+
+ 
+
 ###  Current features:
 
 -  [x] FPS controls

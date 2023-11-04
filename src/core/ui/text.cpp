@@ -150,7 +150,7 @@ int UI::Text::GetLineWidth(const Font& font, const std::string& text) {
         Character c = font.charMap.at(*it);
         width += (c.advance >> 6);
     }
-    return width * ((float) BASE_FONT_SIZE / font.size.y);
+    return (int) (width * ((float) BASE_FONT_SIZE / font.size.y));
 }
 
 

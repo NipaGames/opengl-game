@@ -10,6 +10,8 @@ private:
 public:
     DEFINE_COMPONENT_DATA_VALUE(float, animationLength, 1.0f);
     DEFINE_COMPONENT_DATA_VALUE(float, animationDelay, 0.0f);
+    DEFINE_COMPONENT_DATA_VALUE(bool, playReverse, false);
+    DEFINE_COMPONENT_DATA_VALUE(bool, allowInterruptions, false);
     // start and negative end angle
     static void PlayAnimation(std::string, std::string);
     virtual void Interpolate(float) { }
@@ -41,3 +43,9 @@ public:
     glm::mat4 Transform(float) override;
 };
 REGISTER_COMPONENT(MeshRotationAnimation);
+
+class FloatAnimation : public AnimationComponent {
+public:
+    float* ptr = nullptr;
+    void Interpolate(float) override;
+};

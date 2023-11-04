@@ -57,7 +57,9 @@ void WhatIs(std::string str) {
 }
 
 void SpawnPlayer() {
-    GAME->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
+    MonkeyGame* game = MonkeyGame::GetGame();
+    game->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
+    game->hud.ShowAreaMessage("among us location");
 }
 
 void RegisterCommands(Console& console) {
@@ -278,16 +280,15 @@ void MonkeyGame::Start() {
         }
         */
     }
-    if (resources.fontManager.HasLoaded("FONT_MORRIS")) {
-        hud.fontId = "FONT_MORRIS";
-        hud.CreateHUDElements();
-    }
+    hud.CreateHUDElements();
     Stage::LoadStage("teststage");
+    SpawnPlayer();
 }
 
 void MonkeyGame::Update() {
     if (playerLight != nullptr)
         playerLight->ApplyForAllShaders();
+    hud.Update();
     if (Input::IsKeyPressedDown(GLFW_KEY_F6))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
 

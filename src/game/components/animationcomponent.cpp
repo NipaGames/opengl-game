@@ -24,16 +24,18 @@ void AnimationComponent::Update() {
         if (glfwGetTime() < animationStart_)
             return;
         float t = ((float) glfwGetTime() - animationStart_) / animationLength;
-        Interpolate(t);
         if (t >= 1.0f) {
-            Interpolate(1.0f);
+            t = 1.0f;
             isPlaying_ = false;
         }
+        if (playReverse)
+            t = 1.0f - t;
+        Interpolate(t);
     }
 }
 
 void AnimationComponent::Play() {
-    if (isPlaying_)
+    if (!allowInterruptions && isPlaying_)
         return;
     isPlaying_ = true;
     animationStart_ = (float) glfwGetTime() + animationDelay;
@@ -70,4 +72,9 @@ void MeshTransformAnimation::Play() {
 
 glm::mat4 MeshRotationAnimation::Transform(float t) {
     return glm::rotate(baseTransform_, glm::radians(t * angle * 2.0f - angle), rotationAxis);
+}
+
+void FloatAnimation::Interpolate(float t) {
+    if (ptr != nullptr)
+        *ptr = t;
 }

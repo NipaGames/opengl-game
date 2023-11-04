@@ -13,7 +13,6 @@ UI::TextComponent::~TextComponent() {
 }
 
 void UI::TextComponent::Start() {
-    shader_ = Shader(Shaders::ShaderID::UI_TEXT);
     renderingMethod_ = renderingMethod;
     shape_.numVertexAttributes = 4;
     shape_.stride = 4;
@@ -27,12 +26,18 @@ void UI::TextComponent::Start() {
     }
 }
 
+void UI::TextComponent::SetShader(Shaders::ShaderID s) {
+    shader_ = Shader(s);
+    RenderTexture();
+}
+
 void UI::TextComponent::Render(const glm::mat4& projection) {
-    if (!isVisible)
+    if (!isVisible || color.w == 0.0f)
         return;
     shader_.Use();
     shader_.SetUniform("textColor", color);
     shader_.SetUniform("projection", projection);
+    shader_.SetUniform("time", (float) glfwGetTime());
     glm::vec2 pos(parent->transform->position.x, parent->transform->position.y);
     // janky ass way to determine the size
     float size = parent->transform->size.z;
@@ -45,7 +50,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         if (alignment == Text::TextAlignment::RIGHT) {
             pos.x -= Text::GetTextWidth(f, text_) * size;
         }
-        UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size, modifier, alignment, lineSpacing * size);
+        UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size * ((float) BASE_FONT_SIZE / f.size.y), modifier, alignment, lineSpacing * size);
     }
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         glm::vec2 wndRatio = (glm::vec2) windowSize / glm::vec2(1280.0f, 720.0f);
@@ -89,7 +94,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     }
 }
 
-void UI::TextComponent::ResizeText() {
+void UI::TextComponent::RenderTexture() {
     auto& f = GAME->resources.fontManager.Get(font);
     padding_ = UI::Text::GetVerticalPadding(f, text_);
 
@@ -103,22 +108,23 @@ void UI::TextComponent::ResizeText() {
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     glBindTexture(GL_TEXTURE_2D, texture_);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    GLfloat borderColor[4] = {0, 0, 0, 1};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texSize.x, texSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glClearTexImage(texture_, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture_, 0);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     
     // finally drawing
-    shader_.Use();
-    shader_.SetUniform("textColor", glm::vec4(1.0f));
-    shader_.SetUniform("projection", glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f));
+    textureShader_.Use();
+    textureShader_.SetUniform("textColor", glm::vec4(1.0f));
+    textureShader_.SetUniform("projection", glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f));
 
-    float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
     UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ * size + padding_[0] * size * fontModifier), size * fontModifier, 1.0f, alignment, lineSpacing * size);
 }
 
@@ -127,7 +133,7 @@ void UI::TextComponent::SetText(const std::string& t) {
     additionalRows_ = (int) std::count(text_.begin(), text_.end(), '\n');
     additionalRowsHeight_ = additionalRows_ * (GAME->resources.fontManager.Get(font).fontHeight + lineSpacing);
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE && hasStarted_) {
-        ResizeText();
+        RenderTexture();
     }
 }
 
@@ -141,6 +147,6 @@ const glm::ivec2& UI::TextComponent::GetTextSize() const {
 
 void UI::TextComponent::UpdateWindowSize() {
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE && hasStarted_) {
-        ResizeText();
+        RenderTexture();
     }
 }
