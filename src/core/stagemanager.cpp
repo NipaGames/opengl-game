@@ -21,6 +21,10 @@ void Stage::AddStage(Stage& stage) {
         stages.emplace_back(stage);
 }
 
+const Stage::Stage& Stage::GetStage(const std::string& id) {
+    return *std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
+}
+
 bool Stage::LoadStage(const std::string& id) {
     if (stages.empty())
         return false;

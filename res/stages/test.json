@@ -1,6 +1,6 @@
 {
     "id": "teststage",
-    "location": "TESTAREA",
+    "location": "the void",
     "entities": [
         {
             "id": "Player",

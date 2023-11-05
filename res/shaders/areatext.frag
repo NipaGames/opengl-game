@@ -12,9 +12,9 @@ void main() {
   float speed = 0.25;
   float waviness = 8.0;
   float glint = 0.1;
-  vec2 pos = fragmentTexCoord;
   float amt = 0.01;
-  float sizeModifier = textureSize(textureSampler, 0).x;
+
+  vec2 pos = fragmentTexCoord;
   pos.x += (sin((time * radians(360.0)) * speed + pos.y * waviness) + 1.0) / 2.0 * amt;
   pos.x -= amt;
   pos.x /= 1.0 - amt;

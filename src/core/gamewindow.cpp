@@ -209,6 +209,7 @@ void GameWindow::UpdateInputSystem() {
     glfwWaitEvents();
     if (Input::UPDATE_FULLSCREEN) {
         Input::UPDATE_FULLSCREEN = false;
+        GAME->FreezeDeltaTime();
         isFullscreen_ = !isFullscreen_;
         glm::ivec2 windowSize;
         if (isFullscreen_) {

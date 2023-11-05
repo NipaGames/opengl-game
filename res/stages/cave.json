@@ -1,6 +1,6 @@
 {
     "id": "cave",
-    "location": "OCEAN_PASSAGE",
+    "location": "The Sub-Ocean Passage",
     "entities": [
         {
             "id": "Player",
