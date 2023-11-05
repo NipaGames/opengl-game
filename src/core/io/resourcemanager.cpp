@@ -40,7 +40,8 @@ void Resources::LoadAll() {
     }
 
     textureManager.LoadAll(imports->ListImports("textures"));
-    shaderManager.LoadAll();
+
+    shaderManager.LoadAll(imports->ListShaderImports("shaders"));
 
     materialsFile.SerializeFile(Paths::MATERIALS_PATH.string());
     materialsFile.Register(GAME->GetRenderer().GetMaterials());

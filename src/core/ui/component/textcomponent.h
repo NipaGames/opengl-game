@@ -48,7 +48,7 @@ namespace UI {
         void Render(const glm::mat4&);
         void UpdateWindowSize();
         void SetText(const std::string&);
-        void SetShader(Shaders::ShaderID);
+        void SetShader(const Shader&);
         const std::string& GetText() const;
         const glm::ivec2& GetTextSize() const;
     };

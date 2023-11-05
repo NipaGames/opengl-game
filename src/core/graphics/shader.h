@@ -15,6 +15,9 @@ namespace Shaders {
         VERT_FRAG,
         VERT_FRAG_GEOM
     };
+    extern const std::string EXT_VERT;
+    extern const std::string EXT_FRAG;
+    extern const std::string EXT_GEOM;
     GLuint GetShaderProgram(ShaderID);
     GLuint GetShaderProgram(const std::string&);
 };
@@ -23,11 +26,12 @@ class Shader {
 private:
     std::variant<std::string, Shaders::ShaderID> id_;
     // cache shader program
-    mutable GLuint _program = GL_NONE;
+    mutable GLuint program_ = GL_NONE;
 public:
     Shader() = default;
     Shader(Shaders::ShaderID id) : id_(id) { }
     Shader(const std::string& id) : id_(id) { }
+    Shader(const char* id) : id_(id) { }
     void Use() const;
     GLuint GetProgram() const;
     Shaders::ShaderID GetID() const;

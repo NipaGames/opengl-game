@@ -10,6 +10,7 @@ namespace Paths {
     inline std::fs::path RESOURCES_DIR = "../../res";
 
     inline std::fs::path SHADER_DIR = RESOURCES_DIR / "shaders";
+    inline std::fs::path STANDARD_SHADER_DIR = SHADER_DIR / "standard";
     inline std::fs::path TEXTURES_DIR = RESOURCES_DIR / "textures";
     inline std::fs::path FONTS_DIR = RESOURCES_DIR / "fonts";
     inline std::fs::path STAGES_DIR = RESOURCES_DIR / "stages";

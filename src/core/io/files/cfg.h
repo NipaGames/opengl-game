@@ -191,6 +191,37 @@ namespace CFG {
             }
             return imports;
         }
+        std::vector<Resources::ShaderImport> ListShaderImports(const std::string& name) const {
+            const CFGObject* obj = GetObjectByName(name);
+            if (obj == nullptr)
+                return { };
+            std::vector<Resources::ShaderImport> imports;
+            const std::vector<ICFGField*>& items = obj->GetItems();
+            for (const ICFGField* v : items) {
+                if (v->type != CFGFieldType::STRUCT) {
+                    spdlog::warn("'{}' cannot be parsed as a list of shader imports!", name);
+                    return { };
+                }
+                const CFGObject* import = static_cast<const CFGObject*>(v);
+                if (import == nullptr)
+                    continue;
+                
+                const auto* idField = import->GetItemByIndex<std::string>(0);
+                const auto* vertField = import->GetItemByIndex<std::string>(1);
+                const auto* fragField = import->GetItemByIndex<std::string>(2);
+                const auto* geomField = import->GetItemByIndex<std::string>(3);
+                if (idField == nullptr || vertField == nullptr || fragField == nullptr || geomField == nullptr)
+                    continue;
+                Resources::ShaderImport importStruct;
+                importStruct.id = idField->GetValue();
+                importStruct.vertexPath = vertField->GetValue();
+                importStruct.fragmentPath = fragField->GetValue();
+                importStruct.geometryPath = geomField->GetValue();
+
+                imports.push_back(importStruct);
+            }
+            return imports;
+        }
         bool HasType(const std::type_info& type) const override {
             return typeid(T).hash_code() == type.hash_code();
         }
@@ -226,7 +257,7 @@ namespace CFG {
             return {
                 Optional("fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::INTEGER))),
                 Optional("models", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
-                Optional("shaders", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
+                Optional("shaders", CFG_ARRAY(CFG_STRUCT(CFG_REQUIRE(CFGFieldType::STRING), CFG_REQUIRE(CFGFieldType::STRING), CFGFieldType::STRING, CFGFieldType::STRING))),
                 Optional("stages", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
                 Optional("textures", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)))
             };

@@ -10,7 +10,6 @@ namespace Shaders {
         UI_SHAPE,
         LINE,
         STROBE_UNLIT,
-        SKYBOX,
-        AREA_TEXT
+        SKYBOX
     };
 };

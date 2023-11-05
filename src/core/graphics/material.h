@@ -26,8 +26,8 @@ private:
     Texture::TextureID texture_ = TEXTURE_NONE;
 public:
     Material() { RestoreDefaultUniforms(); }
-    Material(Shaders::ShaderID shaderId) : shader_(shaderId) { RestoreDefaultUniforms(); }
-    Material(Shaders::ShaderID shaderId, Texture::TextureID textureId) : shader_(shaderId), texture_(textureId) { RestoreDefaultUniforms(); }
+    Material(const Shader& shader) : shader_(shader) { RestoreDefaultUniforms(); }
+    Material(const Shader& shader, Texture::TextureID textureId) : shader_(shader), texture_(textureId) { RestoreDefaultUniforms(); }
     void RestoreDefaultUniforms();
     void Use();
     template<typename T>

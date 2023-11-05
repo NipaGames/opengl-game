@@ -46,7 +46,7 @@ CFGParseTreeNode<std::string>* CreateIndentationTree(std::stringstream& buffer) 
 }
 
 const std::string MATCH_NUMBER = "(-?\\d*\\.?\\d+)";
-const std::string MATCH_STRING = "([a-zA-Z_]\\w*|\"(.*)\")";
+const std::string MATCH_STRING = "([a-zA-Z_]\\w*|\"(.*?)\")";
 
 ICFGField* ParseField(const std::string& val) {
     std::smatch groups;

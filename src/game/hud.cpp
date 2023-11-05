@@ -29,7 +29,7 @@ void HUD::CreateHUDElements() {
     areaTextEntity.transform->size.z = 2.0f;
     areaText = areaTextEntity.AddComponent<TextComponent>(&c);
     areaText->font = "FONT_ENCHANTED";
-    areaText->SetShader(Shaders::ShaderID::AREA_TEXT);
+    areaText->SetShader("AREA_TEXT");
     areaText->alignment = Text::TextAlignment::RIGHT;
     areaText->color = glm::vec4(glm::vec3(0.75f), 0.0f);
     areaText->AddToCanvas();

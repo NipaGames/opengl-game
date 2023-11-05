@@ -34,6 +34,12 @@ public:
         std::string id;
         AdditionalImportData additionalData;
     };
+    struct ShaderImport {
+        std::string id;
+        std::string vertexPath;
+        std::string fragmentPath;
+        std::string geometryPath;
+    };
     template <typename T>
     class ResourceManager {
     private:
@@ -112,11 +118,12 @@ public:
     protected:
         std::optional<GLuint> LoadResource(const std::fs::path&) override;
         void LoadShader(GLuint, const std::string&, Shaders::ShaderType);
+        void LoadShader(const std::string&, const std::string&, const std::string&, const std::string& = "");
         void LoadStandardShader(Shaders::ShaderID, const std::string&, Shaders::ShaderType);
         void LoadStandardShader(Shaders::ShaderID, const std::string&, const std::string&, const std::string& = "");
     public:
         ShaderManager() : ResourceManager<GLuint>(Paths::SHADER_DIR) { }
-        virtual void LoadAll() override;
+        virtual void LoadAll(const std::vector<ShaderImport>&);
         GLuint& Get(Shaders::ShaderID);
         GLuint& Get(const std::string& s) { return ResourceManager::Get(s); }
     };

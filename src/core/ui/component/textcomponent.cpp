@@ -26,8 +26,8 @@ void UI::TextComponent::Start() {
     }
 }
 
-void UI::TextComponent::SetShader(Shaders::ShaderID s) {
-    shader_ = Shader(s);
+void UI::TextComponent::SetShader(const Shader& s) {
+    shader_ = s;
     RenderTexture();
 }
 
