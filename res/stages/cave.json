@@ -7,12 +7,12 @@
         {
             "id": "Player",
             "PlayerController": {
-                "spawnPosition": [ 0, -5, 105.5 ]
+                "spawnPosition": [ 100, -5, 105.5 ]
             }
         },
         {
             "Transform": {
-                "position": [ 12, 20, 5 ]
+                "position": [ 112, 20, 5 ]
             },
             "Lights::Spotlight": {
                 "cutOffMin": 0.95,
@@ -25,12 +25,11 @@
         {
             "id": "cave",
             "Transform": {
-                "position": [ 0, -5, 120 ]
+                "position": [ 100, -5, 120 ]
             },
             "MeshRenderer": {
                 "object": "OBJ_CAVE",
-                "isStatic": true,
-                "alwaysOnFrustum": true
+                "isStatic": true
             },
             "Physics::RigidBody": {
                 "mass": 0,
@@ -38,9 +37,29 @@
             }
         },
         {
+            "id": "water",
+            "Transform": {
+                "position": [ 78.5, 0, 0 ],
+                "rotation": [ 0, -10, 0 ],
+                "size": 100
+            },
+            "MeshRenderer": {
+                "meshes": [
+                    {
+                        "type": "TERRAIN",
+                        "faces": [ 100, 100 ],
+                        "variation": 0,
+                        "material": "MAT_WATER"
+                    }
+                ],
+                "isStatic": true,
+                "alwaysOnFrustum": true
+            }
+        },
+        {
             "id": "gate_0",
             "Transform": {
-                "position": [ 36, -4.65, 54.75 ],
+                "position": [ 136, -4.65, 54.75 ],
                 "rotation": [ 0, 18, 0 ]
             },
             "MeshRenderer": {
@@ -59,7 +78,7 @@
         {
             "id": "lever_0",
             "Transform": {
-                "position": [ 38.5, -4.5, 51.8 ],
+                "position": [ 138.5, -4.5, 51.8 ],
                 "rotation": [ 0, 93, 0 ]
             },
             "MeshRenderer": {
@@ -83,7 +102,7 @@
         },
         {
             "Transform": {
-                "position": [ 28, -4.75, 55 ],
+                "position": [ 128, -4.75, 55 ],
                 "rotation": [ 0, 10, -20 ]
             },
             "Lights::PointLight": {

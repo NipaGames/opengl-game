@@ -33,8 +33,8 @@ void Plane::GenerateVertices() {
             vertices.push_back(height);
             vertices.push_back(pos.y);
 
-            texCoords.push_back((x + v.x * tileSize.x) / textureSize.x);
-            texCoords.push_back((y + v.y * tileSize.y) / textureSize.y);
+            texCoords.push_back(x + v.x * tileSize.x);
+            texCoords.push_back(y + v.y * tileSize.y);
         }
     }
     for (int y = 0; y < tiling_.y; y++) {

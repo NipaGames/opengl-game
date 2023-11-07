@@ -24,7 +24,10 @@
             },
             "MeshRenderer": {
                 "meshes": [
-                    "asdoijdsaoidahs"
+                    {
+                        "type": "CUBE",
+                        "material": "MAT_DEFAULT"
+                    }
                 ]
             },
             "Physics::RigidBody": {
@@ -38,7 +41,10 @@
             },
             "MeshRenderer": {
                 "meshes": [
-                    "asdoijdsaoidahs"
+                    {
+                        "type": "CUBE",
+                        "material": "MAT_DEFAULT"
+                    }
                 ]
             },
             "Physics::RigidBody": {
@@ -52,7 +58,10 @@
             },
             "MeshRenderer": {
                 "meshes": [
-                    "asdoijdsaoidahs"
+                    {
+                        "type": "CUBE",
+                        "material": "MAT_DEFAULT"
+                    }
                 ],
                 "isStatic": true
             },
@@ -67,7 +76,10 @@
             },
             "MeshRenderer": {
                 "meshes": [
-                    "asdoijdsaoidahs"
+                    {
+                        "type": "CUBE",
+                        "material": "MAT_DEFAULT"
+                    }
                 ],
                 "isStatic": true
             },
@@ -82,7 +94,10 @@
             },
             "MeshRenderer": {
                 "meshes": [
-                    "asdoijdsaoidahs"
+                    {
+                        "type": "CUBE",
+                        "material": "MAT_DEFAULT"
+                    }
                 ],
                 "isStatic": true
             },

@@ -5,6 +5,7 @@
 #include <core/entity/entity.h>
 #include <core/game.h>
 #include <core/io/serializetypes.h>
+#include <core/terrain/plane.h>
 
 Shader aabbShader = Shader(Shaders::ShaderID::UNLIT);
 
@@ -164,8 +165,33 @@ bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
 #include <core/io/serializetypes.h>
 
 JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::json& j) {
-    auto mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
-    mesh->material = GAME->GetRenderer().GetMaterial("MAT_DEFAULT");
+    if (!j.is_object())
+        return false;
+    if (!j.contains("type") || !j["type"].is_string())
+        return false;
+    std::string type = j["type"];
+    if (!j.contains("material") || !j["material"].is_string())
+        return false;
+    std::string material = j["material"];
+    std::shared_ptr<Mesh> mesh = nullptr;
+
+    if (type == "CUBE") {
+        mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
+    }
+    else if (type == "TERRAIN") {
+        glm::ivec2 faces = glm::ivec2(1);
+        float variation = 0.0f;
+
+        std::shared_ptr<Plane> plane = std::make_shared<Plane>(faces);
+        plane->heightVariation = variation;
+        plane->GenerateVertices();
+        mesh = plane;
+    }
+
+    if (mesh == nullptr)
+        return false;
+    mesh->material = GAME->GetRenderer().GetMaterial(material);
+    mesh->GenerateVAO();
     args.Return(mesh);
     return true;
 }, std::shared_ptr<Mesh>);

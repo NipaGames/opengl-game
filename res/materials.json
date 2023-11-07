@@ -184,6 +184,13 @@
         }
     },
     {
+        "id": "MAT_WATER",
+        "shader": "UNLIT",
+        "uniforms": {
+            "color": [ 0.1, 0.1, 0.25 ]
+        }
+    },
+    {
         "id": "MAT_INSTRUCTIONS",
         "shader": "LIT",
         "texture": {

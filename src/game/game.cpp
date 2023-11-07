@@ -250,7 +250,6 @@ void MonkeyGame::Start() {
 
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
     plane->heightVariation = 1.0f;
-    plane->textureSize = glm::vec2(2);
     plane->GenerateVertices();
     plane->GenerateVAO();
     plane->material = renderer_.GetMaterial("MAT_GRASS");
