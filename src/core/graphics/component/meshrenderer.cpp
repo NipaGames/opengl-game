@@ -56,7 +56,7 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
     if (shader != nullptr)
         useDefaultShader = false;
     
-    for (auto mesh : meshes) {
+    for (const auto& mesh : meshes) {
         if (mesh->material == nullptr)
             continue;
         if (useDefaultShader)

@@ -26,7 +26,6 @@ Renderer::~Renderer() {
 }
 
 bool Renderer::Init() {
-    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glEnable(GL_DEPTH_TEST);
@@ -165,7 +164,6 @@ void Renderer::Render() {
     // first pass (draw into framebuffer)
     glBindFramebuffer(GL_FRAMEBUFFER, MSAAFbo_);
     
-    glClearColor(skyboxColor.x, skyboxColor.y, skyboxColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);
@@ -175,7 +173,12 @@ void Renderer::Render() {
         if (!mesh->isStatic)
             mesh->CalculateModelMatrix();
     }
-    for (auto mesh : entitiesOnFrustum_) {
+    std::vector<const MeshRenderer*> lateMeshes;
+    for (const MeshRenderer* mesh : entitiesOnFrustum_) {
+        if (mesh->renderLate) {
+            lateMeshes.push_back(mesh);
+            continue;
+        }
         mesh->Render(camera_.projectionMatrix, viewMatrix, nullptr, showAabbs);
     }
 
@@ -202,6 +205,10 @@ void Renderer::Render() {
         glDepthFunc(GL_LESS);
         glCullFace(GL_BACK);
         glDisable(GL_DEPTH_CLAMP);
+    }
+
+    for (const MeshRenderer* mesh : lateMeshes) {
+        mesh->Render(camera_.projectionMatrix, viewMatrix, nullptr, showAabbs);
     }
 
     if (highlightNormals) {

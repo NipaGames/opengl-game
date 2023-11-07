@@ -39,9 +39,9 @@
         {
             "id": "water",
             "Transform": {
-                "position": [ 78.5, 0, 0 ],
+                "position": [ -377.5, 0, 0 ],
                 "rotation": [ 0, -10, 0 ],
-                "size": 100
+                "size": [ 1000, 1.0, 1000 ]
             },
             "MeshRenderer": {
                 "meshes": [
@@ -49,11 +49,12 @@
                         "type": "TERRAIN",
                         "faces": [ 100, 100 ],
                         "variation": 0,
-                        "material": "MAT_WATER"
+                        "material": "MAT_OCEAN"
                     }
                 ],
                 "isStatic": true,
-                "alwaysOnFrustum": true
+                "alwaysOnFrustum": true,
+                "renderLate": true
             }
         },
         {

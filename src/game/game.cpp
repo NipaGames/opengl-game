@@ -203,7 +203,7 @@ void MonkeyGame::Start() {
     auto spawnRenderer = spawn.AddComponent<MeshRenderer>();
     spawnRenderer->meshes = resources.modelManager["OBJ_SPAWN"].meshes;
     spawnRenderer->isStatic = true;
-    spawn.transform->position = glm::vec3(0.0f, 2.0f, -20.0f);
+    spawn.transform->position = glm::vec3(0.0f, 7.0f, -20.0f);
     spawn.transform->size = glm::vec3(.5f);
     auto spawnInteractable = spawn.AddComponent<Interactable>();
     Event spawnEvent;
@@ -215,7 +215,7 @@ void MonkeyGame::Start() {
     auto boardRenderer = board.AddComponent<MeshRenderer>();
     boardRenderer->meshes = resources.modelManager["OBJ_BOARD"].meshes;
     boardRenderer->isStatic = true;
-    board.transform->position = glm::vec3(15.0f, -.4f, 0.0f);
+    board.transform->position = glm::vec3(15.0f, 4.6f, 0.0f);
     board.transform->rotation = glm::quat(glm::vec3(0.0f, M_PI, 0.0f));
     auto boardRigidbody = board.AddComponent<Physics::RigidBody>();
     boardRigidbody->colliderFrom = Physics::ColliderConstructor::AABB;
@@ -238,14 +238,14 @@ void MonkeyGame::Start() {
         monkey.AddComponent<RotateCube>();
         
         double rad = ((2 * M_PI) / monkeyCount) * i;
-        monkey.transform->position = glm::vec3(cos(rad) * range, 0.0, sin(rad) * range);
+        monkey.transform->position = glm::vec3(cos(rad) * range, 5.0, sin(rad) * range);
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
     Entity& mogus = entityManager_.CreateEntity();
     auto mogusRenderer = mogus.AddComponent<MeshRenderer>();
     mogusRenderer->meshes = resources.modelManager["OBJ_MOGUS"].meshes;
     mogusRenderer->isStatic = true;
-    mogus.transform->position = glm::vec3(0.0f, 0.25f, 0.0f);
+    mogus.transform->position = glm::vec3(0.0f, 5.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);
 
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
@@ -258,7 +258,7 @@ void MonkeyGame::Start() {
     terrainRenderer->meshes.push_back(plane);
     terrainRenderer->isStatic = true;
     terrain.transform->size = glm::vec3(50, .25f, 50);
-    terrain.transform->position.y = -.5f;
+    terrain.transform->position.y = 4.5f;
     auto terrainRb = terrain.AddComponent<Physics::RigidBody>();
     terrainRb->mass = 0.0f;
     terrainRb->collider = plane->CreateBtCollider();

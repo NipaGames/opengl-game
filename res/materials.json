@@ -9,7 +9,8 @@
             "color": 0.75,
             "specularHighlight": 8,
             "specularStrength": 0,
-            "ambientColor": 0.5
+            "ambientColor": 0.5,
+            "tiling": 0.5
         }
     },
     {
@@ -184,10 +185,14 @@
         }
     },
     {
-        "id": "MAT_WATER",
-        "shader": "UNLIT",
+        "id": "MAT_OCEAN",
+        "shader": "OCEAN",
+        "texture": {
+            "src": "ocean.jpg"
+        },
         "uniforms": {
-            "color": [ 0.1, 0.1, 0.25 ]
+            "color": 0.75,
+            "tiling": 50
         }
     },
     {

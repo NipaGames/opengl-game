@@ -21,6 +21,8 @@ public:
     DEFINE_COMPONENT_DATA_VALUE(std::string, object, "");
     DEFINE_COMPONENT_DATA_VALUE_VECTOR(std::shared_ptr<Mesh>, meshes);
     DEFINE_COMPONENT_DATA_VALUE(bool, copyMeshes, false);
+    // render over skybox and any other entities
+    DEFINE_COMPONENT_DATA_VALUE(bool, renderLate, false);
 
     virtual ~MeshRenderer();
     virtual void CalculateModelMatrix();

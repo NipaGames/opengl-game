@@ -7,7 +7,7 @@
         {
             "id": "Player",
             "PlayerController": {
-                "spawnPosition": [ 0, 5, -8 ],
+                "spawnPosition": [ 0, 10, -8 ],
                 "testNums": [
                     1,
                     2,
@@ -19,7 +19,7 @@
         },
         {
             "Transform": {
-                "position": [ 20, 10, 20 ],
+                "position": [ 20, 15, 20 ],
                 "size": 2
             },
             "MeshRenderer": {
@@ -36,7 +36,7 @@
         },
         {
             "Transform": {
-                "position": [ 19, 12, 20 ],
+                "position": [ 19, 17, 20 ],
                 "size": 1
             },
             "MeshRenderer": {
@@ -53,7 +53,7 @@
         },
         {
             "Transform": {
-                "position": [ -10, 1.5, 0 ],
+                "position": [ -10, 6.5, 0 ],
                 "size": [ 1, 5, 10 ]
             },
             "MeshRenderer": {
@@ -71,7 +71,7 @@
         },
         {
             "Transform": {
-                "position": [ -5, 0.5, 5 ],
+                "position": [ -5, 5.5, 5 ],
                 "size": [ 2, 1, 2 ]
             },
             "MeshRenderer": {
@@ -89,7 +89,7 @@
         },
         {
             "Transform": {
-                "position": [ -7, 2, 10 ],
+                "position": [ -7, 7, 10 ],
                 "size": [ 2, 1, 2 ]
             },
             "MeshRenderer": {
@@ -107,7 +107,7 @@
         },
         {
             "Transform": {
-                "position": [ 0, -0.5, 20 ],
+                "position": [ 0, 4.5, 20 ],
                 "rotation": [ 0, 90, 0 ]
             },
             "MeshRenderer": {
