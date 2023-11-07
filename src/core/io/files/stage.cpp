@@ -65,8 +65,8 @@ bool StageSerializer::ParseJSON() {
         return false;
     }
     stage_.id = jsonData_["id"];
-    if (jsonData_.contains("location") && jsonData_["location"].is_string())
-        stage_.location = jsonData_["location"];
+    if (jsonData_.contains("data") && jsonData_["data"].is_object())
+        stage_.data = jsonData_["data"];
     int invalidEntities = 0;
     if (jsonData_.contains("entities")) {
         json& entities = jsonData_["entities"];

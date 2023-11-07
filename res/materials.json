@@ -3,7 +3,7 @@
         "id": "MAT_GRASS",
         "shader": "LIT",
         "texture": {
-            "path": "grass.jpg"
+            "src": "grass.jpg"
         },
         "uniforms": {
             "color": 0.75,
@@ -16,20 +16,20 @@
         "id": "MAT_DEFAULT",
         "shader": "LIT",
         "texture": {
-            "path": "default.jpg"
+            "src": "default.jpg"
         },
         "uniforms": {
             "color": 1.0,
             "specularHighlight": 8,
             "specularStrength": 0,
-            "ambientColor": 0.15
+            "ambientColor": 0.25
         }
     },
     {
         "id": "MAT_WOOD_CEILING",
         "shader": "LIT",
         "texture": {
-            "path": "wood.jpg"
+            "src": "wood.jpg"
         },
         "uniforms": {
             "color": 1.0,
@@ -50,7 +50,7 @@
         "id": "MAT_TILE",
         "shader": "LIT",
         "texture": {
-            "path": "tile.jpg"
+            "src": "tile.jpg"
         },
         "uniforms": {
             "color": 1.0,
@@ -70,7 +70,7 @@
         "id": "MAT_FLOOR",
         "shader": "LIT",
         "texture": {
-            "path": "floor.jpg"
+            "src": "floor.jpg"
         },
         "uniforms": {
             "color": 1.0,
@@ -84,7 +84,7 @@
         "id": "MAT_CAVE",
         "shader": "LIT",
         "texture": {
-            "path": "cave.jpg"
+            "src": "cave.jpg"
         },
         "uniforms": {
             "specularHighlight": 8,
@@ -106,7 +106,7 @@
         "id": "MAT_WOOD",
         "shader": "LIT",
         "texture": {
-            "path": "wood.jpg"
+            "src": "wood.jpg"
         },
         "uniforms": {
             "specularHighlight": 8,
@@ -148,7 +148,7 @@
         "id": "MAT_LEVER",
         "shader": "LIT",
         "texture": {
-            "path": "lever.jpg"
+            "src": "lever.jpg"
         },
         "uniforms": {
             "specularHighlight": 8,
@@ -187,13 +187,24 @@
         "id": "MAT_INSTRUCTIONS",
         "shader": "LIT",
         "texture": {
-            "path": "instructions.jpg"
+            "src": "instructions.jpg"
         },
         "uniforms": {
             "specularHighlight": 8,
             "specularStrength": 0,
             "color": 1.0,
             "ambientColor": 0.5
+        }
+    },
+    {
+        "id": "MAT_FRAMEBUFFER_PROJECTION",
+        "shader": "UNLIT",
+        "texture": {
+            "src": "FRAMEBUFFER"
+        },
+        "uniforms": {
+            "color": 1.0,
+            "tiling": [ 1, -1 ]
         }
     }
 ]

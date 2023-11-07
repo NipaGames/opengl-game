@@ -105,6 +105,9 @@ public:
         const std::map<std::string, T, ItemComp>& GetAll() {
             return items_;
         }
+        void Set(const std::string& id, const T& val) {
+            items_[id] = val;
+        }
     };
 
     class TextureManager : public ResourceManager<Texture::TextureID> {

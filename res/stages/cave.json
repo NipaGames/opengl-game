@@ -1,6 +1,8 @@
 {
     "id": "cave",
-    "location": "The Sub-Ocean Passage",
+    "data": {
+        "location": "The Sub-Ocean Passage"
+    },
     "entities": [
         {
             "id": "Player",

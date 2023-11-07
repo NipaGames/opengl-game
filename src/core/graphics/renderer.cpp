@@ -64,14 +64,16 @@ bool Renderer::Init() {
     glGenFramebuffers(1, &fbo_);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
-    glGenTextures(1, &textureColorBuffer_);
-    glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
+    glGenTextures(1, &framebufferTexture_);
+    glBindTexture(GL_TEXTURE_2D, framebufferTexture_);
+    GAME->resources.textureManager.Set("FRAMEBUFFER", framebufferTexture_);
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, BASE_WIDTH, BASE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer_, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferTexture_, 0);
 
 
     framebufferShader_ = Shader(Shaders::ShaderID::FRAMEBUFFER);
@@ -221,7 +223,7 @@ void Renderer::Render() {
 
     framebufferShader_.Use();
     framebufferShape_.Bind();
-    glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
+    glBindTexture(GL_TEXTURE_2D, framebufferTexture_);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     for (auto& c : canvases_) {
@@ -240,7 +242,7 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, width, height, GL_TRUE);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo_);
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
-    glBindTexture(GL_TEXTURE_2D, textureColorBuffer_);
+    glBindTexture(GL_TEXTURE_2D, framebufferTexture_);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     camera_.aspectRatio = (float) width / (float) height;

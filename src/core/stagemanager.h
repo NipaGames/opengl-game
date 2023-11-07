@@ -4,13 +4,15 @@
 #include <unordered_set>
 #include <vector>
 #include <opengl.h>
+#include <nlohmann/json.hpp>
 
 #include "entity/entity.h"
 
 namespace Stage {
     struct Stage {
         std::string id;
-        std::string location;
+        // additional game-specific data
+        nlohmann::json data;
 
         std::list<Entity> entities;
         std::unordered_set<size_t> instantiatedEntities;

@@ -21,7 +21,7 @@ private:
     GLFWwindow* window_;
     GLuint fbo_;
     GLuint rbo_;
-    GLuint textureColorBuffer_;
+    GLuint framebufferTexture_;
     GLuint MSAAFbo_;
     GLuint MSAATextureColorBuffer_;
     Shape framebufferShape_;

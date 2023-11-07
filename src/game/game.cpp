@@ -60,8 +60,11 @@ void SpawnPlayer() {
     MonkeyGame* game = MonkeyGame::GetGame();
     game->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
     const std::vector<std::string>& stages = Stage::GetLoadedStages();
-    if (!stages.empty())
-        game->hud.ShowAreaMessage(Stage::GetStage(stages.at(0)).location);
+    if (!stages.empty()) {
+        const nlohmann::json& dataJson = Stage::GetStage(stages.at(0)).data;
+        if (dataJson["location"].is_string())
+            game->hud.ShowAreaMessage(dataJson["location"]);
+    }
 }
 
 void RegisterCommands(Console& console) {

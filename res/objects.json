@@ -66,5 +66,13 @@
         "materialOverrides": {
             "1": "MAT_INSTRUCTIONS"
         }
+    },
+    {
+        "model": "OBJ_SCREEN",
+        "size": 0.5,
+        "defaultMaterial": "MAT_METAL",
+        "materialOverrides": {
+            "1": "MAT_FRAMEBUFFER_PROJECTION"
+        }
     }
 ]

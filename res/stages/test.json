@@ -1,6 +1,8 @@
 {
     "id": "teststage",
-    "location": "the void",
+    "data": {
+        "location": "the void"
+    },
     "entities": [
         {
             "id": "Player",
@@ -86,6 +88,20 @@
             },
             "Physics::RigidBody": {
                 "mass": 0
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 0, -0.5, 20 ],
+                "rotation": [ 0, 90, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_SCREEN",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
             }
         }
     ]
