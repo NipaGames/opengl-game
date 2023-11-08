@@ -3,5 +3,9 @@
 #include <math.h>
 
 void Ship::FixedUpdate() {
-    parent->transform->position.y = (float) sin(glfwGetTime() * M_PI * speed) * height;
+    float factor = (float) sin(glfwGetTime() * M_PI * speed);
+    parent->transform->position.y = factor * height;
+    glm::vec3 eulers = glm::eulerAngles(parent->transform->rotation);
+    eulers.z = (float) M_PI + factor * glm::radians(maxRotation);
+    parent->transform->rotation = eulers;
 }
