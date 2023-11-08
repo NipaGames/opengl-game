@@ -179,10 +179,21 @@ JSON_SERIALIZE_TYPES([](Serializer::SerializationArgs& args, const nlohmann::jso
         mesh = Meshes::CreateMeshInstance(Meshes::CUBE);
     }
     else if (type == "TERRAIN") {
-        glm::ivec2 faces = glm::ivec2(1);
+        glm::vec2 tiling = glm::vec2(1.0f);
         float variation = 0.0f;
 
-        std::shared_ptr<Plane> plane = std::make_shared<Plane>(faces);
+        if (j.contains("tiling")) {
+            if (!Serializer::SetJSONPointerValue(&tiling, j["tiling"])) {
+                return false;
+            }
+        }
+        if (j.contains("variation")) {
+            if (!Serializer::SetJSONPointerValue(&variation, j["variation"])) {
+                return false;
+            }
+        }
+        
+        std::shared_ptr<Plane> plane = std::make_shared<Plane>(tiling);
         plane->heightVariation = variation;
         plane->GenerateVertices();
         mesh = plane;

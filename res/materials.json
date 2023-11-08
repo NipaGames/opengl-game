@@ -191,8 +191,7 @@
             "src": "ocean.jpg"
         },
         "uniforms": {
-            "color": 0.75,
-            "tiling": 50
+            "color": 0.75
         }
     },
     {

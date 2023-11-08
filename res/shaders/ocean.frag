@@ -16,16 +16,16 @@ uniform sampler2D textureSampler;
 uniform float time;
 
 void main() {
-  float speed = 0.25;
-  float waviness = 64.0;
-  vec2 amt = vec2(0.005, 0.001);
+  vec2 speed = vec2(0.05, 0.25);
+  vec2 amt = vec2(0.5, 0.1);
+  float waviness = 0.5;
 
   vec2 pos = fragmentTexCoord;
-  pos.x += (sin((time / 5.0 * radians(360.0)) * speed + pos.y * waviness) + 1.0) / 2.0 * amt.x;
+  pos.x += (sin((time * radians(360.0)) * speed.x + pos.y * waviness) + 1.0) / 2.0 * amt.x;
   pos.x -= amt.x;
   pos.x /= 1.0 - amt.x;
 
-  pos.y += (sin((time * radians(360.0)) * speed + pos.x * waviness) + 1.0) / 2.0 * amt.y;
+  pos.y += (sin((time * radians(360.0)) * speed.y + pos.x * waviness) + 1.0) / 2.0 * amt.y;
   pos.y -= amt.y;
   pos.y /= 1.0 - amt.y;
 

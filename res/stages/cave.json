@@ -47,8 +47,7 @@
                 "meshes": [
                     {
                         "type": "TERRAIN",
-                        "faces": [ 100, 100 ],
-                        "variation": 0,
+                        "tiling": 100,
                         "material": "MAT_OCEAN"
                     }
                 ],
