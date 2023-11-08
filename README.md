@@ -137,9 +137,15 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 
  
 
-![a gate opening](/images/screenshot15.png)
+![hd 640p screenshot](/images/screenshot15.png)
 
 *cool area message and also authentic 640p experience* 4.11.2023
+
+ 
+
+![a desolate endless ocean with a lone ship](/images/screenshot16.png)
+
+*The Ocean Update™* 8.11.2023
 
  
 

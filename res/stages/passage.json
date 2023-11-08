@@ -1,5 +1,5 @@
 {
-    "id": "cave",
+    "id": "passage",
     "data": {
         "location": "The Sub-Ocean Passage"
     },
@@ -46,6 +46,17 @@
                 "object": "OBJ_SHORE",
                 "isStatic": true
             }
+        },
+        {
+            "id": "ship",
+            "Transform": {
+                "position": [ -100, 0, -100 ],
+                "rotation": [ 5, -120, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_SHIP"
+            },
+            "Ship": { }
         },
         {
             "Transform": {

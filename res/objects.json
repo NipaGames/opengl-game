@@ -38,6 +38,15 @@
         }
     },
     {
+        "model": "OBJ_SHIP",
+        "size": 1.25,
+        "defaultMaterial": "MAT_SHIP_WOOD",
+        "materialOverrides": {
+            "1": "MAT_SHIP_WOOD:DARK",
+            "3": "MAT_SHIP_FLAG"
+        }
+    },
+    {
         "model": "OBJ_GATE",
         "size": 1.5,
         "defaultMaterial": "MAT_METAL"
@@ -53,16 +62,6 @@
     },
     {
         "model": "OBJ_LEVER",
-        "size": 0.1,
-        "defaultMaterial": "MAT_WOOD",
-        "materialOverrides": {
-            "1": "MAT_TILE:LEVER",
-            "2": "MAT_LEVER",
-            "4": ":KNOB"
-        }
-    },
-    {
-        "model": "OBJ_GATE",
         "size": 0.1,
         "defaultMaterial": "MAT_WOOD",
         "materialOverrides": {

@@ -130,6 +130,29 @@
         }
     },
     {
+        "id": "MAT_SHIP_WOOD",
+        "shader": "UNLIT",
+        "texture": {
+            "src": "wood.jpg"
+        },
+        "uniforms": {
+            "color": 0.5,
+            "tiling": 5
+        },
+        "children": {
+            "DARK": {
+                "color": 0.25
+            }
+        }
+    },
+    {
+        "id": "MAT_SHIP_FLAG",
+        "shader": "UNLIT",
+        "uniforms": {
+            "color": 0.35
+        }
+    },
+    {
         "id": "MAT_METAL",
         "shader": "LIT",
         "uniforms": {
