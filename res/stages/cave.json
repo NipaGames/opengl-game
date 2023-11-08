@@ -12,13 +12,13 @@
         },
         {
             "Transform": {
-                "position": [ 112, 20, 5 ]
+                "position": [ 112, 20, 6 ]
             },
             "Lights::Spotlight": {
                 "cutOffMin": 0.95,
                 "cutOffMax": 0.9,
                 "range": 25,
-                "dir": [ 1.0, -0.45, 0.15 ],
+                "dir": [ 1.0, -0.4, 0.15 ],
                 "intensity": 1
             }
         },
@@ -29,6 +29,7 @@
             },
             "MeshRenderer": {
                 "object": "OBJ_CAVE",
+                "alwaysOnFrustum": true,
                 "isStatic": true
             },
             "Physics::RigidBody": {
@@ -37,9 +38,32 @@
             }
         },
         {
+            "id": "shore",
+            "Transform": {
+                "position": [ 100, -5.5, 120 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_SHORE",
+                "isStatic": true
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 120, 6, 15 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_LIGHT_POLE",
+                "isStatic": true
+            },
+            "Lights::PointLight": {
+                "color": [ 1, 0.8, 0.5 ],
+                "range": 3.5
+            }
+        },
+        {
             "id": "water",
             "Transform": {
-                "position": [ -377.5, 0, 0 ],
+                "position": [ -379, 0.5, 0 ],
                 "rotation": [ 0, -10, 0 ],
                 "size": [ 1000, 1.0, 1000 ]
             },
@@ -52,7 +76,7 @@
                     }
                 ],
                 "isStatic": true,
-                "alwaysOnFrustum": true,
+                "alwaysOnFrustum": false,
                 "renderLate": true
             }
         },

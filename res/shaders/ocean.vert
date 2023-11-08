@@ -16,7 +16,7 @@ float rand(vec2 seed){
 }
 
 void main() {
-  float waveHeight = 1.5;
+  float waveHeight = 1.25;
   float waveSpeed = 0.25;
 
   float randFactor = rand(pos.xz);

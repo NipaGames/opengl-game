@@ -16,8 +16,25 @@
             "2": "MAT_FLOOR",
             "3": "MAT_WOOD_CEILING:POLE",
             "4": "MAT_CAVE:WALL",
-            "5": "MAT_CAVE:WALL",
-            "6": "MAT_CAVE:FLOOR"
+            "5": "MAT_NONE",
+            "6": "MAT_CAVE:WALL",
+            "7": "MAT_CAVE:FLOOR",
+            "8": "MAT_FLOOR"
+        }
+    },
+    {
+        "model": "OBJ_SHORE",
+        "size": 1.5,
+        "defaultMaterial": "MAT_GRASS:SHORE"
+    },
+    {
+        "model": "OBJ_LIGHT_POLE",
+        "size": 6.0,
+        "defaultMaterial": "MAT_METAL:POLE_1",
+        "materialOverrides": {
+            "0": "MAT_WOOD:POLE",
+            "1": "MAT_TORCH_FLAME",
+            "3": "MAT_METAL:POLE_2"
         }
     },
     {

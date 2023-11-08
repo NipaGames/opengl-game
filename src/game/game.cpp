@@ -248,6 +248,10 @@ void MonkeyGame::Start() {
     mogus.transform->position = glm::vec3(0.0f, 5.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);
 
+    Entity& lightEntity = entityManager_.CreateEntity();
+    lightEntity.transform->position = glm::vec3(0.0f, 7.5f, 0.0f);
+    lightEntity.AddComponent<Lights::PointLight>()->intensity = .5f;
+
     auto plane = std::make_shared<Plane>(glm::ivec2(25, 25));
     plane->heightVariation = 1.0f;
     plane->GenerateVertices();

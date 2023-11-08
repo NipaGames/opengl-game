@@ -9,8 +9,13 @@
             "color": 0.75,
             "specularHighlight": 8,
             "specularStrength": 0,
-            "ambientColor": 0.5,
+            "ambientColor": 0.25,
             "tiling": 0.5
+        },
+        "children": {
+            "SHORE": {
+                "tiling": 4
+            }
         }
     },
     {
@@ -118,6 +123,9 @@
         "children": {
             "KNOB": {
                 "color": 1.5
+            },
+            "POLE": {
+                "ambientColor": 0.25
             }
         }
     },
@@ -134,6 +142,14 @@
                 "specularHighlight": 16,
                 "specularStrength": 0.5,
                 "color": 0.25
+            },
+            "POLE_1": {
+                "color": 0.4,
+                "ambientColor": 0.2
+            },
+            "POLE_2": {
+                "color": 0.25,
+                "ambientColor": 0.1
             }
         }
     },
@@ -204,7 +220,7 @@
             "specularHighlight": 8,
             "specularStrength": 0,
             "color": 1.0,
-            "ambientColor": 0.5
+            "ambientColor": 0.25
         }
     },
     {
@@ -216,6 +232,13 @@
         "uniforms": {
             "color": 1.0,
             "tiling": [ 1, -1 ]
+        }
+    },
+    {
+        "id": "MAT_NONE",
+        "shader": "UNLIT",
+        "uniforms": {
+            "opacity": 0.0
         }
     }
 ]
