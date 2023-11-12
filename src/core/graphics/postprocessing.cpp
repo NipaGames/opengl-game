@@ -24,4 +24,5 @@ void PostProcessing::ApplyUniforms(const Shader& shader) const {
     PP_UPDATE_UNIFORM(shader, gamma);
     PP_UPDATE_UNIFORM(shader, contrast);
     PP_UPDATE_UNIFORM(shader, brightness);
+    PP_UPDATE_UNIFORM(shader, saturation);
 }

@@ -275,6 +275,7 @@ void Renderer::UpdateVideoSettings(const Resources::VideoSettings& settings) {
     framebufferShader_.SetUniform("cfg.gamma", settings.gamma);
     framebufferShader_.SetUniform("cfg.contrast", settings.contrast);
     framebufferShader_.SetUniform("cfg.brightness", settings.brightness);
+    framebufferShader_.SetUniform("cfg.saturation", settings.saturation);
     glUseProgram(0);
 }
 

@@ -8,6 +8,7 @@ struct Config {
     float gamma;
     float contrast;
     float brightness;
+    float saturation;
 };
 
 struct Vignette {
@@ -40,6 +41,7 @@ struct PostProcessing {
     float gamma;
     float contrast;
     float brightness;
+    float saturation;
 };
 
 uniform Config cfg;
@@ -102,9 +104,21 @@ void main() {
     // brightness
     float brightness = cfg.brightness * postProcessing.brightness;
     color.rgb += brightness - 1.0;
-    // gamma correction
+    // saturation
+    float saturation = cfg.saturation * postProcessing.saturation;
+    if (saturation != 1.0) {
+        float satMax = 3.0 - saturation;
+        vec3 sat;
+        sat.r = (color.r * (1.0 + saturation) + color.g * (1.0 - saturation) + color.b * (1.0 - saturation)) / satMax;
+        sat.g = (color.r * (1.0 - saturation) + color.g * (1.0 + saturation) + color.b * (1.0 - saturation)) / satMax;
+        sat.b = (color.r * (1.0 - saturation) + color.g * (1.0 - saturation) + color.b * (1.0 + saturation)) / satMax;
+        color = vec4(sat, 1.0);
+    }
+    // gamma
     float gamma = cfg.gamma * postProcessing.gamma;
-    color.r = pow(color.r, gamma);
-    color.g = pow(color.g, gamma);
-    color.b = pow(color.b, gamma);
+    if (gamma != 1.0) {
+        color.r = pow(color.r, gamma);
+        color.g = pow(color.g, gamma);
+        color.b = pow(color.b, gamma);
+    }
 }

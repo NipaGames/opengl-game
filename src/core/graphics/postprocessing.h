@@ -32,6 +32,7 @@ public:
     float gamma = 1.0f;
     float contrast = 1.0f;
     float brightness = 1.0f;
+    float saturation = 1.0f;
 
     void ApplyUniforms(const Shader&) const;
     template<size_t S>
