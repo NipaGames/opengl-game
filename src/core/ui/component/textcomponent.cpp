@@ -57,9 +57,8 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         int w = (int) (textSize_.x * modifier);
         int h = (int) (textSize_.y);
         float marginY = (additionalRowsHeight_ + padding_[0] * ((float) BASE_FONT_SIZE / f.size.y)) * size;
-        actualTextSize_ = { w, h };
         glActiveTexture(GL_TEXTURE0);
-
+    
         switch (alignment) {
             case Text::TextAlignment::LEFT:
                 shape_.SetVertexData(new float[24] {
@@ -126,6 +125,9 @@ void UI::TextComponent::RenderTexture() {
     textureShader_.SetUniform("projection", glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f));
 
     UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ * size + padding_[0] * size * fontModifier), size * fontModifier, 1.0f, alignment, lineSpacing * size);
+    
+    float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
+    actualTextSize_ = { textSize_.x * modifier, textSize_.y };
 }
 
 void UI::TextComponent::SetText(const std::string& t) {

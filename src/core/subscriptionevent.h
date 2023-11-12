@@ -1,5 +1,6 @@
 #pragma once
 
 enum class EventType {
-    MOUSE_MOVE
+    MOUSE_MOVE,
+    WINDOW_RESIZE
 };

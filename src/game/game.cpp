@@ -87,6 +87,12 @@ void SpawnPlayer() {
     ShowAreaMessage();
 }
 
+void KillPlayer() {
+    HUD& hud = MonkeyGame::GetGame()->hud;
+    hud.UpdateHP(0, 100);
+    hud.UpdateStatus("fucking dead");
+}
+
 void RegisterCommands(Console& console) {
     console.RegisterCommand("quit", [](const std::string&) {
         spdlog::info("byee!! :3");
@@ -177,6 +183,9 @@ void RegisterCommands(Console& console) {
     console.RegisterCommand("unload", UnloadStage);
     console.RegisterCommand("spawn", [](const std::string&) {
         SpawnPlayer();
+    });
+    console.RegisterCommand("die", [](const std::string&) {
+        KillPlayer();
     });
 }
 
@@ -312,6 +321,7 @@ void MonkeyGame::Start() {
         */
     }
     hud.CreateHUDElements();
+
     Stage::LoadStage("teststage");
     SpawnPlayer();
 }

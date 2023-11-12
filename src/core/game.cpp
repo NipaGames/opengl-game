@@ -69,6 +69,7 @@ void Game::GameThread() {
         if (Input::SET_FULLSCREEN_PENDING) {
             const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
             GAME->GetRenderer().UpdateCameraProjection(mode->width, mode->height);
+            window_.DispatchEvent(EventType::WINDOW_RESIZE);
             Input::SET_FULLSCREEN_PENDING = false;
             Input::WINDOW_SIZE_CHANGE_PENDING = false;
         }
@@ -77,6 +78,7 @@ void Game::GameThread() {
             glfwGetFramebufferSize(window_.GetWindow(), &width, &height);
             if (width > 0 && height > 0)
                 renderer_.UpdateCameraProjection(width, height);
+            window_.DispatchEvent(EventType::WINDOW_RESIZE);
             Input::WINDOW_SIZE_CHANGE_PENDING = false;
         }
 

@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "event.h"
+#include "subscriptionevent.h"
 #include "graphics/renderer.h"
 
 #define BASE_WIDTH 1280
@@ -28,8 +28,6 @@ private:
     glm::ivec2 baseWndSize_;
     bool useVsync_ = true;
     std::multimap<EventType, std::function<void()>> events_;
-
-    void DispatchEvent(EventType);
 public:
     GameWindow() = default;
     GameWindow(const std::string&, int, int, bool = true);
@@ -39,6 +37,7 @@ public:
     void SetupInputSystem();
     void UpdateInputSystem();
     void ResetCursorPos();
+    void DispatchEvent(EventType);
     void OnEvent(EventType, std::function<void()>);
     bool IsUsingVsync() { return useVsync_; }
     void UseVsync(bool);

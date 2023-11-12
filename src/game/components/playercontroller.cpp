@@ -1,6 +1,6 @@
 #include "playercontroller.h"
 
-#include <core/event.h>
+#include <core/subscriptionevent.h>
 #include <core/game.h>
 #include <core/input.h>
 #include <core/physics/utils.h>

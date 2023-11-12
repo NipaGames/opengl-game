@@ -23,6 +23,34 @@ void HUD::CreateHUDElements() {
     interactText->AddToCanvas();
     interactTextEntity.Start();
 
+    Entity& hpTextEntity = GAME->GetEntityManager().CreateEntity();
+    hpTextEntity.transform->position.x = 10;
+    hpTextEntity.transform->position.y = 680;
+    hpTextEntity.transform->size.z = .75f;
+    hpText = hpTextEntity.AddComponent<TextComponent>(&c);
+    hpText->font = "FONT_CELTIC";
+    hpText->AddToCanvas();
+    hpTextEntity.Start();
+    
+    Entity& maxHpTextEntity = GAME->GetEntityManager().CreateEntity();
+    maxHpTextEntity.transform->position.y = hpTextEntity.transform->position.y;
+    maxHpTextEntity.transform->size.z = .5f;
+    maxHpText = maxHpTextEntity.AddComponent<TextComponent>(&c);
+    maxHpText->color = glm::vec4(glm::vec3(1.0f), .75f);
+    maxHpText->font = "FONT_CELTIC";
+    maxHpText->AddToCanvas();
+    maxHpTextEntity.Start();
+
+    Entity& statusTextEntity = GAME->GetEntityManager().CreateEntity();
+    statusTextEntity.transform->position.x = hpTextEntity.transform->position.x;
+    statusTextEntity.transform->position.y = hpTextEntity.transform->position.y - 30;
+    statusTextEntity.transform->size.z = .6f;
+    statusText = statusTextEntity.AddComponent<TextComponent>(&c);
+    statusText->font = "FONT_MORRIS";
+    statusText->SetShader("STATUS_TEXT");
+    statusText->AddToCanvas();
+    statusTextEntity.Start();
+
     Entity& areaTextEntity = GAME->GetEntityManager().CreateEntity();
     areaTextEntity.transform->position.x = 1270;
     areaTextEntity.transform->position.y = 25;
@@ -38,6 +66,27 @@ void HUD::CreateHUDElements() {
     areaAnimation->ptr = &areaText->color.w;
     areaAnimation->allowInterruptions = true;
     areaTextEntity.Start();
+
+    GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
+        this->UpdateElementPositions();
+    });
+
+    UpdateHP(100, 100);
+    UpdateStatus("being silly awoo");
+}
+
+void HUD::UpdateElementPositions() {
+    maxHpText->parent->transform->position.x = hpText->parent->transform->position.x + hpText->GetTextSize().x;
+}
+
+void HUD::UpdateHP(int hp, int maxHp) {
+    hpText->SetText("HP: " + std::to_string(hp));
+    maxHpText->SetText(" / " + std::to_string(maxHp));
+    UpdateElementPositions();
+}
+
+void HUD::UpdateStatus(const std::string& status) {
+    statusText->SetText(status);
 }
 
 void HUD::Update() {
