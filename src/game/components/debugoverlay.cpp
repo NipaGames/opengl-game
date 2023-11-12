@@ -1,7 +1,7 @@
 #include "debugoverlay.h"
 #include <core/game.h>
 #include <core/input.h>
-#include <core/stagemanager.h>
+#include <core/stage.h>
 
 #include <algorithm>
 #include <string>
@@ -75,7 +75,7 @@ void DebugOverlay::FixedUpdate() {
     SetValue("pos", camPos.x, camPos.y, camPos.z);
     SetValue("entities", GAME->GetEntityManager().CountEntities());
     SetValue("entitiesOnFrustum", GAME->GetRenderer().CountEntitiesOnFrustum());
-    const std::vector<std::string>& stages = Stage::GetLoadedStages();
+    const std::vector<std::string>& stages = GAME->resources.stageManager.GetLoadedStages();
     std::string stagesStr;
     if (stages.size() > 0) {
         stagesStr = stages.at(0);

@@ -1,6 +1,6 @@
 #include "game/game.h"
 
-#include <core/stagemanager.h>
+#include <core/stage.h>
 #include <core/input.h>
 #include <core/io/files/materials.h>
 #include <core/io/paths.h>
@@ -59,24 +59,24 @@ void WhatIs(std::string str) {
 }
 
 void LoadStage(std::string stage) {
-    if (!Stage::LoadStage(stage))
+    if (!GAME->resources.stageManager.LoadStage(stage))
         spdlog::warn("Stage '{}' not found!", stage);
 }
 
 void UnloadStage(std::string stage) {
     if (stage == "all") {
-        Stage::UnloadAllStages();
+        GAME->resources.stageManager.UnloadAllStages();
         return;
     }
-    if (!Stage::UnloadStage(stage))
+    if (!GAME->resources.stageManager.UnloadStage(stage))
         spdlog::warn("Stage '{}' not loaded!", stage);
 }
 
 void ShowAreaMessage() {
     MonkeyGame* game = MonkeyGame::GetGame();
-    const std::vector<std::string>& stages = Stage::GetLoadedStages();
+    const std::vector<std::string>& stages = GAME->resources.stageManager.GetLoadedStages();
     if (!stages.empty()) {
-        const nlohmann::json& dataJson = Stage::GetStage(stages.at(0)).data;
+        const nlohmann::json& dataJson = GAME->resources.stageManager.Get(stages.at(0)).data;
         if (dataJson["location"].is_string())
             game->hud.ShowAreaMessage(dataJson["location"]);
     }
@@ -191,9 +191,6 @@ void RegisterCommands(Console& console) {
 
 void MonkeyGame::Start() {
     LOG_FN();
-    Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
-    Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "passage.json"));
-    Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "turtle.json"));
 
     PostProcessing postProcessing;
     postProcessing.kernel.offset = 1.0f / 1000.0f;
@@ -322,7 +319,7 @@ void MonkeyGame::Start() {
     }
     hud.CreateHUDElements();
 
-    Stage::LoadStage("teststage");
+    GAME->resources.stageManager.LoadStage("teststage");
     SpawnPlayer();
 }
 
@@ -340,12 +337,12 @@ void MonkeyGame::Update() {
         GetRenderer().showAabbs = !GetRenderer().showAabbs;
 
     if (Input::IsKeyPressedDown(GLFW_KEY_L)) {
-        Stage::UnloadStage("passage");
-        Stage::LoadStage("passage");
+        GAME->resources.stageManager.UnloadStage("passage");
+        GAME->resources.stageManager.LoadStage("passage");
     }
 
     if (Input::IsKeyPressedDown(GLFW_KEY_U)) {
-        Stage::UnloadAllStages();
+        GAME->resources.stageManager.UnloadAllStages();
     }
 
     // console

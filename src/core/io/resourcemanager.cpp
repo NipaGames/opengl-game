@@ -57,4 +57,6 @@ void ResourceManager::LoadAll() {
     modelManager.LoadAll(imports->ListImports("models"));
 
     fontManager.LoadAll(imports->ListImports("fonts"));
+
+    stageManager.LoadAll(imports->ListImports("stages"));
 }

@@ -13,6 +13,7 @@
 #include "paths.h"
 #include "files/materials.h"
 #include "files/objects.h"
+#include <core/stage.h>
 #include <core/graphics/shader.h>
 #include <core/graphics/texture.h>
 #include <core/graphics/model.h>
@@ -148,6 +149,18 @@ namespace Resources {
         ModelManager() : ResourceManager<Model>(Paths::MODELS_DIR, "model") { }
     };
 
+    class StageManager : public ResourceManager<Stage> {
+    protected:
+        std::optional<Stage> LoadResource(const std::fs::path&) override;
+        std::vector<std::string> loadedStages;
+    public:
+        StageManager() : ResourceManager<Stage>(Paths::STAGES_DIR, "stage") { }
+        const std::vector<std::string>& GetLoadedStages();
+        bool LoadStage(const std::string&);
+        bool UnloadStage(const std::string&);
+        void UnloadAllStages();
+    };
+
     struct VideoSettings {
         float gamma, contrast, brightness, saturation;
         bool useVsync;
@@ -168,6 +181,7 @@ public:
     Resources::ShaderManager shaderManager;
     Resources::FontManager fontManager;
     Resources::ModelManager modelManager;
+    Resources::StageManager stageManager;
 
     void RestoreDefaultVideoSettings();
     void ParseVideoSettings(CFG::CFGObject*);

@@ -1,15 +1,15 @@
 #pragma once
 
 #include "../serializer.h"
-#include <core/stagemanager.h>
+#include <core/stage.h>
 
 namespace Serializer {
     class StageSerializer : public JSONFileSerializer {
     protected:
-        Stage::Stage stage_;
+        Stage stage_;
         bool ParseJSON() override;
     public:
-        Stage::Stage& GetStage();
+        Stage& GetStage();
         StageSerializer(const std::string& p) {
             SerializeFile(p);
         }

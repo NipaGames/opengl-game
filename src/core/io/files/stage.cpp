@@ -82,6 +82,6 @@ bool StageSerializer::ParseJSON() {
     return true;
 }
 
-Stage::Stage& StageSerializer::GetStage() {
+Stage& StageSerializer::GetStage() {
     return stage_;
 }

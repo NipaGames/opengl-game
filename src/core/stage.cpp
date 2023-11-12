@@ -1,4 +1,4 @@
-#include "stagemanager.h"
+#include "stage.h"
 
 #include <fstream>
 #include <unordered_map>
@@ -7,31 +7,25 @@
 #include "game.h"
 #include "entity/entitymanager.h"
 #include "io/files/stage.h"
+#include "io/resourcemanager.h"
 
-std::vector<Stage::Stage> stages;
-std::vector<std::string> loadedStages;
-
-void Stage::AddStageFromFile(const std::string& path) {
-    Serializer::StageSerializer serializer(path);
-    AddStage(serializer.GetStage());
+std::optional<Stage> Resources::StageManager::LoadResource(const std::fs::path& path) {
+    Serializer::StageSerializer serializer(path.generic_string());
+    if (!serializer.Success())
+        return std::nullopt;
+    Stage s = serializer.GetStage();
+    if (s.id.empty())
+        return std::nullopt;
+    SetItemID(s.id);
+    return s;
 }
 
-void Stage::AddStage(Stage& stage) {
-    if (!stage.id.empty())
-        stages.emplace_back(stage);
-}
-
-const Stage::Stage& Stage::GetStage(const std::string& id) {
-    return *std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
-}
-
-bool Stage::LoadStage(const std::string& id) {
-    if (stages.empty())
+bool Resources::StageManager::LoadStage(const std::string& id) {
+    if (items_.empty())
         return false;
-    auto sIt = std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
-    if (sIt == stages.end())
+    if (items_.count(id) == 0)
         return false;
-    Stage& s = *sIt;
+    Stage& s = items_.at(id);
     s.instantiatedEntities.clear();
 
     for (const Entity& e : s.entities) {
@@ -58,12 +52,11 @@ bool Stage::LoadStage(const std::string& id) {
     return true;
 }
 
-bool Stage::UnloadStage(const std::string& id) {
+bool Resources::StageManager::UnloadStage(const std::string& id) {
     auto idIt = std::find(loadedStages.begin(), loadedStages.end(), id);
     if (idIt == loadedStages.end())
         return false;
-    auto sIt = std::find_if(stages.begin(), stages.end(), [&](const Stage& s) { return s.id == id; });
-    const Stage& s = *sIt;
+    const Stage& s = items_[id];
     for (size_t hash : s.instantiatedEntities) {
         GAME->GetEntityManager().RemoveEntity(hash);
     }
@@ -73,12 +66,12 @@ bool Stage::UnloadStage(const std::string& id) {
     return true;
 }
 
-void Stage::UnloadAllStages() {
+void Resources::StageManager::UnloadAllStages() {
     for (int i = 0; i < loadedStages.size(); i++) {
         UnloadStage(loadedStages.at(i--));
     }
 }
 
-const std::vector<std::string>& Stage::GetLoadedStages() {
+const std::vector<std::string>& Resources::StageManager::GetLoadedStages() {
     return loadedStages;
 }

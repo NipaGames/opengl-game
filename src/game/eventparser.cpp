@@ -4,7 +4,7 @@
 #include <regex>
 #include <sstream>
 #include <iostream>
-#include <core/stagemanager.h>
+#include <core/stage.h>
 
 EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
     std::smatch groups;
