@@ -6,6 +6,8 @@ in vec2 fragmentTexCoord;
 
 struct Config {
     float gamma;
+    float contrast;
+    float brightness;
 };
 
 struct Vignette {
@@ -34,6 +36,10 @@ struct PostProcessing {
     Kernel kernel;
     Vignette vignette;
     vec3 vignetteColor;
+
+    float gamma;
+    float contrast;
+    float brightness;
 };
 
 uniform Config cfg;
@@ -90,8 +96,15 @@ void main() {
         color.rgb += postProcessing.vignetteColor * (1.0 - vignetteModifier);
     }
 
+    // contrast
+    float contrast = cfg.contrast * postProcessing.contrast;
+    color.rgb = ((color.rgb - 0.5) * contrast) + 0.5;
+    // brightness
+    float brightness = cfg.brightness * postProcessing.brightness;
+    color.rgb += brightness - 1.0;
     // gamma correction
-    color.r = pow(color.r, cfg.gamma);
-    color.g = pow(color.g, cfg.gamma);
-    color.b = pow(color.b, cfg.gamma);
+    float gamma = cfg.gamma * postProcessing.gamma;
+    color.r = pow(color.r, gamma);
+    color.g = pow(color.g, gamma);
+    color.b = pow(color.b, gamma);
 }

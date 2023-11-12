@@ -20,4 +20,8 @@ void PostProcessing::ApplyUniforms(const Shader& shader) const {
     PP_UPDATE_UNIFORM(shader, vignette.isActive);
     PP_UPDATE_UNIFORM(shader, vignette.size);
     PP_UPDATE_UNIFORM(shader, vignetteColor);
+
+    PP_UPDATE_UNIFORM(shader, gamma);
+    PP_UPDATE_UNIFORM(shader, contrast);
+    PP_UPDATE_UNIFORM(shader, brightness);
 }

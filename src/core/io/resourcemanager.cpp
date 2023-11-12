@@ -3,8 +3,11 @@
 #include "files/cfg.h"
 #include <core/game.h>
 
+// this sucks
 void ResourceManager::ParseVideoSettings(CFG::CFGObject* root) {
     videoSettings.gamma = root->GetItemByName<float>("gamma")->GetValue();
+    videoSettings.contrast = root->GetItemByName<float>("contrast")->GetValue();
+    videoSettings.brightness = root->GetItemByName<float>("brightness")->GetValue();
     videoSettings.useVsync = root->GetItemByName<int>("use_vsync")->GetValue();
     videoSettings.fullscreen = root->GetItemByName<int>("fullscreen")->GetValue();
     const CFG::CFGObject* resolutionStruct = root->GetObjectByName("resolution");
@@ -17,6 +20,8 @@ void ResourceManager::ParseVideoSettings(CFG::CFGObject* root) {
 
 void ResourceManager::RestoreDefaultVideoSettings() {
     videoSettings.gamma = 1.0;
+    videoSettings.contrast = 1.0;
+    videoSettings.brightness = 1.0;
     videoSettings.useVsync = true;
     videoSettings.fullscreen = false;
     videoSettings.resolution = { BASE_WIDTH, BASE_HEIGHT };

@@ -268,6 +268,8 @@ namespace CFG {
         CFGStructuredFields DefineFields() const override {
             return {
                 Mandatory("gamma", CFGFieldType::FLOAT),
+                Mandatory("contrast", CFGFieldType::FLOAT),
+                Mandatory("brightness", CFGFieldType::FLOAT),
                 Mandatory("use_vsync", CFGFieldType::INTEGER),
                 Mandatory("fullscreen", CFGFieldType::INTEGER),
                 Mandatory("resolution", CFG_VEC2(CFGFieldType::INTEGER))

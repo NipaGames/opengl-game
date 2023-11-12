@@ -273,6 +273,8 @@ void Renderer::ApplyPostProcessing(const PostProcessing& postProcessing) {
 void Renderer::UpdateVideoSettings(const Resources::VideoSettings& settings) {
     framebufferShader_.Use();
     framebufferShader_.SetUniform("cfg.gamma", settings.gamma);
+    framebufferShader_.SetUniform("cfg.contrast", settings.contrast);
+    framebufferShader_.SetUniform("cfg.brightness", settings.brightness);
     glUseProgram(0);
 }
 

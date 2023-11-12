@@ -149,7 +149,7 @@ namespace Resources {
     };
 
     struct VideoSettings {
-        float gamma;
+        float gamma, contrast, brightness;
         bool useVsync;
         bool fullscreen;
         glm::ivec2 resolution;

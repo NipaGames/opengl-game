@@ -29,6 +29,9 @@ public:
     Vignette vignette;
     glm::vec3 vignetteColor = glm::vec3(0.0f);
     Kernel kernel;
+    float gamma = 1.0f;
+    float contrast = 1.0f;
+    float brightness = 1.0f;
 
     void ApplyUniforms(const Shader&) const;
     template<size_t S>
