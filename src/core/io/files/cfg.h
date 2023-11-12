@@ -258,7 +258,7 @@ namespace CFG {
                 Optional("fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::INTEGER))),
                 Optional("models", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
                 Optional("shaders", CFG_ARRAY(CFG_STRUCT(CFG_REQUIRE(CFGFieldType::STRING), CFG_REQUIRE(CFGFieldType::STRING), CFGFieldType::STRING, CFGFieldType::STRING))),
-                Optional("stages", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
+                Optional("stages", CFG_ARRAY(CFGFieldType::STRING)),
                 Optional("textures", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)))
             };
         }
