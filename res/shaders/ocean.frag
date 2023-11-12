@@ -5,6 +5,7 @@ struct Material {
   float opacity;
   bool hasTexture;
   vec2 tiling;
+  vec2 offset;
 };
 
 out vec4 color;
@@ -31,5 +32,5 @@ void main() {
 
   color = vec4(material.color, material.opacity);
   if (material.hasTexture)
-    color *= texture(textureSampler, pos * material.tiling);
+    color *= texture(textureSampler, pos * material.tiling + material.offset);
 }

@@ -254,7 +254,7 @@
         },
         "uniforms": {
             "color": 1.0,
-            "tiling": [ 1, -1 ]
+            "offset": [ 0, 1 ]
         }
     },
     {

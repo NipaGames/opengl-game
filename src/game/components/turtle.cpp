@@ -36,10 +36,10 @@ void Turtle::FirstUpdate() {
     light_->Start();
     light_->color = glm::vec3(1.0f, 0.0f, 0.0f);
     GAME->GetRenderer().UpdateLighting();
+    
+    const auto& meshes = parent->GetComponent<MeshRenderer>()->meshes;
+    std::transform(meshes.begin(), meshes.end(), std::back_inserter(materials_), [](const auto& m) { return m->material; });
 
-    for (const auto& mesh : parent->GetComponent<MeshRenderer>()->meshes) {
-        materials_.push_back(mesh->material);
-    }
     baseY_ = parent->transform->position.y;
     Interpolate(0.0f);
     AnimationComponent::Play();
