@@ -4,17 +4,17 @@ to here you'll list all your resources!!
 if you're new and this seems confusing, check the CFG format section at the end! (this will still seem super silly but a bit less confusing!)  
 this file contains an import list for each import type
 ### Import types and their directories:
-- fonts: `/fonts`, ttfs and otfs
-- models: `/models`, 3d models
-- shaders: `/shaders`, glsl shaders, `/shaders/standard` contains all the shaders required for the core, please don't write the game-specific or modified ones there
-- stages: `/stages`, see stage serialization
-- textures: `/textures`, for the funny cat jpgs
+  - fonts: `/fonts`, ttfs and otfs
+  - models: `/models`, 3d models
+  - shaders: `/shaders`, glsl shaders, `/shaders/standard` contains all the shaders required for the core, please don't write the game-specific or modified ones there
+  - stages: `/stages`, see stage serialization
+  - textures: `/textures`, for the funny cat jpgs
 ### import field types
 fonts, models and textures use the general `STRUCT {req}STRING path; {opt}STRING id; {opt} additional...`. The path is from the corresponding directory. If the id isn't specified, it will become the same as the path. As a good practice you'd want to explicitly identify each one, but for some reason I like to keep textures implicitly identified. PNG and JPG paths have something special y'know.  
 The additional data is all the following optional struct members that can be used for specifying optional extra-data about the resource. The only one that uses it so far is the font import, with the first additional field the resolution can be overwritten (default 48px)  
 Now the fun exceptions:
-- stages: `STRING path`: the id is always specified in the stage file itself.
-- shaders: `STRUCT {req}STRING id; {req}STRING vertexPath; {req}STRING fragmentPath; {req}STRING geometryPath` yeah, shaders need multiple files to work, at least the fragment and the vertex shader. Note that the id has to be first!
+  - stages: `STRING path`: the id is always specified in the stage file itself.
+  - shaders: `STRUCT {req}STRING id; {req}STRING vertexPath; {req}STRING fragmentPath; {req}STRING geometryPath` yeah, shaders need multiple files to work, at least the fragment and the vertex shader. Note that the id has to be first!
 
 ## materials.json
 todo actually write this
@@ -59,7 +59,7 @@ for example 865 is an integer and -7.342 is a floating point decimal. Integers c
 structs can have multiple members! we'll look to imports.cfg for example:  
 `AREA_TEXT "standard/text.vert" "areatext.frag"`  
 so what's going on????  
-this is a shader struct with 3 members, every one of them is a string. we'll call this struct a [STRING, STRING, STRING]. (the members are separated by spaces, pretty obvious)  
+this is a shader struct with 3 members, every one of them is a string. we'll call this struct a `STRUCT STRING STRING STRING`. (the members are separated by spaces, pretty obvious)  
 structs can have multiple differrent types, however the next type,
 ### array,
 can't.  
