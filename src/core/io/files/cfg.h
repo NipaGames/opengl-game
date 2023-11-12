@@ -160,10 +160,11 @@ namespace CFG {
                     continue;
                 const auto* pathField = import->GetItemByIndex<std::string>(0);
                 const auto* idField = import->GetItemByIndex<std::string>(1);
-                if (pathField == nullptr || idField == nullptr)
+                if (pathField == nullptr)
                     continue;
                 Resources::Import importStruct;
-                importStruct.id = idField->GetValue();
+                if (idField != nullptr)
+                    importStruct.id = idField->GetValue();
                 importStruct.path = pathField->GetValue();
                 for (int i = 2; i < import->GetItems().size(); i++) {
                     const ICFGField* additional = import->GetItemByIndex(i);
@@ -258,7 +259,7 @@ namespace CFG {
                 Optional("fonts", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT, CFGFieldType::INTEGER))),
                 Optional("models", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT))),
                 Optional("shaders", CFG_ARRAY(CFG_STRUCT(CFG_REQUIRE(CFGFieldType::STRING), CFG_REQUIRE(CFGFieldType::STRING), CFGFieldType::STRING, CFGFieldType::STRING))),
-                Optional("stages", CFG_ARRAY(CFGFieldType::STRING)),
+                Optional("stages", CFG_ARRAY(CFG_STRUCT(CFG_REQUIRE(CFGFieldType::STRING)))),
                 Optional("textures", CFG_ARRAY(CFG_STRUCT(CFG_IMPORT)))
             };
         }
