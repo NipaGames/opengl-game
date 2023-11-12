@@ -7,7 +7,7 @@ Entity& EntityManager::CreateEntity(const std::string& id) {
     return *entities_.back();
 }
 
-Entity& EntityManager::AddEntity(Entity e) {
+Entity& EntityManager::AddEntity(const Entity& e) {
     entities_.push_back(std::make_unique<Entity>(e));
     return *entities_.back();
 }

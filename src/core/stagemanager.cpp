@@ -36,7 +36,8 @@ bool Stage::LoadStage(const std::string& id) {
 
     for (const Entity& e : s.entities) {
         if (e.id.empty()) {
-            Entity& instantiated = GAME->GetEntityManager().AddEntity(e);
+            Entity& instantiated = GAME->GetEntityManager().CreateEntity();
+            instantiated.OverrideComponentValues(e);
             s.instantiatedEntities.insert(instantiated.GetHash());
             instantiated.Start();
         }

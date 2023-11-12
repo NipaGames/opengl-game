@@ -134,6 +134,7 @@ class IComponent {
 friend class Entity;
 private:
     bool hasStarted_ = false;
+    bool hasHadFirstUpdate_ = false;
     static inline std::vector<ComponentType> COMPONENT_TYPES_;
 public:
     ComponentData data;
@@ -142,6 +143,7 @@ public:
     virtual IComponent* Clone() const = 0;
     virtual ~IComponent() = default;
     virtual void IStart() = 0;
+    virtual void IFirstUpdate() = 0;
     virtual void IUpdate() = 0;
     virtual void IFixedUpdate() = 0;
     template<typename C>
@@ -186,6 +188,7 @@ public:
     }
     void IStart() override { dynamic_cast<Derived*>(this)->Start(); }
     void IUpdate() override { dynamic_cast<Derived*>(this)->Update(); }
+    void IFirstUpdate() override { dynamic_cast<Derived*>(this)->FirstUpdate(); }
     void IFixedUpdate() override { dynamic_cast<Derived*>(this)->FixedUpdate(); }
 
     template<typename T>
@@ -200,4 +203,5 @@ public:
     virtual void Start() { }
     virtual void Update() { }
     virtual void FixedUpdate() { }
+    virtual void FirstUpdate() { }
 };

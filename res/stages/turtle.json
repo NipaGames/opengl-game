@@ -1,0 +1,19 @@
+{
+    "id": "turtle",
+    "data": {
+        "location": "Kilpparin kammio"
+    },
+    "entities": [
+        {
+            "Transform": {
+                "position": [ 146, 6, 11.5 ],
+                "rotation": [ 0, -100, 0 ],
+                "size": 5
+            },
+            "MeshRenderer": {
+                "object": "OBJ_TURTLE"
+            },
+            "Turtle": { }
+        }
+    ]
+}

@@ -1,9 +1,13 @@
 #include "renderer.h"
 
-#include "mesh.h"
+#include "postprocessing.h"
+#include "component/light.h"
+#include "component/meshrenderer.h"
+
 #include <core/game.h>
 #include <core/gamewindow.h>
 #include <core/physics/physics.h>
+#include <core/ui/canvas.h>
 
 #include <spdlog/spdlog.h>
 
@@ -258,6 +262,12 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     for (auto& c : canvases_) {
         c.second.UpdateWindowSize();
     }
+}
+
+void Renderer::ApplyPostProcessing(const PostProcessing& postProcessing) {
+    framebufferShader_.Use();
+    postProcessing.ApplyUniforms(framebufferShader_);
+    glUseProgram(0);
 }
 
 void Renderer::UpdateVideoSettings(const Resources::VideoSettings& settings) {

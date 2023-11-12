@@ -16,14 +16,14 @@ Entity::Entity(Entity&& e) :
     components_(e.components_), 
     transform(e.transform)
 {
-    for (auto c : components_) {
+    for (IComponent* c : components_) {
         c->parent = this;
     }
     e.components_.clear();
 }
 
 Entity::~Entity() {
-    for (auto component : components_) {
+    for (IComponent* component : components_) {
         delete component;
     }
     components_.clear();
@@ -32,7 +32,7 @@ Entity::~Entity() {
 void Entity::CopyFrom(const Entity& e) {
     id = e.id;
     components_.clear();
-    for (auto c : e.components_) {
+    for (IComponent* c : e.components_) {
         IComponent* c2 = c->Clone();
         c2->parent = this;
         components_.push_back(c2);
@@ -40,8 +40,21 @@ void Entity::CopyFrom(const Entity& e) {
     transform = GetComponent<Transform>();
 }
 
+void Entity::OverrideComponentValues(const Entity& e) {
+    for (auto c : e.components_) {
+        IComponent* mc = GetComponent(c->typeHash);
+        if (mc == nullptr)
+            mc = AddComponent(c->typeHash, c->data);
+        else {
+            for (auto&[k, v] : c->data.vars) {
+                v->CloneValuesTo(mc->data.vars[k]);
+            }
+        }
+    }
+}
+
 void Entity::Start() {
-    for (auto component : components_) {
+    for (IComponent* component : components_) {
         if (!component->hasStarted_)
             component->IStart();
         component->hasStarted_ = true;
@@ -49,7 +62,11 @@ void Entity::Start() {
 }
 
 void Entity::Update() {
-    for (auto component : components_) {
+    for (IComponent* component : components_) {
+        if (!component->hasHadFirstUpdate_) {
+            component->IFirstUpdate();
+            component->hasHadFirstUpdate_ = true;
+        }
         component->IUpdate();
     }
 }
@@ -70,8 +87,8 @@ void Entity::Destroy() {
 
 std::vector<std::string> Entity::ListComponentNames() const {
     std::vector<std::string> names;
-    for (const auto& c : components_) {
-        for (auto& t : IComponent::COMPONENT_TYPES_) {
+    for (const IComponent* c : components_) {
+        for (const ComponentType& t : IComponent::COMPONENT_TYPES_) {
             if (t.type->hash_code() == c->typeHash) {
                 names.push_back(t.name);
                 break;

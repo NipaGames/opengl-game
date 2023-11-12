@@ -4,11 +4,13 @@
 #include <regex>
 #include <sstream>
 #include <iostream>
+#include <core/stagemanager.h>
 
 EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
     std::smatch groups;
     std::string event;
     EventArgs args;
+
     if (!std::regex_search(cmd, groups, std::regex("^\\s*(\\w+)\\s*\\((.*)\\)\\s*$"))) {
         return EventReturnStatus::INVALID_SYNTAX;
     }

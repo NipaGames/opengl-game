@@ -26,8 +26,7 @@ namespace CFG {
     typedef CFGField<std::vector<ICFGField*>> CFGObject;
 };
 
-class Resources {
-public:
+namespace Resources {
     using AdditionalImportData = std::vector<std::variant<std::string, float, int>>;
     struct Import {
         std::string path;
@@ -156,17 +155,20 @@ public:
         glm::ivec2 resolution;
         glm::ivec2 fullscreenResolution;
     };
+};
 
+class ResourceManager {
+public:
     const CFG::CFGObject* imports;
     Serializer::MaterialSerializer materialsFile;
     Serializer::ObjectSerializer objectsFile;
 
-    VideoSettings videoSettings;
+    Resources::VideoSettings videoSettings;
 
-    TextureManager textureManager;
-    ShaderManager shaderManager;
-    FontManager fontManager;
-    ModelManager modelManager;
+    Resources::TextureManager textureManager;
+    Resources::ShaderManager shaderManager;
+    Resources::FontManager fontManager;
+    Resources::ModelManager modelManager;
 
     void RestoreDefaultVideoSettings();
     void ParseVideoSettings(CFG::CFGObject*);

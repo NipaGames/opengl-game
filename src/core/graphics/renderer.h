@@ -5,16 +5,22 @@
 #include <unordered_map>
 
 #include "camera.h"
-#include "material.h"
-#include "mesh.h"
 #include "shader.h"
-#include "shaders.h"
+#include "mesh.h"
 #include "shape.h"
-#include "component/light.h"
-#include "component/meshrenderer.h"
-#include <core/io/resourcemanager.h>
-#include <core/ui/canvas.h>
 
+// forward declarations
+class MeshRenderer;
+class PostProcessing;
+namespace UI {
+    class Canvas;
+};
+namespace Lights {
+    class Light;
+};
+namespace Resources {
+    struct VideoSettings;
+};
 
 class Renderer {
 private:
@@ -63,6 +69,7 @@ public:
     void UpdateFrustum();
     void SortMeshesByDistance();
     void UpdateVideoSettings(const Resources::VideoSettings&);
+    void ApplyPostProcessing(const PostProcessing&);
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
     size_t CountEntitiesOnFrustum() { return entitiesOnFrustum_.size(); }

@@ -9,7 +9,7 @@ private:
     std::list<std::unique_ptr<Entity>> entities_;
 public:
     Entity& CreateEntity(const std::string& = "");
-    Entity& AddEntity(Entity);
+    Entity& AddEntity(const Entity&);
     void RemoveEntities(const std::string&);
     void RemoveEntity(size_t);
     size_t CountEntities(const std::string&);

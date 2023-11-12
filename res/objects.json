@@ -90,5 +90,14 @@
         "materialOverrides": {
             "1": "MAT_FRAMEBUFFER_PROJECTION"
         }
+    },
+    {
+        "model": "OBJ_TURTLE",
+        "defaultMaterial": "MAT_TURTLE",
+        "materialOverrides": {
+            "1": "MAT_TURTLE_FINGER",
+            "2": "MAT_TURTLE_EYE",
+            "3": "MAT_TURTLE_CAP"
+        }
     }
 ]

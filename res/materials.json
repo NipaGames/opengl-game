@@ -258,6 +258,48 @@
         }
     },
     {
+        "id": "MAT_TURTLE",
+        "shader": "LIT",
+        "texture": {
+            "src": "kilppari.jpg"
+        },
+        "uniforms": {
+            "color": 1.0,
+            "ambientColor": 0.25,
+            "specularStrength": 0.25,
+            "specularHighlight": 4
+        }
+    },
+    {
+        "id": "MAT_TURTLE_EYE",
+        "shader": "LIT",
+        "uniforms": {
+            "color": 0.25,
+            "specularStrength": 0.5,
+            "specularHighlight": 16
+        }
+    },
+    {
+        "id": "MAT_TURTLE_CAP",
+        "shader": "LIT",
+        "uniforms": {
+            "color": [ 0.75, 0.0, 0.0 ],
+            "ambientColor": [ 0.25, 0.0, 0.0 ],
+            "specularStrength": 0.25,
+            "specularHighlight": 4
+        }
+    },
+    {
+        "id": "MAT_TURTLE_FINGER",
+        "shader": "LIT",
+        "uniforms": {
+            "color": [ 0.7, 0.5, 0.3 ],
+            "ambientColor": 0.1,
+            "specularStrength": 0.25,
+            "specularHighlight": 4
+        }
+    },
+    {
         "id": "MAT_NONE",
         "shader": "UNLIT",
         "uniforms": {

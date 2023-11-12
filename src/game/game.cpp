@@ -8,6 +8,8 @@
 #include <core/graphics/model.h>
 #include <core/graphics/cubemap.h>
 #include <core/graphics/component/meshrenderer.h>
+#include <core/graphics/component/light.h>
+#include <core/graphics/postprocessing.h>
 #include <core/terrain/plane.h>
 #include <core/ui/component/textcomponent.h>
 #include <core/physics/component/rigidbody.h>
@@ -56,15 +58,33 @@ void WhatIs(std::string str) {
     spdlog::info(str);
 }
 
-void SpawnPlayer() {
+void LoadStage(std::string stage) {
+    if (!Stage::LoadStage(stage))
+        spdlog::warn("Stage '{}' not found!", stage);
+}
+
+void UnloadStage(std::string stage) {
+    if (stage == "all") {
+        Stage::UnloadAllStages();
+        return;
+    }
+    if (!Stage::UnloadStage(stage))
+        spdlog::warn("Stage '{}' not loaded!", stage);
+}
+
+void ShowAreaMessage() {
     MonkeyGame* game = MonkeyGame::GetGame();
-    game->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
     const std::vector<std::string>& stages = Stage::GetLoadedStages();
     if (!stages.empty()) {
         const nlohmann::json& dataJson = Stage::GetStage(stages.at(0)).data;
         if (dataJson["location"].is_string())
             game->hud.ShowAreaMessage(dataJson["location"]);
     }
+}
+
+void SpawnPlayer() {
+    GAME->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
+    ShowAreaMessage();
 }
 
 void RegisterCommands(Console& console) {
@@ -153,19 +173,9 @@ void RegisterCommands(Console& console) {
                 spdlog::info("...");
         }
     });
-    console.RegisterCommand("load", [](const std::string& stage) {
-        if (!Stage::LoadStage(stage))
-            spdlog::warn("Stage '{}' not found!", stage);
-    });
-    console.RegisterCommand("unload", [](const std::string& stage) {
-        if (stage == "all") {
-            Stage::UnloadAllStages();
-            return;
-        }
-        if (!Stage::UnloadStage(stage))
-            spdlog::warn("Stage '{}' not loaded!", stage);
-    });
-    console.RegisterCommand("spawn", [](const std::string& stage) {
+    console.RegisterCommand("load", LoadStage);
+    console.RegisterCommand("unload", UnloadStage);
+    console.RegisterCommand("spawn", [](const std::string&) {
         SpawnPlayer();
     });
 }
@@ -174,8 +184,21 @@ void MonkeyGame::Start() {
     LOG_FN();
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "test.json"));
     Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "passage.json"));
+    Stage::AddStageFromFile(Paths::Path(Paths::STAGES_DIR, "turtle.json"));
+
+    PostProcessing postProcessing;
+    postProcessing.kernel.offset = 1.0f / 1000.0f;
+    postProcessing.kernel.vignette.isActive = true;
+    postProcessing.kernel.vignette.size = 0.5f;
+    postProcessing.ApplyKernel(Convolution::GaussianBlur<49>());
+    postProcessing.vignette.isActive = true;
+
+    renderer_.ApplyPostProcessing(postProcessing);
 
     REGISTER_EVENT(WhatIs);
+    REGISTER_EVENT(LoadStage);
+    REGISTER_EVENT(UnloadStage);
+    REGISTER_EVENT(ShowAreaMessage);
     EVENT_MANAGER.RegisterEvent("Spawn", SpawnPlayer);
     EVENT_MANAGER.RegisterEvent("PlayAnimation", AnimationComponent::PlayAnimation);
 

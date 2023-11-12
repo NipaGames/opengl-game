@@ -8,7 +8,3 @@ void Gate::Play() {
     startHeight_ = parent->transform->position.y;
     AnimationComponent::Play();
 }
-
-void Gate::Start() {
-    AnimationComponent::Start();
-}

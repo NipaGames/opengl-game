@@ -14,12 +14,7 @@ void AnimationComponent::PlayAnimation(std::string entityId, std::string compone
     animationComponent->Play();
 }
 
-void AnimationComponent::Start() {
-
-}
-
-void AnimationComponent::Update() {
-    // can't do this in start, mesh renderer isn't initiated yet
+void AnimationComponent::FixedUpdate() {
     if (isPlaying_) {
         if (glfwGetTime() < animationStart_)
             return;
@@ -31,6 +26,8 @@ void AnimationComponent::Update() {
         if (playReverse)
             t = 1.0f - t;
         Interpolate(t);
+        if (!isPlaying_)
+            End();
     }
 }
 
@@ -47,16 +44,13 @@ void MeshTransformAnimation::UpdateTransforms(const glm::mat4& transform) {
     }
 }
 
-void MeshTransformAnimation::Update() {
-    if (meshRenderer_ == nullptr) {
-        meshRenderer_ = parent->GetComponent<MeshRenderer>();
-        if (transformAtStart) {
-            glm::mat4 baseTransform = meshRenderer_->meshes.at(meshTransforms[0])->transformMatrix;
-            baseTransform_ = baseTransform;
-            UpdateTransforms(Transform(0));
-        }
+void MeshTransformAnimation::FirstUpdate() {
+    meshRenderer_ = parent->GetComponent<MeshRenderer>();
+    if (transformAtStart) {
+        glm::mat4 baseTransform = meshRenderer_->meshes.at(meshTransforms[0])->transformMatrix;
+        baseTransform_ = baseTransform;
+        UpdateTransforms(Transform(0));
     }
-    AnimationComponent::Update();
 }
 
 void MeshTransformAnimation::Interpolate(float t) {

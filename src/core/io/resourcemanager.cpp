@@ -3,7 +3,7 @@
 #include "files/cfg.h"
 #include <core/game.h>
 
-void Resources::ParseVideoSettings(CFG::CFGObject* root) {
+void ResourceManager::ParseVideoSettings(CFG::CFGObject* root) {
     videoSettings.gamma = root->GetItemByName<float>("gamma")->GetValue();
     videoSettings.useVsync = root->GetItemByName<int>("use_vsync")->GetValue();
     videoSettings.fullscreen = root->GetItemByName<int>("fullscreen")->GetValue();
@@ -15,7 +15,7 @@ void Resources::ParseVideoSettings(CFG::CFGObject* root) {
     videoSettings.fullscreenResolution.y = fullscreenResolutionStruct->GetItemByIndex<int>(1)->GetValue();
 }
 
-void Resources::RestoreDefaultVideoSettings() {
+void ResourceManager::RestoreDefaultVideoSettings() {
     videoSettings.gamma = 1.0;
     videoSettings.useVsync = true;
     videoSettings.fullscreen = false;
@@ -23,7 +23,7 @@ void Resources::RestoreDefaultVideoSettings() {
     videoSettings.fullscreenResolution = glm::ivec2(0);
 }
 
-void Resources::LoadAll() {
+void ResourceManager::LoadAll() {
     Serializer::CFGSerializer importsSerializer = Serializer::CFGSerializer(CFG::ImportsFile());
     importsSerializer.SerializeFile(Paths::IMPORTS_PATH.string());
     imports = importsSerializer.GetRoot();

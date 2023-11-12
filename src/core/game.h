@@ -32,7 +32,7 @@ protected:
     int fixedUpdateRate_ = 60;
     bool freezeDeltaTime_ = false;
 public:
-    Resources resources;
+    ResourceManager resources;
     virtual bool InitWindow();
     virtual void Run();
     virtual void GameThread();

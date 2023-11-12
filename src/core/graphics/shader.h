@@ -63,4 +63,14 @@ public:
         else if constexpr(std::is_same_v<T, glm::vec4>)
             glUniform4f(location, ((glm::vec4) value).x, ((glm::vec4) value).y, ((glm::vec4) value).z, ((glm::vec4) value).w);
     }
+    template<typename T, size_t S>
+    void SetUniform(const char* name, const std::array<T, S>& value) const {
+        GLuint location = glGetUniformLocation(GetProgram(), name);
+
+        // yanderedev switch statement II
+        if constexpr(std::is_same_v<T, int>)
+            glUniform1iv(location, S, value.data());
+        else if constexpr(std::is_same_v<T, float>)
+            glUniform1fv(location, S, value.data());
+    }
 };

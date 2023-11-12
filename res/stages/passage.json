@@ -148,6 +148,21 @@
                 "object": "OBJ_TORCH",
                 "isStatic": true
             }
+        },
+        {
+            "Transform": {
+                "position": [ 125, -5, 8 ],
+                "rotation": [ 0, 93, 0 ]
+            },
+            "Interactable": {
+                "event": [
+                    "LoadStage('turtle')",
+                    "ShowAreaMessage()"
+                ],
+                "range": 4.0,
+                "trigger": "IN_PROXIMITY",
+                "oneUse": true
+            }
         }
     ]
 }
