@@ -64,29 +64,29 @@ void main() {
             for (int i = 0; i < 9; i++) {
                 int x = i / 3;
                 int y = i % 3;
-                col += vec3(texture2D(screenTexture, fragmentTexCoord.st + ivec2(x - 1, 1 - y) * offset)) * postProcessing.kernel.kernel3x3[i] * kernelIntensity;
+                col += vec3(texture(screenTexture, fragmentTexCoord.st + ivec2(x - 1, 1 - y) * offset)) * postProcessing.kernel.kernel3x3[i] * kernelIntensity;
             }
         }
         if (postProcessing.kernel.useKernel5x5) {
             for (int i = 0; i < 25; i++) {
                 int x = i / 5;
                 int y = i % 3;
-                col += vec3(texture2D(screenTexture, fragmentTexCoord.st + ivec2(x - 2, 2 - y) * offset)) * postProcessing.kernel.kernel5x5[i] * kernelIntensity;
+                col += vec3(texture(screenTexture, fragmentTexCoord.st + ivec2(x - 2, 2 - y) * offset)) * postProcessing.kernel.kernel5x5[i] * kernelIntensity;
             }
         }
         if (postProcessing.kernel.useKernel7x7) {
             for (int i = 0; i < 49; i++) {
                 int x = i / 7;
                 int y = i % 3;
-                col += vec3(texture2D(screenTexture, fragmentTexCoord.st + ivec2(x - 3, 3 - y) * offset)) * postProcessing.kernel.kernel7x7[i] * kernelIntensity;
+                col += vec3(texture(screenTexture, fragmentTexCoord.st + ivec2(x - 3, 3 - y) * offset)) * postProcessing.kernel.kernel7x7[i] * kernelIntensity;
             }
         }
     }
     if (kernels == 0) {
-        col = vec3(texture2D(screenTexture, fragmentTexCoord.st));
+        col = vec3(texture(screenTexture, fragmentTexCoord.st));
     }
     else if (postProcessing.kernel.blend < 1.0) {
-        col += vec3(texture2D(screenTexture, fragmentTexCoord.st) * (1.0 - postProcessing.kernel.blend));
+        col += vec3(texture(screenTexture, fragmentTexCoord.st) * (1.0 - postProcessing.kernel.blend));
     }
     
     color = vec4(col, 1.0);
