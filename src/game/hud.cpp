@@ -70,9 +70,6 @@ void HUD::CreateHUDElements() {
     GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
         this->UpdateElementPositions();
     });
-
-    UpdateHP(100, 100);
-    UpdateStatus("being silly awoo");
 }
 
 void HUD::UpdateElementPositions() {

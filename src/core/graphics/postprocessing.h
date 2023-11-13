@@ -11,6 +11,7 @@ public:
     struct Vignette {
         bool isActive = false;
         float size = .75f;
+        float treshold = 0.0f;
     };
     struct Kernel {
         bool isActive = false;
@@ -74,22 +75,25 @@ namespace Convolution {
         }
     }
     template <size_t S>
-    constexpr std::array<float, S> BoxBlur() {
-        std::array<float, S> kernel;
-        kernel.fill(1.0f / S);
+    constexpr std::array<float, S * S> Fill(float f) {
+        std::array<float, S * S> kernel;
+        kernel.fill(f);
         return kernel;
     }
     template <size_t S>
-    constexpr std::array<float, S> GaussianBlur(int sigma = (int) sqrt(S)) {
-        std::array<float, S> kernel;
-        int root = (int) sqrt(S);
+    constexpr std::array<float, S * S> BoxBlur() {
+        return Fill<S * S>(1.0f / S);
+    }
+    template <size_t S>
+    constexpr std::array<float, S * S> GaussianBlur(int sigma = S) {
+        std::array<float, S * S> kernel;
         float s = 2.0f * std::pow((float) sigma, 2.0f);
-        for (int y = 0; y < root; y++) {
-            for (int x = 0; x < root; x++) {
-                float distX = std::abs((float) x - (root - 1));
-                float distY = std::abs((float) y - (root - 1));
+        for (int y = 0; y < S; y++) {
+            for (int x = 0; x < S; x++) {
+                float distX = std::abs((float) x - (S - 1));
+                float distY = std::abs((float) y - (S - 1));
                 float val = std::exp(-(distX * distX + distY * distY) / s) / std::sqrt((float) M_PI * s);
-                kernel[y * root + x] = val;
+                kernel[y * S + x] = val;
             }
         }
         Normalize(kernel);

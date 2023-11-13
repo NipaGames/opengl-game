@@ -1,5 +1,7 @@
 #pragma once
 
+#include "livingentity.h"
+
 #include <opengl.h>
 #include <core/entity/component.h>
 #include <core/physics/component/rigidbody.h>
@@ -29,3 +31,13 @@ public:
     SDEF(glm::vec3, spawnPosition) = SVAL(glm::vec3(0.0f));
     SDEFVD(int, testNums);
 };
+
+class Player : public LivingEntity {
+private:
+    void UpdateHUD();
+public:
+    void Start();
+    void SetHealth(int) override;
+    void SetMaxHealth(int) override;
+};
+REGISTER_COMPONENT(Player);

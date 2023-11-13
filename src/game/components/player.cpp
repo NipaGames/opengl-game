@@ -1,4 +1,6 @@
-#include "playercontroller.h"
+#include "player.h"
+
+#include <game/game.h>
 
 #include <core/subscriptionevent.h>
 #include <core/game.h>
@@ -138,4 +140,25 @@ void PlayerController::Update() {
     cam.pos.z = parent->transform->position.z;
 
     cam.pos.y = parent->transform->position.y + 1.0f;
+}
+
+void Player::Start() {
+    health_ = 100;
+    maxHealth_ = 100;
+    UpdateHUD();
+}
+
+void Player::UpdateHUD() {
+    HUD& hud = MonkeyGame::GetGame()->hud;
+    hud.UpdateHP(health_, maxHealth_);
+}
+
+void Player::SetHealth(int health) {
+    LivingEntity::SetHealth(health);
+    UpdateHUD();
+}
+
+void Player::SetMaxHealth(int health) {
+    LivingEntity::SetMaxHealth(health);
+    UpdateHUD();
 }

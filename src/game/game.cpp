@@ -14,7 +14,7 @@
 #include <core/ui/component/textcomponent.h>
 #include <core/physics/component/rigidbody.h>
 
-#include "components/playercontroller.h"
+#include "components/player.h"
 #include "components/rotatecube.h"
 #include "components/debugoverlay.h"
 #include "components/gate.h"
@@ -88,9 +88,7 @@ void SpawnPlayer() {
 }
 
 void KillPlayer() {
-    HUD& hud = MonkeyGame::GetGame()->hud;
-    hud.UpdateHP(0, 100);
-    hud.UpdateStatus("fucking dead");
+    GAME->GetEntityManager().GetEntity(playerId).GetComponent<Player>()->SetHealth(0);
 }
 
 void RegisterCommands(Console& console) {
@@ -196,7 +194,7 @@ void MonkeyGame::Start() {
     postProcessing.kernel.offset = 1.0f / 1000.0f;
     postProcessing.kernel.vignette.isActive = true;
     postProcessing.kernel.vignette.size = 0.5f;
-    postProcessing.ApplyKernel(Convolution::GaussianBlur<49>());
+    postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
     postProcessing.vignette.isActive = true;
 
     renderer_.ApplyPostProcessing(postProcessing);
@@ -212,6 +210,7 @@ void MonkeyGame::Start() {
     
     Entity& player = entityManager_.CreateEntity(playerId);
     player.AddComponent<PlayerController>();
+    player.AddComponent<Player>();
     /*playerLight = player.AddComponent<Lights::PointLight>();
     playerLight->intensity = .5f;
     playerLight->range = 5.0f;*/
