@@ -35,7 +35,6 @@ protected:
     float lastTick_ = 0.0f;
     float startTime_;
     float time_;
-    bool hasTimeRemaining_ = true;
 public:
     StatusEffect(const std::string& n, float rate, float t) : name_(n), tickrate_(rate), time_(t) { }
     virtual void Tick(LivingEntity*) { }

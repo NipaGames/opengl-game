@@ -27,8 +27,7 @@ void LivingEntity::Update() {
     for (int i = 0; i < statuses_.size(); i++) {
         const std::shared_ptr<StatusEffect>& status = statuses_.at(i);
         status->Update(this);
-        // goofy ahh +.01s (to make sure the last tick also counts)
-        if (status->GetTimeRemaining() <= -.01f) {
+        if (status->GetTimeRemaining() < 0.0f) {
             RemoveStatus(status);
             i--;
         }
@@ -46,15 +45,15 @@ void LivingEntity::RemoveStatus(const std::shared_ptr<StatusEffect>& status) {
 }
 
 void StatusEffect::Start(LivingEntity*) {
-    startTime_ = (float) glfwGetTime();
+    startTime_ = -time_;
     lastTick_ = startTime_;
 }
 
 float StatusEffect::GetTimeRemaining() const {
     if (time_ > 0.0f)
-        return (startTime_ + time_) - (float) glfwGetTime();
+        return startTime_ + time_ - (float) glfwGetTime();
     else
-        return 99999.0f; // always 99999s remaining yippee
+        return 99999.0f;
 }
 
 void StatusEffect::Update(LivingEntity* entity) {
@@ -62,6 +61,10 @@ void StatusEffect::Update(LivingEntity* entity) {
     if (now - lastTick_ >= tickrate_) {
         Tick(entity);
         lastTick_ = now;
+        if (startTime_ < 0.0f) {
+            startTime_ = now;
+            lastTick_ = startTime_;
+        }
     }
 }
 
