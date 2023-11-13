@@ -162,3 +162,13 @@ void Player::SetMaxHealth(int health) {
     LivingEntity::SetMaxHealth(health);
     UpdateHUD();
 }
+
+void Player::AddStatus(const std::shared_ptr<StatusEffect>& status) {
+    LivingEntity::AddStatus(status);
+    MonkeyGame::GetGame()->hud.AddStatus(status->GetName());
+}
+
+void Player::RemoveStatus(const std::shared_ptr<StatusEffect>& status) {
+    MonkeyGame::GetGame()->hud.RemoveStatus(status->GetName());
+    LivingEntity::RemoveStatus(status);
+}

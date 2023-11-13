@@ -9,6 +9,7 @@ private:
     float fadeAreaTextAway_;
     bool isAreaTextShown_ = false;
     const float areaTextSeconds_ = 5.0f;
+    std::vector<std::string> statuses_;
 public:
     std::string canvasId = "hud";
     UI::TextComponent* interactText = nullptr;
@@ -23,6 +24,8 @@ public:
     void ShowAreaMessage(const std::string&);
     void UpdateElementPositions();
     void UpdateHP(int, int);
-    void UpdateStatus(const std::string&);
+    void UpdateStatusText();
+    void AddStatus(const std::string&);
+    void RemoveStatus(const std::string&);
     void Update();
 };

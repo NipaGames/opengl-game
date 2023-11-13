@@ -47,6 +47,7 @@ void HUD::CreateHUDElements() {
     statusTextEntity.transform->size.z = .6f;
     statusText = statusTextEntity.AddComponent<TextComponent>(&c);
     statusText->font = "FONT_MORRIS";
+    statusText->lineSpacing = 20;
     statusText->SetShader("STATUS_TEXT");
     statusText->AddToCanvas();
     statusTextEntity.Start();
@@ -82,8 +83,25 @@ void HUD::UpdateHP(int hp, int maxHp) {
     UpdateElementPositions();
 }
 
-void HUD::UpdateStatus(const std::string& status) {
-    statusText->SetText(status);
+void HUD::UpdateStatusText() {
+    std::stringstream s;
+    for (const std::string& status : statuses_) {
+        s << status << "\n";
+    }
+    statusText->SetText(s.str());
+}
+
+void HUD::AddStatus(const std::string& status) {
+    statuses_.push_back(status);
+    UpdateStatusText();
+}
+
+void HUD::RemoveStatus(const std::string& status) {
+    auto it = std::find(statuses_.begin(), statuses_.end(), status);
+    if (it != statuses_.end()) {
+        statuses_.erase(it);
+        UpdateStatusText();
+    }
 }
 
 void HUD::Update() {

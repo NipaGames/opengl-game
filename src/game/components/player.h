@@ -39,5 +39,7 @@ public:
     void Start();
     void SetHealth(int) override;
     void SetMaxHealth(int) override;
+    void AddStatus(const std::shared_ptr<StatusEffect>&) override;
+    void RemoveStatus(const std::shared_ptr<StatusEffect>&) override;
 };
 REGISTER_COMPONENT(Player);

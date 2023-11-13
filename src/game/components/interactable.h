@@ -6,6 +6,7 @@
 
 enum class TriggerType {
     IN_PROXIMITY,
+    IN_PROXIMITY_UPDATE,
     INTERACT
 };
 

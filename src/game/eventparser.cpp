@@ -31,15 +31,21 @@ EventReturnStatus EventParser::ParseCommand(const std::string& cmd) {
             argsStr.erase(0, close + 1);
         }
         // number
-        else if (std::isdigit(argsStr.at(0))) {
+        else if (std::isdigit(argsStr.at(0)) || argsStr.at(0) == '-' || argsStr.at(0) == '.') {
             std::stringstream num;
-            while (!argsStr.empty() && std::isdigit(argsStr.at(0))) {
+            bool isFloat = false;
+            while (!argsStr.empty() && (std::isdigit(argsStr.at(0)) || argsStr.at(0) == '-' || argsStr.at(0) == '.')) {
+                if (argsStr.at(0) == '.')
+                    isFloat = true;
                 num << argsStr.at(0);
                 argsStr.erase(0, 1);
             }
-            int n;
+            EventParameter n;
             try {
-                n = std::stoi(num.str());
+                if (isFloat)
+                    n = std::stof(num.str());
+                else
+                    n = std::stoi(num.str());
             }
             catch (std::exception& e) {
                 spdlog::warn(e.what());

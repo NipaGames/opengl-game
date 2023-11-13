@@ -17,7 +17,7 @@ enum class EventReturnStatus : int {
 };
 
 // std::any could also probably work but since i don't plan on having too many types i'll just use std::variant
-using EventParameter = std::variant<int, std::string>;
+using EventParameter = std::variant<int, float, std::string>;
 using EventArgs = std::vector<EventParameter>;
 using EventFn = std::function<EventReturnStatus(const EventArgs&)>;
 

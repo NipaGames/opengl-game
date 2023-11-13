@@ -37,10 +37,14 @@ void Interactable::Update() {
                 Trigger();
                 hasBeenUsed_ = true;
             }
-            else {
+            else if (trigger == TriggerType::INTERACT) {
                 MonkeyGame::GetGame()->hud.ShowInteractText(message, keyCode);
             }
             previouslyInProximity_ = true;
+        }
+        if (trigger == TriggerType::IN_PROXIMITY_UPDATE) {
+            Trigger();
+            hasBeenUsed_ = true;
         }
     }
     else {

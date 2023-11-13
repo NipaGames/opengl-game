@@ -91,6 +91,23 @@ void KillPlayer() {
     GAME->GetEntityManager().GetEntity(playerId).GetComponent<Player>()->SetHealth(0);
 }
 
+void AddPlayerStatus(std::string type, float t) {
+    Player* player = GAME->GetEntityManager().GetEntity(playerId).GetComponent<Player>();
+    auto enumCast = magic_enum::enum_cast<StatusEffectType>(type);
+    if (!enumCast.has_value()) {
+        spdlog::warn("Invalid status effect '{}'!", type);
+        return;
+    }
+    switch (enumCast.value()) {
+        case StatusEffectType::POISON:
+            player->AddStatusType<PoisonEffect>(t);
+            break;
+        case StatusEffectType::RADIATION:
+            player->AddStatusType<RadiationEffect>(t);
+            break;
+    }
+}
+
 void RegisterCommands(Console& console) {
     console.RegisterCommand("quit", [](const std::string&) {
         spdlog::info("byee!! :3");
@@ -204,6 +221,7 @@ void MonkeyGame::Start() {
     REGISTER_EVENT(UnloadStage);
     REGISTER_EVENT(ShowAreaMessage);
     EVENT_MANAGER.RegisterEvent("Spawn", SpawnPlayer);
+    EVENT_MANAGER.RegisterEvent("PlayerStatus", AddPlayerStatus);
     EVENT_MANAGER.RegisterEvent("PlayAnimation", AnimationComponent::PlayAnimation);
 
     RegisterCommands(console);
@@ -320,6 +338,7 @@ void MonkeyGame::Start() {
 
     GAME->resources.stageManager.LoadStage("teststage");
     SpawnPlayer();
+    player.GetComponent<Player>()->AddStatusType<PoisonEffect>(5.0f);
 }
 
 void MonkeyGame::Update() {
