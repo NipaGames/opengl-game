@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/game.h>
+#include <core/graphics/postprocessing.h>
 #include "console.h"
 #include "hud.h"
 
@@ -10,6 +11,7 @@ class MonkeyGame : public Game {
 public:
     Console console;
     HUD hud;
+    PostProcessing postProcessing;
 
     bool InitWindow() override;
     void PreLoad();

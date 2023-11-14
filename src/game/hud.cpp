@@ -1,5 +1,6 @@
 #include "hud.h"
 #include "game.h"
+#include <core/input.h>
 
 #include <sstream>
 
@@ -80,6 +81,18 @@ void HUD::CreateHUDElements() {
     gameOverText->SetText("game over");
     gameOverText->AddToCanvas();
 
+    Entity& gameOverInstructionsTextEntity = GAME->GetEntityManager().CreateEntity();
+    gameOverInstructionsTextEntity.transform->position.x = 1280 / 2;
+    gameOverInstructionsTextEntity.transform->position.y = 720 / 2 - 100;
+    gameOverInstructionsTextEntity.transform->size.z = 1.0f;
+    gameOverInstructionsText = gameOverInstructionsTextEntity.AddComponent<TextComponent>(&c);
+    gameOverInstructionsText->font = "FONT_MORRIS";
+    gameOverInstructionsText->alignment = Text::TextAlignment::CENTER;
+    gameOverInstructionsText->isVisible = false;
+    gameOverInstructionsText->lineSpacing = 20;
+    gameOverInstructionsText->SetText("no way to retry yet\njust restart the executable ig");
+    gameOverInstructionsText->AddToCanvas();
+
     GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
         this->UpdateElementPositions();
     });
@@ -117,10 +130,40 @@ void HUD::RemoveStatus(const std::string& status) {
 }
 
 void HUD::GameOver() {
+    gameOverEffect_ = 0.0f;
+    gameOver_ = true;    
+    gameOverTextY_ = gameOverText->parent->transform->position.y;
+    gameOverText->parent->transform->position.y = 720.0f;
+    gameOverText->color.a = 0.0f;
     gameOverText->isVisible = true;
+
+    PostProcessing& postProcessing = MonkeyGame::GetGame()->postProcessing;
+    postProcessing.kernel.vignette.isActive = false;
+    baseVignetteSize_ = postProcessing.vignette.size;
+    MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
 }
 
 void HUD::Update() {
+    if (gameOver_ && gameOverEffect_ >= 0.0f) {
+        gameOverEffect_ += (float) GAME->GetDeltaTime() / gameOverTime_;
+        gameOverEffect_ = std::min(gameOverEffect_, 1.0f);
+        
+        PostProcessing& postProcessing = MonkeyGame::GetGame()->postProcessing;
+        postProcessing.saturation = 1.0f - .75f * gameOverEffect_;
+        postProcessing.kernel.offset = gameOverEffect_ / 1000.0f;
+        postProcessing.vignetteColor = glm::vec3(gameOverEffect_ * .5f, 0.0f, 0.0f);
+        postProcessing.vignette.size = baseVignetteSize_ - (baseVignetteSize_ - 0.65f) * gameOverEffect_;
+        gameOverText->parent->transform->position.y = 720.0f - gameOverTextY_ * gameOverEffect_;
+        MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
+
+        gameOverText->color.a = gameOverEffect_;
+
+        if (gameOverEffect_ >= 1.0f) {
+            gameOverEffect_ = -1.0f;
+            GAME->GetGameWindow().LockMouse(false);
+            gameOverInstructionsText->isVisible = true;
+        }
+    }
     if (isAreaTextShown_ && glfwGetTime() >= fadeAreaTextAway_) {
         isAreaTextShown_ = false;
         areaAnimation->playReverse = true;

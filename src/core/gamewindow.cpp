@@ -163,12 +163,12 @@ void GameWindow::Update() {
         glfwFocusWindow(window_);
     }
 
-    if (Input::IsKeyPressedDown(GLFW_KEY_ESCAPE)) {
+    if (Input::IsKeyPressedDown(GLFW_KEY_ESCAPE) && lockMouse_) {
         Input::IS_MOUSE_LOCKED = !Input::IS_MOUSE_LOCKED;
         Input::CURSOR_MODE_CHANGE_PENDING = true;
     }
 
-    if (glfwGetMouseButton(window_, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !Input::IS_MOUSE_LOCKED) {
+    if (glfwGetMouseButton(window_, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !Input::IS_MOUSE_LOCKED && lockMouse_) {
         Input::IS_MOUSE_LOCKED = true;
         Input::CURSOR_MODE_CHANGE_PENDING = true;
     }
@@ -203,6 +203,12 @@ void GameWindow::SetupInputSystem() {
 void GameWindow::UseVsync(bool enabled) {
     useVsync_ = enabled;
     Input::VSYNC_POLL_RATE_CHANGE_PENDING = true;
+}
+
+void GameWindow::LockMouse(bool lock) {
+    lockMouse_ = lock;
+    Input::IS_MOUSE_LOCKED = lock;
+    Input::CURSOR_MODE_CHANGE_PENDING = true;
 }
 
 void GameWindow::UpdateInputSystem() {

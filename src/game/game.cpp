@@ -9,7 +9,6 @@
 #include <core/graphics/cubemap.h>
 #include <core/graphics/component/meshrenderer.h>
 #include <core/graphics/component/light.h>
-#include <core/graphics/postprocessing.h>
 #include <core/terrain/plane.h>
 #include <core/ui/component/textcomponent.h>
 #include <core/physics/component/rigidbody.h>
@@ -207,7 +206,6 @@ void RegisterCommands(Console& console) {
 void MonkeyGame::Start() {
     LOG_FN();
 
-    PostProcessing postProcessing;
     postProcessing.kernel.offset = 1.0f / 1000.0f;
     postProcessing.kernel.vignette.isActive = true;
     postProcessing.kernel.vignette.size = 0.5f;
@@ -338,7 +336,6 @@ void MonkeyGame::Start() {
 
     GAME->resources.stageManager.LoadStage("teststage");
     SpawnPlayer();
-    player.GetComponent<Player>()->AddStatusType<PoisonEffect>(5.0f);
 }
 
 void MonkeyGame::Update() {

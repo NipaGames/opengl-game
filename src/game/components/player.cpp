@@ -17,8 +17,8 @@ void PlayerController::OnMouseMove() {
     float sensitivity = 0.1f;
     auto& cam = GAME->GetRenderer().GetCamera();
 
-    cam.yaw   += static_cast<float>(Input::MOUSE_MOVE_X) * sensitivity;
-    cam.pitch += static_cast<float>(Input::MOUSE_MOVE_Y) * sensitivity;
+    cam.yaw   += static_cast<float>(Input::MOUSE_MOVE_X) * sensitivity * controlSpeedModifier_;
+    cam.pitch += static_cast<float>(Input::MOUSE_MOVE_Y) * sensitivity * controlSpeedModifier_;
 
     if(cam.pitch > 89.0f)
         cam.pitch = 89.0f;
@@ -32,6 +32,7 @@ void PlayerController::Spawn() {
 }
 
 void PlayerController::Start() {
+    controlSpeedModifier_ = 1.0f;
     ghostObject_ = new btPairCachingGhostObject();
     ghostObject_->setWorldTransform(parent->transform->btGetTransform());
     Physics::axisSweep->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
@@ -62,6 +63,11 @@ void PlayerController::Update() {
     Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
     bool isOnGround = res.hasHit() || characterController_->onGround();
 
+    if (gameOver_) {
+        controlSpeedModifier_ -= (float) GAME->GetDeltaTime() / speedModifierTime_;
+        controlSpeedModifier_ = std::max(0.0f, controlSpeedModifier_);
+    }
+
     glm::vec3 velocity(0.0f);
     if (Input::IS_MOUSE_LOCKED) {
         if (Input::IsKeyDown(GLFW_KEY_W))
@@ -78,29 +84,30 @@ void PlayerController::Update() {
             
         if (velocity != glm::vec3(0.0f))
             velocity = glm::normalize(velocity);
-
-        if (Input::IsKeyPressedDown(GLFW_KEY_F)) {
-            isFlying_ = !isFlying_;
-            if (isFlying_) {
-                characterController_->setGravity(btVector3(0.0f, 0.0f, 0.0f));
-                characterController_->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
-                ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+        if (!gameOver_) {
+            if (Input::IsKeyPressedDown(GLFW_KEY_F)) {
+                isFlying_ = !isFlying_;
+                if (isFlying_) {
+                    characterController_->setGravity(btVector3(0.0f, 0.0f, 0.0f));
+                    characterController_->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+                    ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+                }
+                else {
+                    characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
+                    ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+                }
+            }
+            if (isOnGround) {
+                characterController_->setStepHeight(stepHeight_);
+                characterController_->setMaxPenetrationDepth(stepHeight_);
             }
             else {
-                characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
-                ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+                characterController_->setStepHeight(0.0f);
+                characterController_->setMaxPenetrationDepth(0.05f);
             }
-        }
-        if (isOnGround) {
-            characterController_->setStepHeight(stepHeight_);
-            characterController_->setMaxPenetrationDepth(stepHeight_);
-        }
-        else {
-            characterController_->setStepHeight(0.0f);
-            characterController_->setMaxPenetrationDepth(0.05f);
-        }
-        if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && isOnGround && !isFlying_) {
-            characterController_->jump();
+            if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && isOnGround && !isFlying_) {
+                characterController_->jump();
+            }
         }
 
         if (isFlying_) {
@@ -115,26 +122,9 @@ void PlayerController::Update() {
         movingSpeed *= 2.0f;
     }
     velocity *= movingSpeed;
-    characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * btScalar(GAME->GetDeltaTime()));
+    characterController_->setWalkDirection(btVector3(velocity.x, velocity.y, velocity.z) * controlSpeedModifier_ * btScalar(GAME->GetDeltaTime()));
 
     parent->transform->btSetTransform(ghostObject_->getWorldTransform());
-
-    // shits pretty broken, don't use
-    if (pushRigidBodies_) {
-        if (glm::length(velocity) > 0.0f) {
-            for (int i = 0; i < ghostObject_->getNumOverlappingObjects(); i++) {
-                btCollisionObject* obj = ghostObject_->getOverlappingObject(i);
-                btRigidBody* rb = static_cast<btRigidBody*>(obj);
-                if (rb == nullptr)
-                    continue;
-                if (rb->getMass() == 0.0f)
-                    continue;
-                rb->setLinearVelocity(btVector3(velocity.x, rb->getLinearVelocity().getY(), velocity.z));
-                rb->applyCentralForce(btVector3(velocity.x, velocity.y, velocity.z));
-            }
-        }
-    }
-
     characterController_->updateAction(Physics::dynamicsWorld, btScalar(GAME->GetDeltaTime()));
 
     cam.pos.x = parent->transform->position.x;
@@ -143,9 +133,14 @@ void PlayerController::Update() {
     cam.pos.y = parent->transform->position.y + 1.0f;
 }
 
+void PlayerController::ActivateGameOverState() {
+    gameOver_ = true;
+    controlSpeedModifier_ = 1.0f;
+}
+
 void Player::Start() {
-    health_ = 100;
     maxHealth_ = 100;
+    health_ = maxHealth_;
     UpdateHUD();
 }
 
@@ -166,15 +161,8 @@ void Player::SetMaxHealth(int health) {
 
 void Player::Die() {
     LivingEntity::Die();
+    parent->GetComponent<PlayerController>()->ActivateGameOverState();
     MonkeyGame::GetGame()->hud.GameOver();
-    PostProcessing postProcessing;
-    postProcessing.saturation = 0.25f;
-    postProcessing.kernel.offset = 1.0f / 1000.0f;
-    postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
-    postProcessing.vignette.isActive = true;
-    postProcessing.vignette.size = .65f;
-    postProcessing.vignetteColor = glm::vec3(.5f, 0.0f, 0.0f);
-    MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
 }
 
 void Player::AddStatus(const std::shared_ptr<StatusEffect>& status) {

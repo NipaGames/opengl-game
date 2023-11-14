@@ -102,9 +102,10 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
     glm::vec2 startPos = pos;
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
         Character c = font.charMap.at(*it);
+        float fontModifier = ((float) font.size.y / BASE_FONT_SIZE);
         if (*it == '\n') {
             pos.x = startPos.x;
-            pos.y -= (font.fontHeight * ((float) font.size.y / BASE_FONT_SIZE) * size + lineSpacing);
+            pos.y -= (font.fontHeight * fontModifier * size + lineSpacing);
             ++line;
             continue;
         }
@@ -113,13 +114,13 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
         actualPos.y = pos.y - (c.size.y - c.bearing.y) * size;
         switch (alignment) {
             case TextAlignment::LEFT:
-                actualPos.x = pos.x + c.bearing.x * size;
+                actualPos.x = pos.x + c.bearing.x * size * fontModifier;
                 break;
             case TextAlignment::RIGHT:
-                actualPos.x = pos.x + (c.bearing.x + textWidth - lineWidths.at(line)) * size;
+                actualPos.x = pos.x + (c.bearing.x + textWidth - lineWidths.at(line)) * size * fontModifier;
                 break;
             case TextAlignment::CENTER:
-                actualPos.x = pos.x + (c.bearing.x + (textWidth - lineWidths.at(line)) / 2.0f) * size;
+                actualPos.x = pos.x + (c.bearing.x * size + (textWidth - lineWidths.at(line)) / 2.0f) * size * fontModifier;
                 break;
         }
         float w = c.size.x * size * modifier;

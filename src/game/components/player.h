@@ -20,11 +20,15 @@ private:
     float jumpSpeed_ = 10.0f;
     bool pushRigidBodies_ = false;
     bool running_ = false;
+    bool gameOver_ = false;
+    float controlSpeedModifier_ = 1.0f;
+    float speedModifierTime_ = .5f;
 public:
     ~PlayerController();
     void Spawn();
     void Start();
     void Update();
+    void ActivateGameOverState();
 
     SDEF(float, speed) = SVAL(10.0f);
     SDEF(glm::vec3, spawnPosition) = SVAL(glm::vec3(0.0f));

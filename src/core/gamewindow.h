@@ -23,6 +23,7 @@ private:
     std::string title_;
     glm::vec2 prevCursorPos_ = glm::vec2(0.0f);
     bool isFullscreen_ = false;
+    bool lockMouse_ = true;
     glm::ivec2 prevWndPos_;
     glm::ivec2 prevWndSize_;
     glm::ivec2 baseWndSize_;
@@ -41,5 +42,6 @@ public:
     void OnEvent(EventType, std::function<void()>);
     bool IsUsingVsync() { return useVsync_; }
     void UseVsync(bool);
+    void LockMouse(bool);
     GLFWwindow* const GetWindow() { return window_; }
 };
