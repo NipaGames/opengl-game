@@ -18,11 +18,13 @@ public:
     UI::TextComponent* maxHpText = nullptr;
     UI::TextComponent* statusText = nullptr;
     FloatAnimation* areaAnimation = nullptr;
+    UI::TextComponent* gameOverText = nullptr;
     void CreateHUDElements();
     void ShowInteractText(const std::string&, int = -1);
     void HideInteractMessage();
     void ShowAreaMessage(const std::string&);
     void UpdateElementPositions();
+    void GameOver();
     void UpdateHP(int, int);
     void UpdateStatusText();
     void AddStatus(const std::string&);

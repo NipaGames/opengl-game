@@ -6,6 +6,7 @@
 #include <core/game.h>
 #include <core/input.h>
 #include <core/physics/utils.h>
+#include <core/graphics/postprocessing.h>
 
 PlayerController::~PlayerController() {
     delete characterController_;
@@ -163,7 +164,22 @@ void Player::SetMaxHealth(int health) {
     UpdateHUD();
 }
 
+void Player::Die() {
+    LivingEntity::Die();
+    MonkeyGame::GetGame()->hud.GameOver();
+    PostProcessing postProcessing;
+    postProcessing.saturation = 0.25f;
+    postProcessing.kernel.offset = 1.0f / 1000.0f;
+    postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
+    postProcessing.vignette.isActive = true;
+    postProcessing.vignette.size = .65f;
+    postProcessing.vignetteColor = glm::vec3(.5f, 0.0f, 0.0f);
+    MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
+}
+
 void Player::AddStatus(const std::shared_ptr<StatusEffect>& status) {
+    if (!statusesActive_)
+        return;
     LivingEntity::AddStatus(status);
     MonkeyGame::GetGame()->hud.AddStatus(status->GetName());
 }

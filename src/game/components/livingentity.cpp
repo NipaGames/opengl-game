@@ -4,10 +4,18 @@
 
 void LivingEntity::SetHealth(int health) {
     health_ = health;
+    CheckHealth();
 }
 
 int LivingEntity::GetHealth() const {
     return health_;
+}
+
+void LivingEntity::CheckHealth() {
+    if (health_ <= 0) {
+        health_ = 0;
+        Die();
+    }
 }
 
 void LivingEntity::SetMaxHealth(int health) {
@@ -26,12 +34,17 @@ void LivingEntity::AddHealth(int health) {
 void LivingEntity::Update() {
     for (int i = 0; i < statuses_.size(); i++) {
         const std::shared_ptr<StatusEffect>& status = statuses_.at(i);
-        status->Update(this);
+        if (statusesActive_)
+            status->Update(this);
         if (status->GetTimeRemaining() < 0.0f) {
             RemoveStatus(status);
             i--;
         }
     }
+}
+
+void LivingEntity::Die() {
+    statusesActive_ = false;
 }
 
 void LivingEntity::AddStatus(const std::shared_ptr<StatusEffect>& status) {
@@ -44,8 +57,9 @@ void LivingEntity::RemoveStatus(const std::shared_ptr<StatusEffect>& status) {
     status->End(this);
 }
 
-void StatusEffect::Start(LivingEntity*) {
-    startTime_ = -time_;
+void StatusEffect::Start(LivingEntity* entity) {
+    Tick(entity);
+    startTime_ = (float) glfwGetTime();
     lastTick_ = startTime_;
 }
 
@@ -60,15 +74,14 @@ void StatusEffect::Update(LivingEntity* entity) {
     float now = (float) glfwGetTime();
     if (now - lastTick_ >= tickrate_) {
         Tick(entity);
-        lastTick_ = now;
         if (startTime_ < 0.0f) {
             startTime_ = now;
-            lastTick_ = startTime_;
         }
+        lastTick_ = now;
     }
 }
 
 void PoisonEffect::Tick(LivingEntity* entity) {
-    if (entity->GetHealth() > 1)
+    if (entity->GetHealth() > 1 || !stopAt1HP)
         entity->AddHealth(-1);
 }

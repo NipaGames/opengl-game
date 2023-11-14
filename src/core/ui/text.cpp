@@ -110,12 +110,16 @@ void UI::Text::RenderText(const Font& font, const std::string& text, glm::vec2 p
         }
 
         glm::vec2 actualPos;
+        actualPos.y = pos.y - (c.size.y - c.bearing.y) * size;
         switch (alignment) {
             case TextAlignment::LEFT:
-                actualPos = glm::vec2(pos.x + c.bearing.x * size, pos.y - (c.size.y - c.bearing.y) * size);
+                actualPos.x = pos.x + c.bearing.x * size;
                 break;
             case TextAlignment::RIGHT:
-                actualPos = glm::vec2(pos.x + (c.bearing.x + textWidth - lineWidths.at(line)) * size, pos.y - (c.size.y - c.bearing.y) * size);
+                actualPos.x = pos.x + (c.bearing.x + textWidth - lineWidths.at(line)) * size;
+                break;
+            case TextAlignment::CENTER:
+                actualPos.x = pos.x + (c.bearing.x + (textWidth - lineWidths.at(line)) / 2.0f) * size;
                 break;
         }
         float w = c.size.x * size * modifier;

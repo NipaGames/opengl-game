@@ -47,8 +47,13 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
     if (renderingMethod_ == TextRenderingMethod::RENDER_EVERY_FRAME) {
-        if (alignment == Text::TextAlignment::RIGHT) {
-            pos.x -= Text::GetTextWidth(f, text_) * size;
+        switch (alignment) {
+            case Text::TextAlignment::RIGHT:
+                pos.x -= Text::GetTextWidth(f, text_) * size;
+                break;
+            case Text::TextAlignment::CENTER:
+                pos.x -= (Text::GetTextWidth(f, text_) * size) / 2.0f;
+                break;
         }
         UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size * ((float) BASE_FONT_SIZE / f.size.y), modifier, alignment, lineSpacing * size);
     }
@@ -58,31 +63,25 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         int h = (int) (textSize_.y);
         float marginY = (additionalRowsHeight_ + padding_[0] * ((float) BASE_FONT_SIZE / f.size.y)) * size;
         glActiveTexture(GL_TEXTURE0);
-    
+
+        glm::vec2 offset(0.0f, -marginY);
         switch (alignment) {
-            case Text::TextAlignment::LEFT:
-                shape_.SetVertexData(new float[24] {
-                    pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
-                    pos.x,     pos.y - marginY,       0.0f, 0.0f,
-                    pos.x + w, pos.y - marginY,       1.0f, 0.0f,
-
-                    pos.x,     pos.y - marginY + h,   0.0f, 1.0f,
-                    pos.x + w, pos.y - marginY,       1.0f, 0.0f,
-                    pos.x + w, pos.y - marginY + h,   1.0f, 1.0f
-                }, false);
-                break;
             case Text::TextAlignment::RIGHT:
-                shape_.SetVertexData(new float[24] {
-                    pos.x - w, pos.y - marginY + h,   0.0f, 1.0f,
-                    pos.x - w, pos.y - marginY,       0.0f, 0.0f,
-                    pos.x,     pos.y - marginY,       1.0f, 0.0f,
-
-                    pos.x - w, pos.y - marginY + h,   0.0f, 1.0f,
-                    pos.x,     pos.y - marginY,       1.0f, 0.0f,
-                    pos.x,     pos.y - marginY + h,   1.0f, 1.0f
-                }, false);
+                offset.x = (float) -w;
+                break;
+            case Text::TextAlignment::CENTER:
+                offset.x = -w / 2.0f;
                 break;
         }
+        shape_.SetVertexData(new float[24] {
+            pos.x + offset.x,     pos.y + offset.y + h,   0.0f, 1.0f,
+            pos.x + offset.x,     pos.y + offset.y,       0.0f, 0.0f,
+            pos.x + offset.x + w, pos.y + offset.y,       1.0f, 0.0f,
+
+            pos.x + offset.x,     pos.y + offset.y + h,   0.0f, 1.0f,
+            pos.x + offset.x + w, pos.y + offset.y,       1.0f, 0.0f,
+            pos.x + offset.x + w, pos.y + offset.y + h,   1.0f, 1.0f
+        }, false);
         shape_.Bind();
 
         glBindTexture(GL_TEXTURE_2D, texture_);

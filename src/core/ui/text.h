@@ -26,7 +26,8 @@ namespace UI::Text {
     };
     enum class TextAlignment {
         LEFT,
-        RIGHT
+        RIGHT,
+        CENTER
     };
     
     bool Init();

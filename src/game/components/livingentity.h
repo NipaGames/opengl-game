@@ -8,9 +8,12 @@ protected:
     int health_ = 100;
     int maxHealth_ = 100;
     std::vector<std::shared_ptr<StatusEffect>> statuses_;
+    bool statusesActive_ = true;
 public:
     virtual void SetHealth(int);
     virtual int GetHealth() const;
+    virtual void CheckHealth();
+    virtual void Die();
     virtual void SetMaxHealth(int);
     virtual int GetMaxHealth() const;
     virtual void AddHealth(int);
@@ -51,6 +54,8 @@ enum class StatusEffectType {
 };
 
 class PoisonEffect : public StatusEffect {
+protected:
+    bool stopAt1HP = true;
 public:
     PoisonEffect(float t) : StatusEffect("poison", 1.0f, t) { }
     PoisonEffect(const std::string& n, float rate, float t) : StatusEffect(n, rate, t) { }
@@ -59,5 +64,5 @@ public:
 
 class RadiationEffect : public PoisonEffect {
 public:
-    RadiationEffect(float t) : PoisonEffect("radiation", .1f, t) { }
+    RadiationEffect(float t) : PoisonEffect("radiation", .1f, t) { stopAt1HP = false; }
 };

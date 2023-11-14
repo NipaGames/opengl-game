@@ -68,6 +68,18 @@ void HUD::CreateHUDElements() {
     areaAnimation->allowInterruptions = true;
     areaTextEntity.Start();
 
+    Entity& gameOverTextEntity = GAME->GetEntityManager().CreateEntity();
+    gameOverTextEntity.transform->position.x = 1280 / 2;
+    gameOverTextEntity.transform->position.y = 720 / 2;
+    gameOverTextEntity.transform->size.z = 3.0f;
+    gameOverText = gameOverTextEntity.AddComponent<TextComponent>(&c);
+    gameOverText->font = "FONT_ENCHANTED";
+    gameOverText->alignment = Text::TextAlignment::CENTER;
+    gameOverText->color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    gameOverText->isVisible = false;
+    gameOverText->SetText("game over");
+    gameOverText->AddToCanvas();
+
     GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
         this->UpdateElementPositions();
     });
@@ -102,6 +114,10 @@ void HUD::RemoveStatus(const std::string& status) {
         statuses_.erase(it);
         UpdateStatusText();
     }
+}
+
+void HUD::GameOver() {
+    gameOverText->isVisible = true;
 }
 
 void HUD::Update() {

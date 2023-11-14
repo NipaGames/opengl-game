@@ -77,11 +77,12 @@ vec3 applyKernels(float kernelIntensity, float offset) {
 void main() {
     vec3 col = vec3(0.0);
     float dist = distance(fragmentTexCoord, vec2(.5, .5));
-    col = vec3(texture(screenTexture, fragmentTexCoord.st) * (1.0 - postProcessing.kernel.blend));
+    col = vec3(texture(screenTexture, fragmentTexCoord.st));
 
     // convolution
     int kernels = 0;
     if (postProcessing.kernel.isActive && postProcessing.kernel.blend > 0.0) {
+        col *= (1.0 - postProcessing.kernel.blend);
         kernels = int(postProcessing.kernel.useKernel3x3) + int(postProcessing.kernel.useKernel5x5) + int(postProcessing.kernel.useKernel7x7);
         float offset = postProcessing.kernel.offset;
         float vignetteFactor = 1.0;
@@ -99,15 +100,6 @@ void main() {
     }
     
     color = vec4(col, 1.0);
-
-    // vignette
-    if (postProcessing.vignette.isActive) {
-        float vignetteFactor = 1.0 - smoothstep(postProcessing.vignette.size, .5 * postProcessing.vignette.size, dist * (.3 + .5));
-        if (vignetteFactor >= postProcessing.vignette.treshold) {
-            color.rgb *= 1.0 - vignetteFactor;
-            color.rgb += postProcessing.vignetteColor * vignetteFactor;
-        }
-    }
 
     // contrast
     float contrast = cfg.contrast * postProcessing.contrast;
@@ -131,5 +123,14 @@ void main() {
         color.r = pow(color.r, gamma);
         color.g = pow(color.g, gamma);
         color.b = pow(color.b, gamma);
+    }
+
+    // vignette
+    if (postProcessing.vignette.isActive) {
+        float vignetteFactor = 1.0 - smoothstep(postProcessing.vignette.size, .5 * postProcessing.vignette.size, dist * (.3 + .5));
+        if (vignetteFactor >= postProcessing.vignette.treshold) {
+            color.rgb *= 1.0 - vignetteFactor;
+            color.rgb += postProcessing.vignetteColor * vignetteFactor;
+        }
     }
 }

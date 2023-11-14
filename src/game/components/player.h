@@ -23,7 +23,6 @@ private:
 public:
     ~PlayerController();
     void Spawn();
-
     void Start();
     void Update();
 
@@ -39,6 +38,7 @@ public:
     void Start();
     void SetHealth(int) override;
     void SetMaxHealth(int) override;
+    void Die() override;
     void AddStatus(const std::shared_ptr<StatusEffect>&) override;
     void RemoveStatus(const std::shared_ptr<StatusEffect>&) override;
 };
