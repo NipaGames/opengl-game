@@ -36,7 +36,7 @@ void LivingEntity::Update() {
         const std::shared_ptr<StatusEffect>& status = statuses_.at(i);
         if (statusesActive_)
             status->Update(this);
-        if (status->GetTimeRemaining() < 0.0f) {
+        if (status->IsFinished() || (!statusesActive_ && status->GetTimeRemaining() < 0.0f)) {
             RemoveStatus(status);
             i--;
         }
@@ -58,9 +58,10 @@ void LivingEntity::RemoveStatus(const std::shared_ptr<StatusEffect>& status) {
 }
 
 void StatusEffect::Start(LivingEntity* entity) {
-    Tick(entity);
     startTime_ = (float) glfwGetTime();
     lastTick_ = startTime_;
+    ticks_ = (int) std::floor(time_ / tickrate_);
+    ticksCounted_ = 0;
 }
 
 float StatusEffect::GetTimeRemaining() const {
@@ -70,14 +71,15 @@ float StatusEffect::GetTimeRemaining() const {
         return 99999.0f;
 }
 
+bool StatusEffect::IsFinished() const {
+    return GetTimeRemaining() < 0.0f && ticksCounted_ >= ticks_;
+}
+
 void StatusEffect::Update(LivingEntity* entity) {
-    float now = (float) glfwGetTime();
-    if (now - lastTick_ >= tickrate_) {
+    if ((float) glfwGetTime() - lastTick_ >= tickrate_ && ticksCounted_ < ticks_) {
         Tick(entity);
-        if (startTime_ < 0.0f) {
-            startTime_ = now;
-        }
-        lastTick_ = now;
+        ticksCounted_++;
+        lastTick_ = (float) glfwGetTime();
     }
 }
 

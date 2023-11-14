@@ -38,12 +38,15 @@ protected:
     float lastTick_ = 0.0f;
     float startTime_;
     float time_;
+    int ticks_ = 0;
+    int ticksCounted_;
 public:
     StatusEffect(const std::string& n, float rate, float t) : name_(n), tickrate_(rate), time_(t) { }
     virtual void Tick(LivingEntity*) { }
     virtual void Start(LivingEntity*);
     virtual void End(LivingEntity*) { }
     float GetTimeRemaining() const;
+    bool IsFinished() const;
     void Update(LivingEntity*);
     const std::string& GetName() const { return name_; }
 };
