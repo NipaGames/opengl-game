@@ -99,38 +99,40 @@ void main() {
         }
     }
     
-    color = vec4(col, 1.0);
-
     // contrast
     float contrast = cfg.contrast * postProcessing.contrast;
-    color.rgb = ((color.rgb - 0.5) * contrast) + 0.5;
+    col.rgb = ((col.rgb - 0.5) * contrast) + 0.5;
     // brightness
     float brightness = cfg.brightness * postProcessing.brightness;
-    color.rgb += brightness - 1.0;
+    col.rgb += brightness - 1.0;
+    // clamp to positive only
+    col.r = max(col.r, 0.0);
+    col.g = max(col.g, 0.0);
+    col.b = max(col.b, 0.0);
     // saturation
     float saturation = cfg.saturation * postProcessing.saturation;
     if (saturation != 1.0) {
         float satMax = 3.0 - saturation;
-        vec3 sat;
-        sat.r = (color.r * (1.0 + saturation) + color.g * (1.0 - saturation) + color.b * (1.0 - saturation)) / satMax;
-        sat.g = (color.r * (1.0 - saturation) + color.g * (1.0 + saturation) + color.b * (1.0 - saturation)) / satMax;
-        sat.b = (color.r * (1.0 - saturation) + color.g * (1.0 - saturation) + color.b * (1.0 + saturation)) / satMax;
-        color = vec4(sat, 1.0);
+        col.r = (col.r * (1.0 + saturation) + col.g * (1.0 - saturation) + col.b * (1.0 - saturation)) / satMax;
+        col.g = (col.r * (1.0 - saturation) + col.g * (1.0 + saturation) + col.b * (1.0 - saturation)) / satMax;
+        col.b = (col.r * (1.0 - saturation) + col.g * (1.0 - saturation) + col.b * (1.0 + saturation)) / satMax;
     }
     // gamma
     float gamma = cfg.gamma * postProcessing.gamma;
     if (gamma != 1.0) {
-        color.r = pow(color.r, gamma);
-        color.g = pow(color.g, gamma);
-        color.b = pow(color.b, gamma);
+        col.r = pow(col.r, gamma);
+        col.g = pow(col.g, gamma);
+        col.b = pow(col.b, gamma);
     }
 
     // vignette
     if (postProcessing.vignette.isActive) {
         float vignetteFactor = 1.0 - smoothstep(postProcessing.vignette.size, .5 * postProcessing.vignette.size, dist * (.3 + .5));
         if (vignetteFactor >= postProcessing.vignette.treshold) {
-            color.rgb *= 1.0 - vignetteFactor;
-            color.rgb += postProcessing.vignetteColor * vignetteFactor;
+            col.rgb *= 1.0 - vignetteFactor;
+            col.rgb += postProcessing.vignetteColor * vignetteFactor;
         }
     }
+
+    color = vec4(col, 1.0);
 }
