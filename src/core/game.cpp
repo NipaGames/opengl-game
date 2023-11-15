@@ -29,12 +29,11 @@ void Game::Run() {
     gameThread.join();
 }
 
-void Game::GameThread() {
+void Game::GameThreadInit() {
     srand(static_cast<unsigned int>(time(0)));
     glfwMakeContextCurrent(window_.GetWindow());
     PreLoad();
     glfwShowWindow(GAME->GetGameWindow().GetWindow());
-    Physics::Init();
     RegisterDefaultSerializers();
     resources.LoadAll();
     renderer_.UpdateVideoSettings(resources.videoSettings);
@@ -42,6 +41,11 @@ void Game::GameThread() {
     glfwSetWindowSize(window_.GetWindow(), resources.videoSettings.resolution.x, resources.videoSettings.resolution.y);
     if (resources.videoSettings.fullscreen)
         Input::UPDATE_FULLSCREEN = true;
+}
+
+void Game::GameThreadStart() {
+    window_.LockMouse(true);
+    Physics::Init();
     Start();
     for (const auto& entity : entityManager_.entities_) {
         entity->Start();
@@ -49,67 +53,85 @@ void Game::GameThread() {
     renderer_.Start();
     prevUpdate_ = glfwGetTime();
     prevFixedUpdate_ = prevUpdate_;
-    while (running_) {
-        if (glfwWindowShouldClose(window_.GetWindow())) {
-            running_ = false;
-            break;
-        }
-        
-        double currentTime = glfwGetTime();
-        if (limitFps_ > 0 && currentTime - prevUpdate_ < 1.0 / limitFps_)
-            continue;
-        // don't skip too big intervals (>.5s)
-        deltaTime_ = std::min(currentTime - prevUpdate_, .5);
-        if (freezeDeltaTime_) {
-            deltaTime_ = 0;
-            freezeDeltaTime_ = false;
-        }
-        prevUpdate_ = currentTime;
+}
 
-        if (Input::SET_FULLSCREEN_PENDING) {
-            const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            GAME->GetRenderer().UpdateCameraProjection(mode->width, mode->height);
-            window_.DispatchEvent(EventType::WINDOW_RESIZE);
-            Input::SET_FULLSCREEN_PENDING = false;
-            Input::WINDOW_SIZE_CHANGE_PENDING = false;
-        }
-        if (Input::WINDOW_SIZE_CHANGE_PENDING) {
-            int width, height;
-            glfwGetFramebufferSize(window_.GetWindow(), &width, &height);
-            if (width > 0 && height > 0)
-                renderer_.UpdateCameraProjection(width, height);
-            window_.DispatchEvent(EventType::WINDOW_RESIZE);
-            Input::WINDOW_SIZE_CHANGE_PENDING = false;
-        }
-
-        Physics::Update(deltaTime_);
-        isFixedUpdate_ = currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_;
-        if (isFixedUpdate_) {
-            Input::PollKeysPressedDown();
-            prevFixedUpdate_ = currentTime;
-            FixedUpdate();
-            for (const auto& entity : entityManager_.entities_) {
-                entity->FixedUpdate();
-            }
-            renderer_.UpdateFrustum();
-            renderer_.SortMeshesByDistance();
-        }
-        window_.Update();
-        Update();
-        for (const auto& entity : entityManager_.entities_) {
-            entity->Update();
-        }
-        Camera& cam = renderer_.GetCamera();
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));
-        direction.y = sin(glm::radians(cam.pitch));
-        direction.z = sin(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));
-        cam.front = glm::normalize(direction);
-        cam.right = glm::normalize(glm::cross(cam.front, cam.up));
-        cam.UpdateFrustum();
-        
-        renderer_.Render();
-        Input::ClearKeysPressedDown();
-    }
+void Game::GameThreadCleanUp() {
+    CleanUp();
     Physics::Destroy();
+    window_.ClearEvents();
+    renderer_.CleanUpEntities();
+    resources.stageManager.UnloadAllStages();
+    entityManager_.ClearEntities();
+}
+
+void Game::GameThreadUpdate() {
+    if (glfwWindowShouldClose(window_.GetWindow())) {
+        running_ = false;
+        return;
+    }
+    
+    double currentTime = glfwGetTime();
+    if (limitFps_ > 0 && currentTime - prevUpdate_ < 1.0 / limitFps_)
+        return;
+    // don't skip too big intervals (>.5s)
+    deltaTime_ = std::min(currentTime - prevUpdate_, .5);
+    if (freezeDeltaTime_) {
+        deltaTime_ = 0;
+        freezeDeltaTime_ = false;
+    }
+    prevUpdate_ = currentTime;
+
+    if (Input::SET_FULLSCREEN_PENDING) {
+        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        GAME->GetRenderer().UpdateCameraProjection(mode->width, mode->height);
+        window_.DispatchEvent(EventType::WINDOW_RESIZE);
+        Input::SET_FULLSCREEN_PENDING = false;
+        Input::WINDOW_SIZE_CHANGE_PENDING = false;
+    }
+    if (Input::WINDOW_SIZE_CHANGE_PENDING) {
+        int width, height;
+        glfwGetFramebufferSize(window_.GetWindow(), &width, &height);
+        if (width > 0 && height > 0)
+            renderer_.UpdateCameraProjection(width, height);
+        window_.DispatchEvent(EventType::WINDOW_RESIZE);
+        Input::WINDOW_SIZE_CHANGE_PENDING = false;
+    }
+
+    Physics::Update(deltaTime_);
+    isFixedUpdate_ = currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_;
+    if (isFixedUpdate_) {
+        Input::PollKeysPressedDown();
+        prevFixedUpdate_ = currentTime;
+        FixedUpdate();
+        for (const auto& entity : entityManager_.entities_) {
+            entity->FixedUpdate();
+        }
+        renderer_.UpdateFrustum();
+        renderer_.SortMeshesByDistance();
+    }
+    window_.Update();
+    Update();
+    for (const auto& entity : entityManager_.entities_) {
+        entity->Update();
+    }
+    Camera& cam = renderer_.GetCamera();
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));
+    direction.y = sin(glm::radians(cam.pitch));
+    direction.z = sin(glm::radians(cam.yaw)) * cos(glm::radians(cam.pitch));
+    cam.front = glm::normalize(direction);
+    cam.right = glm::normalize(glm::cross(cam.front, cam.up));
+    cam.UpdateFrustum();
+    
+    renderer_.Render();
+    Input::ClearKeysPressedDown();
+}
+
+void Game::GameThread() {
+    GameThreadInit();
+    GameThreadStart();
+    while (running_) {
+        GameThreadUpdate();
+    }
+    GameThreadCleanUp();
 }

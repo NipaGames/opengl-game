@@ -8,13 +8,20 @@ class HUD {
 private:
     float fadeAreaTextAway_;
     bool isAreaTextShown_ = false;
-    const float areaTextSeconds_ = 5.0f;
+    float areaTextSeconds_ = 5.0f;
     std::vector<std::string> statuses_;
-    bool gameOver_ = false;
     float gameOverTextY_;
-    float gameOverEffect_ = 0.0f;
-    float gameOverTime_ = 1.0f;
     float baseVignetteSize_;
+
+    bool gameOver_ = false;
+    float gameOverEffect_ = 0.0f;
+    bool gameOverEffectFinished_ = false;
+    float gameOverTime_ = 1.0f;
+    bool gameOverContinue_ = false;
+    float gameOverContinueEffect_ = 0.0f;
+    bool gameOverContinueEffectFinished_ = false;
+    float gameOverContinueTime_ = 1.0f;
+    
 public:
     std::string canvasId = "hud";
     UI::TextComponent* interactText = nullptr;

@@ -30,6 +30,24 @@ public:
     Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i, const std::vector<float>& t) : Mesh(v, i, t) { id = meshId; }
     Mesh(const std::string& meshId, const std::vector<float>& v, const std::vector<unsigned int>& i) : Mesh(v, i) { id = meshId; }
     Mesh(const Mesh& m) : id(m.id), vertices(m.vertices), indices(m.indices), texCoords(m.texCoords), normals(m.normals) { }
+    Mesh(Mesh&& m) :
+        id(m.id),
+        vertices(m.vertices),
+        indices(m.indices),
+        texCoords(m.texCoords),
+        normals(m.normals),
+        vao(m.vao),
+        vbo(m.vbo),
+        ebo(m.ebo),
+        normalBuffer(m.normalBuffer),
+        texCoordBuffer(m.texCoordBuffer)
+    {
+        m.vao = NULL;
+        m.vbo = NULL;
+        m.ebo = NULL;
+        m.normalBuffer = NULL;
+        m.texCoordBuffer = NULL;
+    }
     virtual ~Mesh();
     std::vector<float> vertices;
     std::vector<float> normals;

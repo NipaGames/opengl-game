@@ -7,9 +7,13 @@
 
 UI::TextComponent::~TextComponent() {
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
-        glDeleteBuffers(1, &fbo_);
-        glDeleteTextures(1, &texture_);
+        if (fbo_ != NULL)
+            glDeleteFramebuffers(1, &fbo_);
+        if (texture_ != NULL)
+            glDeleteTextures(1, &texture_);
     }
+    fbo_ = NULL;
+    texture_ = NULL;
 }
 
 void UI::TextComponent::Start() {
@@ -22,13 +26,14 @@ void UI::TextComponent::Start() {
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         glGenFramebuffers(1, &fbo_);
         glGenTextures(1, &texture_);
-        SetText(text_);
+        RenderTexture();
     }
 }
 
 void UI::TextComponent::SetShader(const Shader& s) {
     shader_ = s;
-    RenderTexture();
+    if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE && hasStarted_)
+        RenderTexture();
 }
 
 void UI::TextComponent::Render(const glm::mat4& projection) {
@@ -130,6 +135,8 @@ void UI::TextComponent::RenderTexture() {
 }
 
 void UI::TextComponent::SetText(const std::string& t) {
+    if (text_ == t)
+        return;
     text_ = t;
     additionalRows_ = (int) std::count(text_.begin(), text_.end(), '\n');
     additionalRowsHeight_ = additionalRows_ * (GAME->resources.fontManager.Get(font).fontHeight + lineSpacing);

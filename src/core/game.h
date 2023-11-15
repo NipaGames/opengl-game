@@ -37,6 +37,10 @@ public:
     virtual void Run();
     virtual void GameThread();
     
+    void GameThreadInit();
+    void GameThreadStart();
+    void GameThreadUpdate();
+    void GameThreadCleanUp();
     // Called before the window is shown
     virtual void PreLoad() { }
     // Called before the first update
@@ -44,6 +48,7 @@ public:
     // Called every frame
     virtual void Update() { }
     virtual void FixedUpdate() { }
+    virtual void CleanUp() { }
 
     virtual double GetDeltaTime() { return deltaTime_; }
     virtual double GetFixedDeltaTime() { return 1.0 / fixedUpdateRate_; }

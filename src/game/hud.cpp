@@ -90,7 +90,7 @@ void HUD::CreateHUDElements() {
     gameOverInstructionsText->alignment = Text::TextAlignment::CENTER;
     gameOverInstructionsText->isVisible = false;
     gameOverInstructionsText->lineSpacing = 20;
-    gameOverInstructionsText->SetText("no way to retry yet\njust restart the executable ig");
+    gameOverInstructionsText->SetText("[E] to retry");
     gameOverInstructionsText->AddToCanvas();
 
     GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
@@ -131,20 +131,25 @@ void HUD::RemoveStatus(const std::string& status) {
 
 void HUD::GameOver() {
     gameOverEffect_ = 0.0f;
+    gameOverEffectFinished_ = false;
     gameOver_ = true;    
+    gameOverContinue_ = false;
     gameOverTextY_ = gameOverText->parent->transform->position.y;
     gameOverText->parent->transform->position.y = 720.0f;
     gameOverText->color.a = 0.0f;
     gameOverText->isVisible = true;
 
     PostProcessing& postProcessing = MonkeyGame::GetGame()->postProcessing;
+    postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
     postProcessing.kernel.vignette.isActive = false;
     baseVignetteSize_ = postProcessing.vignette.size;
     MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
 }
 
 void HUD::Update() {
-    if (gameOver_ && gameOverEffect_ >= 0.0f) {
+    // yippee hardcoded animation interpolation
+    // too lazy to write this more elegantly
+    if (gameOver_ && !gameOverEffectFinished_) {
         gameOverEffect_ += (float) GAME->GetDeltaTime() / gameOverTime_;
         gameOverEffect_ = std::min(gameOverEffect_, 1.0f);
         
@@ -153,16 +158,49 @@ void HUD::Update() {
         postProcessing.kernel.offset = gameOverEffect_ / 1000.0f;
         postProcessing.vignetteColor = glm::vec3(gameOverEffect_ * .5f, 0.0f, 0.0f);
         postProcessing.vignette.size = baseVignetteSize_ - (baseVignetteSize_ - 0.65f) * gameOverEffect_;
-        gameOverText->parent->transform->position.y = 720.0f - gameOverTextY_ * gameOverEffect_;
         MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
 
+        gameOverText->parent->transform->position.y = 720.0f - gameOverTextY_ * gameOverEffect_;
         gameOverText->color.a = gameOverEffect_;
 
         if (gameOverEffect_ >= 1.0f) {
-            gameOverEffect_ = -1.0f;
+            gameOverEffectFinished_ = true;
             GAME->GetGameWindow().LockMouse(false);
             gameOverInstructionsText->isVisible = true;
         }
+    }
+    if (gameOverContinue_ && !gameOverContinueEffectFinished_) {
+        gameOverContinueEffect_ += (float) GAME->GetDeltaTime() / gameOverContinueTime_;
+        gameOverContinueEffect_ = std::min(gameOverContinueEffect_, 1.0f);
+
+        PostProcessing& postProcessing = MonkeyGame::GetGame()->postProcessing;
+        postProcessing.brightness = 1.0f - gameOverContinueEffect_;
+        postProcessing.kernel.offset = (1.0f + gameOverContinueEffect_) / 1000.0f;
+        MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
+
+        gameOverText->parent->transform->position.y = gameOverTextY_ * (1.0f - gameOverContinueEffect_);
+        gameOverText->color.a = 1.0f - gameOverContinueEffect_;
+
+        if (gameOverContinueEffect_ >= 1.0f) {
+            gameOverContinueEffectFinished_ = true;
+        }
+    }
+    if (gameOverEffectFinished_ && !gameOverContinue_) {
+        if (Input::IsKeyPressedDown(GLFW_KEY_E)) {
+            gameOverContinue_ = true;
+            gameOverContinueEffect_ = 0.0f;
+            gameOverInstructionsText->isVisible = false;
+
+            areaText->isVisible = false;
+            interactText->isVisible = false;
+            hpText->isVisible = false;
+            maxHpText->isVisible = false;
+            statusText->isVisible = false;
+        }
+    }
+    if (gameOverContinueEffectFinished_) {
+        MonkeyGame::GetGame()->GameThreadCleanUp();
+        MonkeyGame::GetGame()->GameThreadStart();
     }
     if (isAreaTextShown_ && glfwGetTime() >= fadeAreaTextAway_) {
         isAreaTextShown_ = false;

@@ -129,7 +129,6 @@ void PlayerController::Update() {
 
     cam.pos.x = parent->transform->position.x;
     cam.pos.z = parent->transform->position.z;
-
     cam.pos.y = parent->transform->position.y + 1.0f;
 }
 

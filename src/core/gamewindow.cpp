@@ -191,6 +191,10 @@ void GameWindow::OnEvent(EventType eventType, std::function<void()> event) {
     events_.insert({ eventType, event });
 }
 
+void GameWindow::ClearEvents() {
+    events_.clear();
+}
+
 void GameWindow::SetupInputSystem() {
     Input::IS_MOUSE_LOCKED = true;
     Input::MOUSE_MOVE_PENDING = true;
@@ -209,6 +213,9 @@ void GameWindow::LockMouse(bool lock) {
     lockMouse_ = lock;
     Input::IS_MOUSE_LOCKED = lock;
     Input::CURSOR_MODE_CHANGE_PENDING = true;
+    if (lock) {
+        Input::WINDOW_FOCUS_PENDING = true;
+    }
 }
 
 void GameWindow::UpdateInputSystem() {

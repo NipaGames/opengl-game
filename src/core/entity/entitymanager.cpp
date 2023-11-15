@@ -41,6 +41,10 @@ const std::list<std::unique_ptr<Entity>>& EntityManager::GetEntities() {
     return entities_;
 }
 
+void EntityManager::ClearEntities() {
+    entities_.clear();
+}
+
 Entity& EntityManager::operator[](const std::string& id) {
     auto it = std::find_if(entities_.begin(), entities_.end(), [&](const auto& e) { return e->id == id; });
     if (it != entities_.end())

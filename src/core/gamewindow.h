@@ -40,6 +40,7 @@ public:
     void ResetCursorPos();
     void DispatchEvent(EventType);
     void OnEvent(EventType, std::function<void()>);
+    void ClearEvents();
     bool IsUsingVsync() { return useVsync_; }
     void UseVsync(bool);
     void LockMouse(bool);

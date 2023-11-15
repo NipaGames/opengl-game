@@ -16,7 +16,7 @@ MeshRenderer::~MeshRenderer() {
 
 void MeshRenderer::Start() {
     if (!object.empty()) {
-        for (auto mesh : GAME->resources.modelManager[object].meshes) {
+        for (const auto& mesh : GAME->resources.modelManager[object].meshes) {
             if (copyMeshes) {
                 std::shared_ptr<Mesh> meshCopy = std::make_shared<Mesh>(*mesh);
                 meshCopy->material = mesh->material;
@@ -125,6 +125,7 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
+    glBindVertexArray(0);
 }
 
 bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {

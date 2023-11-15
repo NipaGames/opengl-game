@@ -70,6 +70,7 @@ public:
     void SortMeshesByDistance();
     void UpdateVideoSettings(const Resources::VideoSettings&);
     void ApplyPostProcessing(const PostProcessing&);
+    void CleanUpEntities();
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
     size_t CountEntitiesOnFrustum() { return entitiesOnFrustum_.size(); }

@@ -65,4 +65,9 @@ Mesh::~Mesh() {
         glDeleteBuffers(1, &texCoordBuffer);
     if (normalBuffer != NULL)
         glDeleteBuffers(1, &normalBuffer);
+    vao = NULL;
+    vbo = NULL;
+    ebo = NULL;
+    texCoordBuffer = NULL;
+    normalBuffer = NULL;
 }

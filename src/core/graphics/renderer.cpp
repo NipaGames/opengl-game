@@ -299,6 +299,13 @@ void Renderer::RemoveMeshRenderer(MeshRenderer* mesh) {
     meshes_.erase(std::remove(meshes_.begin(), meshes_.end(), mesh), meshes_.end());
 }
 
+void Renderer::CleanUpEntities() {
+    canvases_.clear();
+    meshes_.clear();
+    entitiesOnFrustum_.clear();
+    lights_.clear();
+}
+
 std::shared_ptr<Material> Renderer::GetMaterial(const std::string& mat) {
     if (materials_.count(mat) == 0)
         return materials_.at(MATERIAL_MISSING);

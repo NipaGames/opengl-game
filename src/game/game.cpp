@@ -49,10 +49,6 @@ bool MonkeyGame::InitWindow() {
     return true;
 }
 
-void MonkeyGame::PreLoad() {
-    LOG_FN();
-}
-
 void WhatIs(std::string str) {
     spdlog::info(str);
 }
@@ -203,16 +199,8 @@ void RegisterCommands(Console& console) {
     });
 }
 
-void MonkeyGame::Start() {
+void MonkeyGame::PreLoad() {
     LOG_FN();
-
-    postProcessing.kernel.offset = 1.0f / 1000.0f;
-    postProcessing.kernel.vignette.isActive = true;
-    postProcessing.kernel.vignette.size = 0.5f;
-    postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
-    postProcessing.vignette.isActive = true;
-
-    renderer_.ApplyPostProcessing(postProcessing);
 
     REGISTER_EVENT(WhatIs);
     REGISTER_EVENT(LoadStage);
@@ -223,6 +211,19 @@ void MonkeyGame::Start() {
     EVENT_MANAGER.RegisterEvent("PlayAnimation", AnimationComponent::PlayAnimation);
 
     RegisterCommands(console);
+}
+
+void MonkeyGame::Start() {
+    LOG_FN();
+
+    postProcessing = PostProcessing();
+    postProcessing.kernel.offset = 1.0f / 1000.0f;
+    postProcessing.kernel.vignette.isActive = true;
+    postProcessing.kernel.vignette.size = 0.5f;
+    postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
+    postProcessing.vignette.isActive = true;
+
+    renderer_.ApplyPostProcessing(postProcessing);
     
     Entity& player = entityManager_.CreateEntity(playerId);
     player.AddComponent<PlayerController>();
@@ -242,6 +243,8 @@ void MonkeyGame::Start() {
         "graycloud_bk.jpg"
     };
     renderer_.skyboxTexture = Cubemap::LoadTextureFromFaces("cloud-skybox", faces, true);
+    renderer_.GetCamera().yaw = 90.0f;
+    renderer_.GetCamera().pitch = 0.0f;
 
     Entity& spawn = entityManager_.CreateEntity();
     auto spawnRenderer = spawn.AddComponent<MeshRenderer>();
@@ -332,6 +335,7 @@ void MonkeyGame::Start() {
         }
         */
     }
+    hud = HUD();
     hud.CreateHUDElements();
 
     GAME->resources.stageManager.LoadStage("teststage");
