@@ -5,6 +5,7 @@
 #include <core/io/files/materials.h>
 #include <core/io/paths.h>
 #include <core/io/resourcemanager.h>
+#include <core/io/files/cfg.h>
 #include <core/graphics/model.h>
 #include <core/graphics/cubemap.h>
 #include <core/graphics/component/meshrenderer.h>
@@ -215,6 +216,12 @@ void MonkeyGame::PreLoad() {
 
 void MonkeyGame::Start() {
     LOG_FN();
+
+    Serializer::CFGSerializer controlsSerializer = Serializer::CFGSerializer();
+    controlsSerializer.SerializeFile(CONTROLS_PATH.string());
+    if (controlsSerializer.Validate(controls.CreateCFGTemplate())) {
+        controls.CopyFromCFGObject(controlsSerializer.GetRoot());
+    }
 
     postProcessing = PostProcessing();
     postProcessing.kernel.offset = 1.0f / 1000.0f;

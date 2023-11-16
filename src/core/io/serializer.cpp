@@ -7,10 +7,10 @@ bool Serializer::SetJSONComponentValue(IComponent* c, const std::string& k, cons
     if (dataVal == nullptr)
         return false;
     
-    auto it = std::find_if(Serializer::JSON_COMPONENT_VAL_SERIALIZERS.begin(), Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
+    auto it = std::find_if(Serializer::JSON_SERIALIZERS.begin(), Serializer::JSON_SERIALIZERS.end(), [&](const auto& s) {
         return s->CompareToComponentType(c->data.GetComponentDataValue(k));
     });
-    if (it == Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end())
+    if (it == Serializer::JSON_SERIALIZERS.end())
         return false;
     
     const auto& serializer = *it;

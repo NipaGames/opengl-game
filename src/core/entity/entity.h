@@ -8,7 +8,6 @@ class Component;
 
 #include "component.h"
 #include "transform.h"
-#include <core/graphics/mesh.h>
 
 class EntityManager;
 class Entity {

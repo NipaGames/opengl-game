@@ -277,6 +277,12 @@ void Renderer::UpdateVideoSettings(const Resources::VideoSettings& settings) {
     framebufferShader_.SetUniform("cfg.brightness", settings.brightness);
     framebufferShader_.SetUniform("cfg.saturation", settings.saturation);
     glUseProgram(0);
+
+    camera_.fov = settings.fov;
+
+    int w, h;
+    glfwGetWindowSize(window_, &w, &h);
+    UpdateCameraProjection(w, h);
 }
 
 void Renderer::AddLight(Lights::Light* light) {

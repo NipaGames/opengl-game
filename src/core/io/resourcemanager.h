@@ -10,9 +10,11 @@
 #include <variant>
 #include <spdlog/spdlog.h>
 
-#include "paths.h"
+#include "fs.h"
+#include "serializablestruct.h"
 #include "files/materials.h"
 #include "files/objects.h"
+#include <core/gamewindow.h>
 #include <core/stage.h>
 #include <core/graphics/shader.h>
 #include <core/graphics/texture.h>
@@ -114,7 +116,7 @@ namespace Resources {
     protected:
         std::optional<Texture::TextureID> LoadResource(const std::fs::path&) override;
     public:
-        TextureManager() : ResourceManager<Texture::TextureID>(Paths::TEXTURES_DIR, "texture") { }
+        TextureManager();
     };
 
     class ShaderManager : public ResourceManager<GLuint> {
@@ -125,7 +127,7 @@ namespace Resources {
         void LoadStandardShader(Shaders::ShaderID, const std::string&, Shaders::ShaderType);
         void LoadStandardShader(Shaders::ShaderID, const std::string&, const std::string&, const std::string& = "");
     public:
-        ShaderManager() : ResourceManager<GLuint>(Paths::SHADER_DIR) { }
+        ShaderManager();
         virtual void LoadAll(const std::vector<ShaderImport>&);
         GLuint& Get(Shaders::ShaderID);
         GLuint& Get(const std::string& s) { return ResourceManager::Get(s); }
@@ -137,7 +139,7 @@ namespace Resources {
         std::optional<UI::Text::Font> LoadResource(const std::fs::path&) override;
         glm::ivec2 fontSize_ = { 0, BASE_FONT_SIZE };
     public:
-        FontManager() : ResourceManager<UI::Text::Font>(Paths::FONTS_DIR, "font") { }
+        FontManager();
         void SetFontSize(const glm::ivec2&);
         void SetFontSize(int);
     };
@@ -146,7 +148,7 @@ namespace Resources {
     protected:
         std::optional<Model> LoadResource(const std::fs::path&) override;
     public:
-        ModelManager() : ResourceManager<Model>(Paths::MODELS_DIR, "model") { }
+        ModelManager();
     };
 
     class StageManager : public ResourceManager<Stage> {
@@ -154,18 +156,23 @@ namespace Resources {
         std::optional<Stage> LoadResource(const std::fs::path&) override;
         std::vector<std::string> loadedStages;
     public:
-        StageManager() : ResourceManager<Stage>(Paths::STAGES_DIR, "stage") { }
+        StageManager();
         const std::vector<std::string>& GetLoadedStages();
         bool LoadStage(const std::string&);
         bool UnloadStage(const std::string&);
         void UnloadAllStages();
     };
 
-    struct VideoSettings {
-        float gamma, contrast, brightness, saturation;
-        bool useVsync;
-        bool fullscreen;
-        glm::ivec2 resolution, fullscreenResolution;
+    struct VideoSettings : SerializableStruct {
+        DATA_FIELD(float, gamma, 1.0f);
+        DATA_FIELD(float, contrast, 1.0f);
+        DATA_FIELD(float, brightness, 1.0f);
+        DATA_FIELD(float, saturation, 1.0f);
+        DATA_FIELD(float, fov, 60.0f);
+        DATA_FIELD(bool, useVsync, false);
+        DATA_FIELD(bool, fullscreen, false);
+        DATA_FIELD(glm::ivec2, resolution, glm::ivec2(BASE_WIDTH, BASE_HEIGHT));
+        DATA_FIELD(glm::ivec2, fullscreenResolution, glm::ivec2(-1));
     };
 };
 

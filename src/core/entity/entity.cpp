@@ -46,7 +46,7 @@ void Entity::OverrideComponentValues(const Entity& e) {
         if (mc == nullptr)
             AddComponent(c->typeHash, c->data);
         else {
-            for (auto&[k, v] : c->data.vars) {
+            for (const auto&[k, v] : c->data.vars) {
                 v->CloneValuesTo(mc->data.vars[k]);
             }
         }

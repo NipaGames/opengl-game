@@ -14,11 +14,10 @@ PlayerController::~PlayerController() {
 }
 
 void PlayerController::OnMouseMove() {
-    float sensitivity = 0.1f;
     auto& cam = GAME->GetRenderer().GetCamera();
 
-    cam.yaw   += static_cast<float>(Input::MOUSE_MOVE_X) * sensitivity * controlSpeedModifier_;
-    cam.pitch += static_cast<float>(Input::MOUSE_MOVE_Y) * sensitivity * controlSpeedModifier_;
+    cam.yaw   += static_cast<float>(Input::MOUSE_MOVE_X) * sensitivity * baseSensitivity_ * controlSpeedModifier_;
+    cam.pitch += static_cast<float>(Input::MOUSE_MOVE_Y) * sensitivity * baseSensitivity_ * controlSpeedModifier_;
 
     if(cam.pitch > 89.0f)
         cam.pitch = 89.0f;
@@ -32,6 +31,7 @@ void PlayerController::Spawn() {
 }
 
 void PlayerController::Start() {
+    sensitivity = MonkeyGame::GetGame()->controls.sensitivity;
     controlSpeedModifier_ = 1.0f;
     ghostObject_ = new btPairCachingGhostObject();
     ghostObject_->setWorldTransform(parent->transform->btGetTransform());

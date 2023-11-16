@@ -180,7 +180,7 @@ ICFGField* CreateNewCFGObject(const ICFGField* copyFrom) {
 
 bool ValidateCFGFieldType(ICFGField*, std::vector<CFGFieldType>);
 
-bool IsValidType(CFGFieldType in, CFGFieldType expected, bool allowCasts = true) {
+bool CFG::IsValidType(CFGFieldType in, CFGFieldType expected, bool allowCasts) {
     if (in == expected)
         return true;
     if (!allowCasts)
@@ -201,6 +201,22 @@ bool ValidateSubItems(ICFGField* node, const std::vector<CFGFieldType>& types) {
         return !ValidateCFGFieldType(f, { types.begin() + 1, types.end() });
     };
     return !std::any_of(arrayObject->GetItems().begin(), arrayObject->GetItems().end(), validate);
+}
+
+CFGField<float>* CastToInteger(const CFGField<int>* intField) {
+    CFGField<float>* floatField = dynamic_cast<CFGField<float>*>(CreateNewCFGObject<float>(intField));
+    floatField->value = (float) intField->value;
+    floatField->type = CFGFieldType::FLOAT;
+    floatField->name = intField->name;
+    floatField->parent = intField->parent;
+    if (intField->parent != nullptr) {
+        auto& otherItems = const_cast<CFGField<int>*>(intField)->parent->GetItems();
+        auto it = std::find(otherItems.begin(), otherItems.end(), intField);
+        if (it != otherItems.end())
+            *it = floatField;
+    }
+    delete intField;
+    return floatField;
 }
 
 bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
@@ -243,12 +259,7 @@ bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
                 return false;
             if ((receivedTypes.front() == CFGFieldType::INTEGER && typesQueue.front() == CFGFieldType::FLOAT)) {
                 // cast integer into float
-                const CFGField<int>* intField = structNode->GetItemByIndex<int>(memberIndex);
-                CFGField<float>* floatField = dynamic_cast<CFGField<float>*>(CreateNewCFGObject<float>(intField));
-                floatField->value = (float) intField->value;
-                floatField->type = CFGFieldType::FLOAT;
-                delete structNode->GetItemByIndex(memberIndex);
-                structNode->GetItems()[memberIndex] = floatField;
+                structNode->GetItems()[memberIndex] = CastToInteger(structNode->GetItemByIndex<int>(memberIndex));
             }
         }
         typesQueue.pop();
@@ -302,6 +313,9 @@ bool ValidateCFGFieldType(ICFGField* node, std::vector<CFGFieldType> types) {
             magic_enum::enum_name(types.at(0)),
             magic_enum::enum_name(node->type));
         return false;
+    }
+    if ((node->type == CFGFieldType::INTEGER && types.at(0) == CFGFieldType::FLOAT)) {
+        node = CastToInteger(dynamic_cast<const CFGField<int>*>(node));
     }
     if (types.at(0) == CFGFieldType::ARRAY) {
         if (!ValidateSubItems(node, types))
@@ -387,4 +401,8 @@ bool CFGSerializer::ParseContents(std::ifstream& f) {
         return false;
     }
     return true;
+}
+
+bool CFGSerializer::Validate(const CFGStructuredFields& fields) {
+    return ValidateCFGFields(root_, fields);
 }

@@ -1,33 +1,27 @@
 #include "resourcemanager.h"
 
 #include "files/cfg.h"
+#include "paths.h"
+#include "serializablestruct.h"
 #include <core/game.h>
+
+typedef std::string ResourceName;
+
+namespace Resources {
+    TextureManager::TextureManager() : ResourceManager<Texture::TextureID>(Paths::TEXTURES_DIR, ResourceName("texture")) { }
+    ShaderManager::ShaderManager() : ResourceManager<GLuint>(Paths::SHADER_DIR) { }
+    FontManager::FontManager() : ResourceManager<UI::Text::Font>(Paths::FONTS_DIR, ResourceName("font")) { }
+    ModelManager::ModelManager() : ResourceManager<Model>(Paths::MODELS_DIR, ResourceName("model")) { }
+    StageManager::StageManager() : ResourceManager<Stage>(Paths::STAGES_DIR, ResourceName("stage")) { }
+};
 
 // this sucks
 void ResourceManager::ParseVideoSettings(CFG::CFGObject* root) {
-    videoSettings.gamma = root->GetItemByName<float>("gamma")->GetValue();
-    videoSettings.contrast = root->GetItemByName<float>("contrast")->GetValue();
-    videoSettings.brightness = root->GetItemByName<float>("brightness")->GetValue();
-    videoSettings.saturation = root->GetItemByName<float>("saturation")->GetValue();
-    videoSettings.useVsync = root->GetItemByName<int>("use_vsync")->GetValue();
-    videoSettings.fullscreen = root->GetItemByName<int>("fullscreen")->GetValue();
-    const CFG::CFGObject* resolutionStruct = root->GetObjectByName("resolution");
-    videoSettings.resolution.x = resolutionStruct->GetItemByIndex<int>(0)->GetValue();
-    videoSettings.resolution.y = resolutionStruct->GetItemByIndex<int>(1)->GetValue();
-    const CFG::CFGObject* fullscreenResolutionStruct = root->GetObjectByName("resolution_fullscreen");
-    videoSettings.fullscreenResolution.x = fullscreenResolutionStruct->GetItemByIndex<int>(0)->GetValue();
-    videoSettings.fullscreenResolution.y = fullscreenResolutionStruct->GetItemByIndex<int>(1)->GetValue();
+    videoSettings.CopyFromCFGObject(root);
 }
 
 void ResourceManager::RestoreDefaultVideoSettings() {
-    videoSettings.gamma = 1.0;
-    videoSettings.contrast = 1.0;
-    videoSettings.brightness = 1.0;
-    videoSettings.saturation = 1.0;
-    videoSettings.useVsync = true;
-    videoSettings.fullscreen = false;
-    videoSettings.resolution = { BASE_WIDTH, BASE_HEIGHT };
-    videoSettings.fullscreenResolution = glm::ivec2(0);
+    videoSettings = Resources::VideoSettings();
 }
 
 void ResourceManager::LoadAll() {
@@ -35,9 +29,9 @@ void ResourceManager::LoadAll() {
     importsSerializer.SerializeFile(Paths::IMPORTS_PATH.string());
     imports = importsSerializer.GetRoot();
 
-    Serializer::CFGSerializer videoSettingsSerializer = Serializer::CFGSerializer(CFG::VideoSettingsFile());
+    Serializer::CFGSerializer videoSettingsSerializer = Serializer::CFGSerializer();
     videoSettingsSerializer.SerializeFile(Paths::VIDEO_SETTINGS_PATH.string());
-    if (!videoSettingsSerializer.Success()) {
+    if (!videoSettingsSerializer.Validate(videoSettings.CreateCFGTemplate())) {
         spdlog::error("Corrupted video settings!");
         spdlog::info("Restoring defaults...");
         RestoreDefaultVideoSettings();

@@ -36,6 +36,8 @@ namespace CFG {
     #define CFG_STRUCT(...) CFG::CFGFieldType::STRUCT, __VA_ARGS__
     #define CFG_IMPORT CFG_REQUIRE(CFG::CFGFieldType::STRING), CFG::CFGFieldType::STRING
     #define CFG_VEC2(type) CFG_STRUCT(CFG_REQUIRE(type), CFG_REQUIRE(type))
+
+    bool IsValidType(CFGFieldType, CFGFieldType, bool = true);
     
     struct CFGStructuredField {
         std::string name;
@@ -43,6 +45,8 @@ namespace CFG {
         bool required = false;
         bool isObject = false;
         std::vector<CFGStructuredField> objectParams;
+        CFGStructuredField(const std::string& n, bool r, const std::vector<CFGFieldType>& t) : name(n), required(r), types(t) { }
+        CFGStructuredField(const std::string& n, const std::vector<CFGFieldType>& t) : CFGStructuredField(n, false, t) { }
         template<typename... Field>
         CFGStructuredField(const std::string& n, bool r, const Field&... t) : name(n), required(r) {
             (types.push_back(t), ...);
@@ -59,19 +63,25 @@ namespace CFG {
     };
 
     inline CFGStructuredField Mandatory(const std::string& n, const std::vector<CFGStructuredField>& v) {
-        return CFGStructuredField {n, true, v};
+        return CFGStructuredField { n, true, v };
+    }
+    inline CFGStructuredField Mandatory(const std::string& n, const std::vector<CFGFieldType>& v) {
+        return CFGStructuredField { n, true, v };
     }
     template<typename... Field>
     inline CFGStructuredField Mandatory(const std::string& n, const Field&... t) {
-        return CFGStructuredField {n, true, t...};
+        return CFGStructuredField { n, true, t... };
     }
 
     inline CFGStructuredField Optional(const std::string& n, const std::vector<CFGStructuredField>& v) {
-        return CFGStructuredField {n, false, v};
+        return CFGStructuredField { n, false, v };
+    }
+    inline CFGStructuredField Optional(const std::string& n, const std::vector<CFGFieldType>& v) {
+        return CFGStructuredField { n, false, v };
     }
     template<typename... Field>
     inline CFGStructuredField Optional(const std::string& n, const Field&... t) {
-        return CFGStructuredField {n, false, t...};
+        return CFGStructuredField { n, false, t... };
     }
 
     class ICFGField {
@@ -84,10 +94,15 @@ namespace CFG {
         ICFGField(CFGFieldType t) : type(t) { }
         ICFGField(const std::string& n, CFGFieldType t) : name(n), type(t) { }
         virtual bool HasType(const std::type_info&) const { return false; }
-        template<typename Type>
+        template <typename T>
+        const T& GetValue() const {
+            return dynamic_cast<const CFGField<T>*>(this)->GetValue();
+        }
+        template <typename Type>
         bool HasType() const {
             return HasType(typeid(Type));
         }
+        virtual void CopyValueTo(void*) const { }
     };
 
     template<typename T>
@@ -102,8 +117,7 @@ namespace CFG {
             static_cast<std::vector<ICFGField*>&>(value).push_back(f);
             f->parent = this;
         }
-        template<typename F>
-        const CFGField<F>* GetItemByName(const std::string& name) const {
+        const ICFGField* GetItemByName(const std::string& name) const {
             auto it = std::find_if(GetItems().begin(), GetItems().end(), [&](const ICFGField* field) {
                 if (field == nullptr)
                     return false;
@@ -111,7 +125,11 @@ namespace CFG {
             });
             if (it == GetItems().end())
                 return nullptr;
-            return static_cast<CFGField<F>*>(*it);
+            return *it;
+        }
+        template<typename F>
+        const CFGField<F>* GetItemByName(const std::string& name) const {
+            return static_cast<const CFGField<F>*>(GetItemByName(name));
         }
         const ICFGField* GetItemByIndex(int i) const {
             if (i >= GetItems().size())
@@ -223,6 +241,11 @@ namespace CFG {
             }
             return imports;
         }
+        void CopyValueTo(void* ptr) const override {
+            if (ptr == nullptr)
+                return;
+            *static_cast<T*>(ptr) = value;
+        }
         bool HasType(const std::type_info& type) const override {
             return typeid(T).hash_code() == type.hash_code();
         }
@@ -247,7 +270,17 @@ namespace CFG {
         }
     };
 
-    using CFGStructuredFields = std::vector<CFGStructuredField>;
+    #define CFG_TYPE_PAIR(T, CFGT) { &typeid(T), { CFGT }}
+    inline const std::unordered_map<const type_info*, const std::vector<CFG::CFGFieldType>> CFG_TYPES = {
+        CFG_TYPE_PAIR(std::string, CFGFieldType::STRING),
+        CFG_TYPE_PAIR(int, CFGFieldType::INTEGER),
+        CFG_TYPE_PAIR(bool, CFGFieldType::INTEGER),
+        CFG_TYPE_PAIR(float, CFGFieldType::FLOAT),
+        CFG_TYPE_PAIR(glm::vec2, CFG_VEC2(CFGFieldType::FLOAT)),
+        CFG_TYPE_PAIR(glm::ivec2, CFG_VEC2(CFGFieldType::INTEGER))
+    };
+
+    typedef std::vector<CFGStructuredField> CFGStructuredFields;
     class CFGFile {
     public:
         virtual CFGStructuredFields DefineFields() const { return { }; }
@@ -292,8 +325,26 @@ namespace Serializer {
         CFGSerializer(const CFG::CFGFile& f) : file_(&f) { }
         CFGSerializer() = default;
         static CFG::CFGObject* ParseCFG(std::stringstream&, const CFG::CFGFile* = nullptr);
+        bool Validate(const CFG::CFGStructuredFields&);
         bool ParseContents(std::ifstream&) override;
         CFG::CFGObject* GetRoot() { return root_; }
         void SetCFGFile(const CFG::CFGFile* f) { file_ = f; }
     };
 }
+
+
+namespace Serializer {
+    typedef SerializerFunction<const CFG::ICFGField*> CFGSerializerFunction;
+
+    inline std::vector<std::shared_ptr<IValueSerializer<CFGSerializerFunction>>> CFG_SERIALIZERS;
+    
+    template<typename... T>
+    void* AddCFGSerializer(const CFGSerializerFunction& f) {
+        return AddSerializer<CFGSerializerFunction, T...>(CFG_SERIALIZERS, f);
+    }
+
+    template<typename T>
+    bool SetCFGPointerValue(T* ptr, const CFG::ICFGField* field) {
+        return SetPointerValue<T>(ptr, field, Serializer::CFG_SERIALIZERS);
+    }
+};

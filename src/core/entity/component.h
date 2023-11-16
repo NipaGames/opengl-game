@@ -149,7 +149,7 @@ public:
     template<typename C>
     static IComponent* CreateInstance(const ComponentData& data) {
         IComponent* c = new C();
-        for (auto[k, v] : data.vars) {
+        for (const auto&[k, v] : data.vars) {
             v->CloneValuesTo(c->data.vars[k]);
         }
         return c;

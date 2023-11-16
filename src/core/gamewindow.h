@@ -14,8 +14,8 @@
 #include "subscriptionevent.h"
 #include "graphics/renderer.h"
 
-#define BASE_WIDTH 1280
-#define BASE_HEIGHT 720
+inline constexpr int BASE_WIDTH = 1280;
+inline constexpr int BASE_HEIGHT = 720;
 
 class GameWindow {
 private:

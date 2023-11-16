@@ -23,7 +23,10 @@ private:
     bool gameOver_ = false;
     float controlSpeedModifier_ = 1.0f;
     float speedModifierTime_ = .5f;
+    float baseSensitivity_ = .2f;
 public:
+    float sensitivity;
+
     ~PlayerController();
     void Spawn();
     void Start();

@@ -40,14 +40,16 @@ namespace Serializer {
     using SerializerFunction = std::function<bool(SerializationArgs&, T)>;
     typedef SerializerFunction<const nlohmann::json&> JSONSerializerFunction;
 
+    template<typename F>
     class IValueSerializer {
     public:
+        F fn;
         virtual bool CompareToComponentType(std::shared_ptr<IComponentDataValue>) const = 0;
         virtual bool HasType(const type_info*) const = 0;
     };
 
-    template<typename... T>
-    class ValueSerializer : public IValueSerializer {
+    template<typename F, typename... T>
+    class ValueSerializer : public IValueSerializer<F> {
     public:
         bool CompareToComponentType(std::shared_ptr<IComponentDataValue> d) const override {
             bool found = false;
@@ -81,22 +83,9 @@ namespace Serializer {
         }
     };
     
-    class IJSONValueSerializer : public IValueSerializer {
-    public:
-        JSONSerializerFunction fn;
-    };
-
-    template<typename... T>
-    class JSONValueSerializer : public IJSONValueSerializer, public ValueSerializer<T...> {
-    public:
-        virtual bool CompareToComponentType(std::shared_ptr<IComponentDataValue> v) const { return ValueSerializer<T...>::CompareToComponentType(v); }
-        virtual bool HasType(const type_info* t) const { return ValueSerializer<T...>::HasType(t); }
-    };
-    
-    inline std::vector<std::shared_ptr<IJSONValueSerializer>> JSON_COMPONENT_VAL_SERIALIZERS;
     // must return something
-    template<typename S, typename I, typename F,  typename... T>
-    void* AddSerializer(std::vector<std::shared_ptr<I>>& vec, const F& f) {
+    template<typename F,  typename... T>
+    void* AddSerializer(std::vector<std::shared_ptr<IValueSerializer<F>>>& vec, const F& f) {
         auto count = std::count_if(vec.begin(), vec.end(), [&](const auto& s) {
             bool found = false;
             ([&] {
@@ -108,21 +97,36 @@ namespace Serializer {
             return found;
         });
         if (count == 0) {
-            auto v = std::make_shared<S>();
+            auto v = std::make_shared<ValueSerializer<F, T...>>();
             v->fn = f;
             vec.push_back(v);
         }
         return nullptr;
     }
 
+    template<typename T, typename P, typename M>
+    bool SetPointerValue(T* ptr, const P& param, const M& map) {
+        auto it = std::find_if(map.begin(), map.end(), [&](const auto& s) {
+            return s->HasType(&typeid(T));
+        });
+        if (it == map.end())
+            return false;
+        const auto& serializer = *it;
+        SerializationArgs args(SerializerType::ANY_POINTER);
+        args.ptr = ptr;
+        return (serializer->fn)(args, param);
+    }
+
+    inline std::vector<std::shared_ptr<IValueSerializer<JSONSerializerFunction>>> JSON_SERIALIZERS;
+
     template<typename... T>
     void* AddJSONSerializer(const JSONSerializerFunction& f) {
-        return AddSerializer<JSONValueSerializer<T...>, IJSONValueSerializer, JSONSerializerFunction, T...>(JSON_COMPONENT_VAL_SERIALIZERS, f);
+        return AddSerializer<JSONSerializerFunction, T...>(JSON_SERIALIZERS, f);
     }
 
     template<typename T>
     void* AddJSONEnumSerializer() {
-        return AddSerializer<JSONValueSerializer<T>, IJSONValueSerializer, JSONSerializerFunction, T>(JSON_COMPONENT_VAL_SERIALIZERS, [](Serializer::SerializationArgs& args, const nlohmann::json& j) {
+        return AddSerializer<JSONSerializerFunction, T>(JSON_SERIALIZERS, [](Serializer::SerializationArgs& args, const nlohmann::json& j) {
             if (!j.is_string())
                 return false;
             auto e = magic_enum::enum_cast<T>((std::string) j);
@@ -136,15 +140,7 @@ namespace Serializer {
     bool SetJSONComponentValue(IComponent*, const std::string&, const nlohmann::json&, const std::string& = "");
     template<typename T>
     bool SetJSONPointerValue(T* ptr, const nlohmann::json& jsonVal) {
-        auto it = std::find_if(Serializer::JSON_COMPONENT_VAL_SERIALIZERS.begin(), Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end(), [&](const auto& s) {
-            return s->HasType(&typeid(T));
-        });
-        if (it == Serializer::JSON_COMPONENT_VAL_SERIALIZERS.end())
-            return false;
-        const auto& serializer = *it;
-        SerializationArgs args(SerializerType::ANY_POINTER);
-        args.ptr = ptr;
-        return (serializer->fn)(args, jsonVal);
+        return SetPointerValue<T>(ptr, jsonVal, Serializer::JSON_SERIALIZERS);
     }
 
     enum class SerializationStatus {
