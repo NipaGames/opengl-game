@@ -45,6 +45,15 @@ CFGParseTreeNode<std::string>* CreateIndentationTree(std::stringstream& buffer) 
     return root;
 }
 
+std::string replace(const std::string& str, const std::string& from, const std::string& to) {
+    std::string s = str;
+    size_t pos;
+    while (pos = s.find(from) != std::string::npos) {
+        s.replace(pos, from.length(), to);
+    }
+    return s;
+}
+
 const std::string MATCH_NUMBER = "(-?\\d*\\.?\\d+)";
 const std::string MATCH_STRING = "([a-zA-Z_]\\w*|\"(.*?)\")";
 
@@ -74,7 +83,10 @@ ICFGField* ParseField(const std::string& val) {
     if (std::regex_search(val, groups, std::regex("^" + MATCH_STRING + "$"))) {
         CFGField<std::string>* thisNode = new CFGField<std::string>(CFGFieldType::STRING);
         std::string strVal = groups[2].matched ? groups[2] : groups[1];
-        thisNode->value = strVal;
+        std::string withoutEscapes = strVal;
+        withoutEscapes = replace(withoutEscapes, "\\\"", "\"");
+        withoutEscapes = replace(withoutEscapes, "\\'", "'");
+        thisNode->value = withoutEscapes;
         return thisNode;
     }
     return nullptr;
@@ -405,4 +417,84 @@ bool CFGSerializer::ParseContents(std::ifstream& f) {
 
 bool CFGSerializer::Validate(const CFGStructuredFields& fields) {
     return ValidateCFGFields(root_, fields);
+}
+
+std::string CFGDecimal(const ICFGField* field) {
+    std::string decimal = std::to_string(field->GetValue<float>());
+    // remove trailing zeros from the decimal part
+    while (decimal.size() > 3 && decimal.at(decimal.size() - 1) == '0') {
+        if (decimal.at(decimal.size() - 2) == '.')
+            break;
+        decimal.pop_back();
+    }
+    return decimal;
+}
+
+void CFGFieldValueToString(const ICFGField* field, std::stringstream& ss, const CFGFormatting& format, int indents = 0) {
+    const CFGObject* obj;
+    if (field->automaticallyCreated)
+        return;
+    switch (field->type) {
+        case CFGFieldType::NUMBER:
+        case CFGFieldType::FLOAT:
+            ss << CFGDecimal(field);
+            break;
+        case CFGFieldType::INTEGER:
+            ss << std::to_string(field->GetValue<int>());
+            break;
+        case CFGFieldType::STRING:
+            switch (format.stringLiteral) {
+                case CFGStringLiteral::APOSTROPHES:
+                    ss << '\'' + replace(field->GetValue<std::string>(), "'", "\\'") + '\'';
+                    break;
+                case CFGStringLiteral::QUOTES:
+                    ss << '"' + replace(field->GetValue<std::string>(), "\"", "\\\"") + '"';
+                    break;
+            }
+            break;
+        case CFGFieldType::STRUCT:
+            obj = dynamic_cast<const CFGObject*>(field);
+            for (int i = 0; i < obj->GetItems().size(); i++) {
+                if (obj->GetItemByIndex(i)->automaticallyCreated)
+                    continue;
+                CFGFieldValueToString(obj->GetItemByIndex(i), ss, format, indents);
+                if (i < obj->GetItems().size() - 1) {
+                    ss << ' ';
+                }
+            }
+            break;
+        case CFGFieldType::ARRAY:
+            obj = dynamic_cast<const CFGObject*>(field);
+            indents += format.indents;
+            for (int i = 0; i < obj->GetItems().size(); i++) {
+                ss << std::string(indents, ' ');
+                const ICFGField* e = obj->GetItemByIndex(i);
+                if (!e->name.empty())
+                    ss << e->name << ": ";
+                CFGFieldValueToString(e, ss, format, indents);
+                if (i < obj->GetItems().size() - 1) {
+                    ss << '\n';
+                }
+            }
+            indents -= format.indents;
+            break;
+    }
+}
+
+void CFG::Dump(const CFGObject* root, std::stringstream& ss, const CFGFormatting& formatting) {
+    for (const ICFGField* child : root->GetItems()) {
+        if (!child->name.empty()) {
+            ss << child->name << ": ";
+        }
+        if (child->type == CFGFieldType::ARRAY)
+            ss << '\n';
+        CFGFieldValueToString(child, ss, formatting);
+        ss << '\n';
+    }
+}
+
+std::string CFG::Dump(const CFGObject* root, const CFGFormatting& formatting) {
+    std::stringstream ss;
+    Dump(root, ss, formatting);
+    return ss.str();
 }

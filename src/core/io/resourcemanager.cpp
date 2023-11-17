@@ -15,9 +15,11 @@ namespace Resources {
     StageManager::StageManager() : ResourceManager<Stage>(Paths::STAGES_DIR, ResourceName("stage")) { }
 };
 
-// this sucks
 void ResourceManager::ParseVideoSettings(CFG::CFGObject* root) {
     videoSettings.CopyFromCFGObject(root);
+    std::stringstream ss;
+    CFG::Dump(root, ss);
+    std::cout << ss.str() << std::endl;
 }
 
 void ResourceManager::RestoreDefaultVideoSettings() {

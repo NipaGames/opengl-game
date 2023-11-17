@@ -38,6 +38,25 @@ namespace CFG {
     #define CFG_VEC2(type) CFG_STRUCT(CFG_REQUIRE(type), CFG_REQUIRE(type))
 
     bool IsValidType(CFGFieldType, CFGFieldType, bool = true);
+
+    enum class CFGStringLiteral {
+        APOSTROPHES,
+        QUOTES
+    };
+    struct CFGFormatting {
+        int indents;
+        // actually the format doesn't even support commas yet lol
+        // at least not in the regex
+        CFGStringLiteral stringLiteral;
+    };
+    const CFGFormatting STANDARD_FORMATTING = {
+        2,
+        CFGStringLiteral::APOSTROPHES
+    };
+    // serialize cfg object to a stringstream
+    void Dump(const CFGObject*, std::stringstream&, const CFGFormatting& = STANDARD_FORMATTING);
+    // serialize cfg object to a string
+    std::string Dump(const CFGObject*, const CFGFormatting& = STANDARD_FORMATTING);
     
     struct CFGStructuredField {
         std::string name;
