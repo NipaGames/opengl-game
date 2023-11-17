@@ -29,7 +29,8 @@ namespace CFG {
         FLOAT,
         ARRAY,
         STRUCT,
-        STRUCT_MEMBER_REQUIRED
+        STRUCT_MEMBER_REQUIRED,
+        RAW
     };
     #define CFG_ARRAY(type) CFG::CFGFieldType::ARRAY, type
     #define CFG_REQUIRE(type) CFG::CFGFieldType::STRUCT_MEMBER_REQUIRED, type

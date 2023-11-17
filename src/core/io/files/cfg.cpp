@@ -458,6 +458,10 @@ void CFGFieldValueToString(const ICFGField* field, std::stringstream& ss, const 
 
 void CFG::Dump(const CFGObject* root, std::stringstream& ss, const CFGFormatting& formatting) {
     for (const ICFGField* child : root->GetItems()) {
+        if (child->type == CFGFieldType::RAW) {
+            ss << child->GetValue<std::string>();
+            continue;
+        }
         if (!child->name.empty()) {
             ss << child->name << ": ";
         }

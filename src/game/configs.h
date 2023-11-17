@@ -7,11 +7,15 @@ namespace Config {
 
     struct Controls : SerializableStruct {
         INHERIT_COPY(Controls);
+
         DATA_FIELD(float, sensitivity, 1.0f);
     };
 
     struct General : SerializableStruct {
         INHERIT_COPY(General);
+
+        META_COMMENT("might be a good idea to disable this on lower-end pcs");
+        META_COMMENT("(or if i want to flex with 2000+ fps)");
         DATA_FIELD(bool, blurEdges, true);
     };
 };

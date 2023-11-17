@@ -2,16 +2,38 @@
 #include <core/io/files/cfg.h>
 #include <spdlog/spdlog.h>
 
-void SerializableStruct::AddMember(const std::string& name, const SerializableStructMemberData& data) {
-    members_.insert({ name, data });
+void SerializableStruct::AddMember(const SerializableStructMemberData& data) {
+    members_.push_back(data);
 }
 
-SerializableStructMemberData EMPTY_DATA = { nullptr, nullptr };
+void* SerializableStruct::AddNewline() {
+    members_.push_back({
+        "#meta" + std::to_string(_metaCounter++),
+        nullptr,
+        nullptr,
+        MetaType::NEWLINE
+    });
+    return nullptr;
+}
+
+void* SerializableStruct::AddComment(const std::string& comment) {
+    members_.push_back({
+        "#meta" + std::to_string(_metaCounter++),
+        nullptr,
+        nullptr,
+        MetaType::COMMENT,
+        comment
+    });
+    return nullptr;
+}
+
+SerializableStructMemberData EMPTY_DATA = { "", nullptr, nullptr };
 const SerializableStructMemberData& SerializableStruct::GetMemberData(const std::string& name) {
-    if (members_.count(name) == 0) {
+    auto it = std::find_if(members_.begin(), members_.end(), [&](const auto& m) { return m.name == name; });
+    if (it == members_.end()) {
         return EMPTY_DATA;
     }
-    return members_.at(name);
+    return *it;
 }
 
 void* SerializableStruct::GetMemberAddress(const std::string& name) {
@@ -21,41 +43,56 @@ void* SerializableStruct::GetMemberAddress(const std::string& name) {
 using namespace CFG;
 const CFGObject* SerializableStruct::CFGSerialize() const {
     CFGObject* root = new CFGObject();
-    for (const auto& [k, v] : members_) {
-        if (CFG_TYPES.count(v.type) == 0) {
-            spdlog::warn("Cannot serialize member '{}' ({})", k, v.type->name());
-            continue;
-        }
+    for (const auto& m : members_) {
         ICFGField* field;
-        const auto& types = CFG_TYPES.at(v.type);
-        if (types.size() == 1) {
-            field = CreateNewCFGField(types.front(), v.addr);
-            field->type = types.front();
-        }
-        else if (types.front() == CFGFieldType::STRUCT) {
-            CFGObject* structObj = new CFGObject();
-            structObj->type = types.front();
-            int index = 0;
-            for (int i = 1; i < types.size(); i++) {
-                CFGFieldType type = types.at(i);
-                if (type == CFGFieldType::STRUCT_MEMBER_REQUIRED) {
-                    continue;
-                }
-                // wahoo hardcoded serializations lessgoo
-                ICFGField* structMember;
-                if (v.type == &typeid(glm::vec2))
-                    structMember = CreateNewCFGField(type, &static_cast<const glm::vec2*>(v.addr)->operator[](index++));
-                else if (v.type == &typeid(glm::ivec2))
-                    structMember = CreateNewCFGField(type, &static_cast<const glm::ivec2*>(v.addr)->operator[](index++));
-                structMember->type = type;
-                structObj->AddItem(structMember);
+        if (m.metaType != MetaType::NONE) {
+            CFGField<std::string>* meta = new CFGField<std::string>();
+            switch(m.metaType) {
+                case MetaType::NEWLINE:
+                    meta->value = "\n";
+                    break;
+                case MetaType::COMMENT:
+                    meta->value = "# " + m.metaData + "\n";
+                    break;
             }
-            field = structObj;
+            meta->type = CFGFieldType::RAW;
+            field = meta;
         }
         else {
-            continue;
+            if (CFG_TYPES.count(m.type) == 0) {
+                spdlog::warn("Cannot serialize member '{}' ({})", m.name, m.type->name());
+                continue;
+            }
+            const auto& types = CFG_TYPES.at(m.type);
+            if (types.size() == 1) {
+                field = CreateNewCFGField(types.front(), m.addr);
+                field->type = types.front();
+            }
+            else if (types.front() == CFGFieldType::STRUCT) {
+                CFGObject* structObj = new CFGObject();
+                structObj->type = types.front();
+                int index = 0;
+                for (int i = 1; i < types.size(); i++) {
+                    CFGFieldType type = types.at(i);
+                    if (type == CFGFieldType::STRUCT_MEMBER_REQUIRED) {
+                        continue;
+                    }
+                    // wahoo hardcoded serializations lessgoo
+                    ICFGField* structMember;
+                    if (m.type == &typeid(glm::vec2))
+                        structMember = CreateNewCFGField(type, &static_cast<const glm::vec2*>(m.addr)->operator[](index++));
+                    else if (m.type == &typeid(glm::ivec2))
+                        structMember = CreateNewCFGField(type, &static_cast<const glm::ivec2*>(m.addr)->operator[](index++));
+                    structMember->type = type;
+                    structObj->AddItem(structMember);
+                }
+                field = structObj;
+            }
+            else {
+                continue;
+            }
         }
-        field->name = k;
+        field->name = m.name;
         root->AddItem(field);
     }
     return root;
@@ -88,12 +125,14 @@ void SerializableStruct::CFGDeserialize(const CFGObject* obj) {
 
 CFG::CFGStructuredFields SerializableStruct::CreateCFGTemplate() const {
     CFG::CFGStructuredFields fields;
-    for (const auto& [k, v] : members_) {
-        if (CFG_TYPES.count(v.type) == 0) {
-            spdlog::warn("Unsupported serializable type for {}!", k);
+    for (const auto& m : members_) {
+        if (m.metaType != MetaType::NONE)
+            continue;
+        if (CFG_TYPES.count(m.type) == 0) {
+            spdlog::warn("Unsupported serializable type for {}!", m.name);
             continue;
         }
-        fields.push_back(CFG::Mandatory(k, CFG_TYPES.at(v.type)));
+        fields.push_back(CFG::Mandatory(m.name, CFG_TYPES.at(m.type)));
     }
     return fields;
 }
