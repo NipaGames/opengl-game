@@ -5,6 +5,8 @@
 #include "serializablestruct.h"
 #include <core/game.h>
 
+#include <fstream>
+
 typedef std::string ResourceName;
 
 namespace Resources {
@@ -16,10 +18,15 @@ namespace Resources {
 };
 
 void ResourceManager::ParseVideoSettings(CFG::CFGObject* root) {
-    videoSettings.CopyFromCFGObject(root);
-    std::stringstream ss;
-    CFG::Dump(root, ss);
-    std::cout << ss.str() << std::endl;
+    videoSettings.CFGDeserialize(root);
+}
+
+void ResourceManager::SaveVideoSettingsToFile() {
+    const CFG::CFGObject* root = videoSettings.CFGSerialize();
+    std::string cfgString = CFG::Dump(root);
+    delete root;
+    std::ofstream fstream(Paths::VIDEO_SETTINGS_PATH.string());
+    fstream.write(cfgString.c_str(), cfgString.length());
 }
 
 void ResourceManager::RestoreDefaultVideoSettings() {
@@ -31,12 +38,15 @@ void ResourceManager::LoadAll() {
     importsSerializer.SerializeFile(Paths::IMPORTS_PATH.string());
     imports = importsSerializer.GetRoot();
 
+    if (!std::fs::is_directory(Paths::USER_SETTINGS_DIR) || !std::fs::exists(Paths::USER_SETTINGS_DIR))
+        std::fs::create_directory(Paths::USER_SETTINGS_DIR);
     Serializer::CFGSerializer videoSettingsSerializer = Serializer::CFGSerializer();
     videoSettingsSerializer.SerializeFile(Paths::VIDEO_SETTINGS_PATH.string());
-    if (!videoSettingsSerializer.Validate(videoSettings.CreateCFGTemplate())) {
+    if (!videoSettingsSerializer.Success() || !videoSettingsSerializer.Validate(videoSettings.CreateCFGTemplate())) {
         spdlog::error("Corrupted video settings!");
         spdlog::info("Restoring defaults...");
         RestoreDefaultVideoSettings();
+        SaveVideoSettingsToFile();
     }
     else {
         ParseVideoSettings(videoSettingsSerializer.GetRoot());

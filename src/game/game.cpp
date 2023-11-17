@@ -219,8 +219,8 @@ void MonkeyGame::Start() {
 
     Serializer::CFGSerializer controlsSerializer = Serializer::CFGSerializer();
     controlsSerializer.SerializeFile(CONTROLS_PATH.string());
-    if (controlsSerializer.Validate(controls.CreateCFGTemplate())) {
-        controls.CopyFromCFGObject(controlsSerializer.GetRoot());
+    if (controlsSerializer.Success() && controlsSerializer.Validate(controls.CreateCFGTemplate())) {
+        controls.CFGDeserialize(controlsSerializer.GetRoot());
     }
 
     postProcessing = PostProcessing();

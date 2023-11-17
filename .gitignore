@@ -1,5 +1,6 @@
 /.vscode
 /build
+/user
 /bin/Debug/OpenGLProject.exe
 /bin/Release/OpenGLProject.exe
 /bin/Release/OpenGLProject.exp

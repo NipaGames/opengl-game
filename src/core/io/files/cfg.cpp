@@ -153,41 +153,11 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
     return nullptr;
 }
 
-// ONLY COPIES THE VALUE, DOES NOT RETURN ANY TYPE OR NAME!
-template<typename T>
-ICFGField* CreateNewCFGObject(const ICFGField* copyFrom = nullptr) {
-    CFGField<T>* field = new CFGField<T>();
-    if (copyFrom != nullptr)
-        field->value = static_cast<const CFGField<T>*>(copyFrom)->value;
-    return field;
+ICFGField* CFG::CreateNewCFGField(const ICFGField* copyFrom) {
+    return CreateNewCFGField(copyFrom->type, copyFrom);
 }
-
-ICFGField* CreateNewCFGObject(CFGFieldType type, const ICFGField* copyFrom = nullptr) {
-    ICFGField* field;
-    switch (type) {
-        case CFGFieldType::STRING:
-            field = CreateNewCFGObject<std::string>(copyFrom);
-            break;
-        case CFGFieldType::NUMBER:
-        case CFGFieldType::FLOAT:
-            field = CreateNewCFGObject<float>(copyFrom);
-            break;
-        case CFGFieldType::INTEGER:
-            field = CreateNewCFGObject<int>(copyFrom);
-            break;
-        case CFGFieldType::ARRAY:
-            field = CreateNewCFGObject<std::vector<ICFGField*>>(copyFrom);
-            break;
-        case CFGFieldType::STRUCT:
-            field = CreateNewCFGObject<std::vector<ICFGField*>>(copyFrom);
-            break;
-    }
-    field->type = type;
-    return field;
-}
-
-ICFGField* CreateNewCFGObject(const ICFGField* copyFrom) {
-    return CreateNewCFGObject(copyFrom->type, copyFrom);
+ICFGField* CFG::CreateNewCFGField(CFGFieldType t) {
+    return CreateNewCFGField<ICFGField>(t, nullptr);
 }
 
 bool ValidateCFGFieldType(ICFGField*, std::vector<CFGFieldType>);
@@ -216,7 +186,7 @@ bool ValidateSubItems(ICFGField* node, const std::vector<CFGFieldType>& types) {
 }
 
 CFGField<float>* CastIntegerToFloat(const CFGField<int>* intField) {
-    CFGField<float>* floatField = dynamic_cast<CFGField<float>*>(CreateNewCFGObject<float>(intField));
+    CFGField<float>* floatField = dynamic_cast<CFGField<float>*>(CreateNewCFGField<float>(intField));
     floatField->value = (float) intField->value;
     floatField->type = CFGFieldType::FLOAT;
     floatField->name = intField->name;
@@ -236,7 +206,7 @@ bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
     if (node->type != CFGFieldType::STRUCT) {
         std::string name = node->name;
         CFGFieldType type = node->type;
-        ICFGField* field = CreateNewCFGObject(node);
+        ICFGField* field = CreateNewCFGField(node);
         if (field == nullptr)
             return false;
         structNode = new CFGObject{ name, CFGFieldType::STRUCT };
@@ -261,7 +231,7 @@ bool ValidateStruct(ICFGField* node, const std::vector<CFGFieldType>& types) {
         }
         else {
             if (receivedTypes.empty()) {
-                ICFGField* field = CreateNewCFGObject(typesQueue.front());
+                ICFGField* field = CreateNewCFGField(typesQueue.front());
                 field->automaticallyCreated = true;
                 structNode->AddItem(field);
             }
@@ -349,7 +319,7 @@ bool ValidateCFGFields(CFGObject* node, const CFGStructuredFields& fields) {
                 if (f.isObject)
                     newField = new CFGObject();
                 else
-                    newField = CreateNewCFGObject(f.types.at(0));
+                    newField = CreateNewCFGField(f.types.at(0));
                 newField->automaticallyCreated = true;
                 newField->name = f.name;
                 node->AddItem(newField);

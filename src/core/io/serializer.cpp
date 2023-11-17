@@ -45,6 +45,7 @@ void IFileSerializer::SerializeFile() {
     std::ifstream f(path_);
     if (f.fail()) {
         spdlog::error("Cannot read file '" + path_ + "'!");
+        status_ = SerializationStatus::FAILED;
         return;
     }
     status_ = ParseContents(f) ? SerializationStatus::OK : SerializationStatus::FAILED;

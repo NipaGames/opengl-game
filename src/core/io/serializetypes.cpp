@@ -59,7 +59,7 @@ bool SerializeCFGVectorAuto(Serializer::SerializationArgs& args, const CFG::ICFG
     const type_info* type = &typeid(T);
     if (CFG::CFG_TYPES.count(type) == 0)
         return false;
-    return SerializeCFGVector<S, T>(args, field, CFG::CFG_TYPES.at(type).at(0));
+    return SerializeCFGVector<S, T>(args, field, CFG::CFG_TYPES.at(type).front());
 }
 
 void RegisterDefaultSerializers() {

@@ -38,6 +38,49 @@ namespace CFG {
     #define CFG_VEC2(type) CFG_STRUCT(CFG_REQUIRE(type), CFG_REQUIRE(type))
 
     bool IsValidType(CFGFieldType, CFGFieldType, bool = true);
+    
+    template<typename T>
+    ICFGField* CreateNewCFGField(const void* ptr) {
+        CFGField<T>* field = new CFGField<T>();
+        if (ptr != nullptr)
+            field->value = *static_cast<const T*>(ptr);
+        return field;
+    }
+
+    // ONLY COPIES THE VALUE, DOES NOT RETURN ANY TYPE OR NAME!
+    template<typename T>
+    ICFGField* CreateNewCFGField(const ICFGField* copyFrom = nullptr) {
+        CFGField<T>* field = new CFGField<T>();
+        if (copyFrom != nullptr)
+            field->value = static_cast<const CFGField<T>*>(copyFrom)->value;
+        return field;
+    }
+    template <typename T>
+    ICFGField* CreateNewCFGField(CFGFieldType type, const T* copyFrom) {
+        ICFGField* field;
+        switch (type) {
+            case CFGFieldType::STRING:
+                field = CreateNewCFGField<std::string>(copyFrom);
+                break;
+            case CFGFieldType::NUMBER:
+            case CFGFieldType::FLOAT:
+                field = CreateNewCFGField<float>(copyFrom);
+                break;
+            case CFGFieldType::INTEGER:
+                field = CreateNewCFGField<int>(copyFrom);
+                break;
+            case CFGFieldType::ARRAY:
+                field = CreateNewCFGField<std::vector<ICFGField*>>(copyFrom);
+                break;
+            case CFGFieldType::STRUCT:
+                field = CreateNewCFGField<std::vector<ICFGField*>>(copyFrom);
+                break;
+        }
+        field->type = type;
+        return field;
+    }
+    ICFGField* CreateNewCFGField(CFGFieldType);
+    ICFGField* CreateNewCFGField(const ICFGField*);
 
     enum class CFGStringLiteral {
         APOSTROPHES,

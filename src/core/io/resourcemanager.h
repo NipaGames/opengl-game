@@ -164,6 +164,7 @@ namespace Resources {
     };
 
     struct VideoSettings : SerializableStruct {
+        INHERIT_COPY(VideoSettings);
         DATA_FIELD(float, gamma, 1.0f);
         DATA_FIELD(float, contrast, 1.0f);
         DATA_FIELD(float, brightness, 1.0f);
@@ -192,5 +193,6 @@ public:
 
     void RestoreDefaultVideoSettings();
     void ParseVideoSettings(CFG::CFGObject*);
+    void SaveVideoSettingsToFile();
     void LoadAll();
 };

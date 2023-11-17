@@ -19,7 +19,49 @@ void* SerializableStruct::GetMemberAddress(const std::string& name) {
 }
 
 using namespace CFG;
-void SerializableStruct::CopyFromCFGObject(const CFGObject* obj) {
+const CFGObject* SerializableStruct::CFGSerialize() {
+    CFGObject* root = new CFGObject();
+    for (const auto& [k, v] : members_) {
+        if (CFG_TYPES.count(v.type) == 0) {
+            spdlog::warn("Cannot serialize member '{}' ({})", k, v.type->name());
+            continue;
+        }
+        ICFGField* field;
+        const auto& types = CFG_TYPES.at(v.type);
+        if (types.size() == 1) {
+            field = CreateNewCFGField(types.front(), v.addr);
+            field->type = types.front();
+        }
+        else if (types.front() == CFGFieldType::STRUCT) {
+            CFGObject* structObj = new CFGObject();
+            structObj->type = types.front();
+            int index = 0;
+            for (int i = 1; i < types.size(); i++) {
+                CFGFieldType type = types.at(i);
+                if (type == CFGFieldType::STRUCT_MEMBER_REQUIRED) {
+                    continue;
+                }
+                // wahoo hardcoded serializations lessgoo
+                ICFGField* structMember;
+                if (v.type == &typeid(glm::vec2))
+                    structMember = CreateNewCFGField(type, &static_cast<const glm::vec2*>(v.addr)->operator[](index++));
+                else if (v.type == &typeid(glm::ivec2))
+                    structMember = CreateNewCFGField(type, &static_cast<const glm::ivec2*>(v.addr)->operator[](index++));
+                structMember->type = type;
+                structObj->AddItem(structMember);
+            }
+            field = structObj;
+        }
+        else {
+            continue;
+        }
+        field->name = k;
+        root->AddItem(field);
+    }
+    return root;
+}
+
+void SerializableStruct::CFGDeserialize(const CFGObject* obj) {
     for (const ICFGField* f : obj->GetItems()) {
         const SerializableStructMemberData& data = GetMemberData(f->name);
         if (data.addr == nullptr)

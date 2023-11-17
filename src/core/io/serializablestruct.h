@@ -21,6 +21,7 @@ struct SerializableStructMemberData {
     void* addr;
     const type_info* type;
 };
+
 struct SerializableStruct {
 protected:
     std::unordered_map<std::string, SerializableStructMemberData> members_;
@@ -33,10 +34,22 @@ protected:
 public:
     const SerializableStructMemberData& GetMemberData(const std::string&);
     void* GetMemberAddress(const std::string&);
-    template<typename T>
+    template <typename T>
+    T operator=(const SerializableStruct& copyFrom) {
+        T s;
+        for (const auto& [k, v] : copyFrom.GetMembers()) {
+            *reinterpret_cast<char*>(s.GetMemberAddress(k)) = *reinterpret_cast<char*>(v.addr);
+        }
+        return s;
+    }
+    template <typename T>
     T* GetMemberAddress(const std::string& name) {
         return static_cast<T*>(GetAddress(name));
     }
-    void CopyFromCFGObject(const CFG::CFGObject*);
+    const CFG::CFGObject* CFGSerialize();
+    void CFGDeserialize(const CFG::CFGObject*);
+    const std::unordered_map<std::string, SerializableStructMemberData>& GetMembers() const { return members_; }
     CFG::CFGStructuredFields CreateCFGTemplate();
 };
+
+#define INHERIT_COPY(T) T operator=(const T& s) { return SerializableStruct::operator=<T>(s); }
