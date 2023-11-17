@@ -48,14 +48,14 @@ CFGParseTreeNode<std::string>* CreateIndentationTree(std::stringstream& buffer) 
 std::string replace(const std::string& str, const std::string& from, const std::string& to) {
     std::string s = str;
     size_t pos;
-    while (pos = s.find(from) != std::string::npos) {
+    while ((pos = s.find(from)) != std::string::npos) {
         s.replace(pos, from.length(), to);
     }
     return s;
 }
 
 const std::string MATCH_NUMBER = "(-?\\d*\\.?\\d+)";
-const std::string MATCH_STRING = "([a-zA-Z_]\\w*|\"(.*?)\")";
+const std::string MATCH_STRING = "([a-zA-Z_]\\w*|\"(.*?)\"|'(.*?)')";
 
 ICFGField* ParseField(const std::string& val) {
     std::smatch groups;
@@ -82,10 +82,10 @@ ICFGField* ParseField(const std::string& val) {
     // string
     if (std::regex_search(val, groups, std::regex("^" + MATCH_STRING + "$"))) {
         CFGField<std::string>* thisNode = new CFGField<std::string>(CFGFieldType::STRING);
-        std::string strVal = groups[2].matched ? groups[2] : groups[1];
+        std::string strVal = groups[3].matched ? groups[3] : groups[2].matched ? groups[2] : groups[1];
         std::string withoutEscapes = strVal;
-        withoutEscapes = replace(withoutEscapes, "\\\"", "\"");
-        withoutEscapes = replace(withoutEscapes, "\\'", "'");
+        withoutEscapes = replace(withoutEscapes, "\\q", "\"");
+        withoutEscapes = replace(withoutEscapes, "\\a", "'");
         thisNode->value = withoutEscapes;
         return thisNode;
     }
@@ -101,7 +101,7 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
     // object or array
     if (isRoot || std::regex_search(node->value, groups, std::regex("^" + MATCH_STRING + "\\s*:$"))) {
         if (!isRoot)
-            name = groups[2].matched ? groups[2] : groups[1];
+            name = groups[3].matched ? groups[3] : groups[2].matched ? groups[2] : groups[1];
         CFGObject* thisNode = new CFGObject{ name, CFGFieldType::ARRAY };
         for (auto* child : node->children) {
             ICFGField* item = ParseIndentTreeNodes(child);
@@ -116,8 +116,8 @@ ICFGField* ParseIndentTreeNodes(CFGParseTreeNode<std::string>* node, bool isRoot
     }
     // field name
     if (std::regex_match(node->value, groups, std::regex("^" + MATCH_STRING + "\\s*:\\s*([^\\s].*)$"))) {
-        name = groups[2].matched ? groups[2] : groups[1];
-        val = groups[3];
+        name = groups[3].matched ? groups[3] : groups[2].matched ? groups[2] : groups[1];
+        val = groups[4];
     }
     // struct elements
     auto searchStart = val.cbegin();
@@ -430,7 +430,7 @@ std::string CFGDecimal(const ICFGField* field) {
     return decimal;
 }
 
-void CFGFieldValueToString(const ICFGField* field, std::stringstream& ss, const CFGFormatting& format, int indents = 0) {
+void CFGFieldValueToString(const ICFGField* field, std::stringstream& ss, const CFGFormatting& format, int& indents) {
     const CFGObject* obj;
     if (field->automaticallyCreated)
         return;
@@ -445,10 +445,10 @@ void CFGFieldValueToString(const ICFGField* field, std::stringstream& ss, const 
         case CFGFieldType::STRING:
             switch (format.stringLiteral) {
                 case CFGStringLiteral::APOSTROPHES:
-                    ss << '\'' + replace(field->GetValue<std::string>(), "'", "\\'") + '\'';
+                    ss << '\'' + replace(field->GetValue<std::string>(), "'", "\\a") + '\'';
                     break;
                 case CFGStringLiteral::QUOTES:
-                    ss << '"' + replace(field->GetValue<std::string>(), "\"", "\\\"") + '"';
+                    ss << '"' + replace(field->GetValue<std::string>(), "\"", "\\q") + '"';
                     break;
             }
             break;
@@ -479,6 +479,11 @@ void CFGFieldValueToString(const ICFGField* field, std::stringstream& ss, const 
             indents -= format.indents;
             break;
     }
+}
+
+void CFGFieldValueToString(const ICFGField* field, std::stringstream& ss, const CFGFormatting& format) {
+    int indents = 0;
+    CFGFieldValueToString(field, ss, format, indents);
 }
 
 void CFG::Dump(const CFGObject* root, std::stringstream& ss, const CFGFormatting& formatting) {
