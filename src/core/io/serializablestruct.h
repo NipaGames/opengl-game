@@ -46,10 +46,10 @@ public:
     T* GetMemberAddress(const std::string& name) {
         return static_cast<T*>(GetAddress(name));
     }
-    const CFG::CFGObject* CFGSerialize();
+    const CFG::CFGObject* CFGSerialize() const;
     void CFGDeserialize(const CFG::CFGObject*);
     const std::unordered_map<std::string, SerializableStructMemberData>& GetMembers() const { return members_; }
-    CFG::CFGStructuredFields CreateCFGTemplate();
+    CFG::CFGStructuredFields CreateCFGTemplate() const;
 };
 
 #define INHERIT_COPY(T) T operator=(const T& s) { return SerializableStruct::operator=<T>(s); }

@@ -19,7 +19,7 @@ void* SerializableStruct::GetMemberAddress(const std::string& name) {
 }
 
 using namespace CFG;
-const CFGObject* SerializableStruct::CFGSerialize() {
+const CFGObject* SerializableStruct::CFGSerialize() const {
     CFGObject* root = new CFGObject();
     for (const auto& [k, v] : members_) {
         if (CFG_TYPES.count(v.type) == 0) {
@@ -86,7 +86,7 @@ void SerializableStruct::CFGDeserialize(const CFGObject* obj) {
     }
 }
 
-CFG::CFGStructuredFields SerializableStruct::CreateCFGTemplate() {
+CFG::CFGStructuredFields SerializableStruct::CreateCFGTemplate() const {
     CFG::CFGStructuredFields fields;
     for (const auto& [k, v] : members_) {
         if (CFG_TYPES.count(v.type) == 0) {

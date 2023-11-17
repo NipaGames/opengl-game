@@ -4,7 +4,7 @@
 #include <core/graphics/postprocessing.h>
 #include "console.h"
 #include "hud.h"
-#include "controls.h"
+#include "configs.h"
 
 #define SPDLOG_PATTERN "[%T] %-10l %v"
 
@@ -13,7 +13,8 @@ public:
     Console console;
     HUD hud;
     PostProcessing postProcessing;
-    Controls controls;
+    Config::Controls controlsConfig;
+    Config::General generalConfig;
 
     bool InitWindow() override;
     void PreLoad();

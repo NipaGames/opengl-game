@@ -170,11 +170,26 @@ namespace Resources {
         DATA_FIELD(float, brightness, 1.0f);
         DATA_FIELD(float, saturation, 1.0f);
         DATA_FIELD(float, fov, 60.0f);
-        DATA_FIELD(bool, useVsync, false);
+        DATA_FIELD(bool, useVsync, true);
         DATA_FIELD(bool, fullscreen, false);
         DATA_FIELD(glm::ivec2, resolution, glm::ivec2(BASE_WIDTH, BASE_HEIGHT));
         DATA_FIELD(glm::ivec2, fullscreenResolution, glm::ivec2(-1));
     };
+
+    void SaveConfig(const std::fs::path&, const SerializableStruct&);
+    template <typename T, typename = std::enable_if_t<std::is_base_of_v<SerializableStruct, T>>>
+    void LoadConfig(const std::fs::path& path, T& config) {
+        Serializer::CFGSerializer serializer = Serializer::CFGSerializer();
+        serializer.SerializeFile(path.string());
+        if (serializer.Success() && serializer.Validate(config.CreateCFGTemplate())) {
+            config.CFGDeserialize(serializer.GetRoot());
+        }
+        else {
+            spdlog::info("Restoring defaults...");
+            config = {};
+            SaveConfig(path, config);
+        }
+    }
 };
 
 class ResourceManager {
@@ -191,8 +206,5 @@ public:
     Resources::ModelManager modelManager;
     Resources::StageManager stageManager;
 
-    void RestoreDefaultVideoSettings();
-    void ParseVideoSettings(CFG::CFGObject*);
-    void SaveVideoSettingsToFile();
     void LoadAll();
 };

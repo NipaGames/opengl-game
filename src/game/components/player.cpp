@@ -31,7 +31,7 @@ void PlayerController::Spawn() {
 }
 
 void PlayerController::Start() {
-    sensitivity = MonkeyGame::GetGame()->controls.sensitivity;
+    sensitivity = MonkeyGame::GetGame()->controlsConfig.sensitivity;
     controlSpeedModifier_ = 1.0f;
     ghostObject_ = new btPairCachingGhostObject();
     ghostObject_->setWorldTransform(parent->transform->btGetTransform());

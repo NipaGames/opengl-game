@@ -17,20 +17,12 @@ namespace Resources {
     StageManager::StageManager() : ResourceManager<Stage>(Paths::STAGES_DIR, ResourceName("stage")) { }
 };
 
-void ResourceManager::ParseVideoSettings(CFG::CFGObject* root) {
-    videoSettings.CFGDeserialize(root);
-}
-
-void ResourceManager::SaveVideoSettingsToFile() {
-    const CFG::CFGObject* root = videoSettings.CFGSerialize();
-    std::string cfgString = CFG::Dump(root);
+void Resources::SaveConfig(const std::fs::path& path, const SerializableStruct& config) {
+    const CFG::CFGObject* root = config.CFGSerialize();
+    std::string serializedString = CFG::Dump(root);
     delete root;
-    std::ofstream fstream(Paths::VIDEO_SETTINGS_PATH.string());
-    fstream.write(cfgString.c_str(), cfgString.length());
-}
-
-void ResourceManager::RestoreDefaultVideoSettings() {
-    videoSettings = Resources::VideoSettings();
+    std::ofstream fstream(path.string());
+    fstream.write(serializedString.c_str(), serializedString.length());
 }
 
 void ResourceManager::LoadAll() {
@@ -40,17 +32,8 @@ void ResourceManager::LoadAll() {
 
     if (!std::fs::is_directory(Paths::USER_SETTINGS_DIR) || !std::fs::exists(Paths::USER_SETTINGS_DIR))
         std::fs::create_directory(Paths::USER_SETTINGS_DIR);
-    Serializer::CFGSerializer videoSettingsSerializer = Serializer::CFGSerializer();
-    videoSettingsSerializer.SerializeFile(Paths::VIDEO_SETTINGS_PATH.string());
-    if (!videoSettingsSerializer.Success() || !videoSettingsSerializer.Validate(videoSettings.CreateCFGTemplate())) {
-        spdlog::error("Corrupted video settings!");
-        spdlog::info("Restoring defaults...");
-        RestoreDefaultVideoSettings();
-        SaveVideoSettingsToFile();
-    }
-    else {
-        ParseVideoSettings(videoSettingsSerializer.GetRoot());
-    }
+    
+    LoadConfig(Paths::VIDEO_SETTINGS_PATH, videoSettings);
 
     textureManager.LoadAll(imports->ListImports("textures"));
 

@@ -217,17 +217,16 @@ void MonkeyGame::PreLoad() {
 void MonkeyGame::Start() {
     LOG_FN();
 
-    Serializer::CFGSerializer controlsSerializer = Serializer::CFGSerializer();
-    controlsSerializer.SerializeFile(CONTROLS_PATH.string());
-    if (controlsSerializer.Success() && controlsSerializer.Validate(controls.CreateCFGTemplate())) {
-        controls.CFGDeserialize(controlsSerializer.GetRoot());
-    }
+    Resources::LoadConfig(Config::CONTROLS_PATH, controlsConfig);
+    Resources::LoadConfig(Config::GENERAL_PATH, generalConfig);
 
     postProcessing = PostProcessing();
-    postProcessing.kernel.offset = 1.0f / 1000.0f;
-    postProcessing.kernel.vignette.isActive = true;
-    postProcessing.kernel.vignette.size = 0.5f;
-    postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
+    if (generalConfig.blurEdges) {
+        postProcessing.kernel.offset = 1.0f / 1000.0f;
+        postProcessing.kernel.vignette.isActive = true;
+        postProcessing.kernel.vignette.size = 0.5f;
+        postProcessing.ApplyKernel(Convolution::GaussianBlur<7>());
+    }
     postProcessing.vignette.isActive = true;
 
     renderer_.ApplyPostProcessing(postProcessing);
