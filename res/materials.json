@@ -136,12 +136,12 @@
             "src": "wood.jpg"
         },
         "uniforms": {
-            "color": 0.5,
+            "color": 1.0,
             "tiling": 5
         },
         "children": {
             "DARK": {
-                "color": 0.25
+                "color": 0.75
             }
         }
     },
@@ -149,7 +149,7 @@
         "id": "MAT_SHIP_FLAG",
         "shader": "UNLIT",
         "uniforms": {
-            "color": 0.35
+            "color": 0.5
         }
     },
     {
