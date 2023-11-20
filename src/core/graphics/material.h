@@ -29,6 +29,7 @@ public:
     Material(const Shader& shader) : shader_(shader) { RestoreDefaultUniforms(); }
     Material(const Shader& shader, Texture::TextureID textureId) : shader_(shader), texture_(textureId) { RestoreDefaultUniforms(); }
     void RestoreDefaultUniforms();
+    void Use(const Shader& shader);
     void Use();
     template<typename T>
     void SetShader(T s) {

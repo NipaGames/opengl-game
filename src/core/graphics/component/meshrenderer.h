@@ -7,7 +7,7 @@
 #include <core/entity/component.h>
 
 #include <opengl.h>
-#include <memory.h>
+#include <memory>
 
 class MeshRenderer : public Component<MeshRenderer> {
 private:
@@ -24,9 +24,13 @@ public:
     DEFINE_COMPONENT_DATA_VALUE(bool, copyMeshes, false);
     // render over skybox and any other entities
     DEFINE_COMPONENT_DATA_VALUE(bool, renderLate, false);
+    DEFINE_COMPONENT_DATA_VALUE(bool, renderAfterPostProcessing, false);
 
     virtual ~MeshRenderer();
     virtual void CalculateModelMatrix();
+    virtual const Shader& GetMaterialShader(const std::shared_ptr<Material>&) const;
+    virtual void UpdateUniforms(const Shader&, const glm::mat4&, const glm::mat4&, const glm::mat4&) const;
+    virtual void UseMaterial(const std::shared_ptr<Material>&) const;
 
     virtual void Start();
     virtual bool IsOnFrustum(const ViewFrustum&) const;

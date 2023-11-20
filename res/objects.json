@@ -99,5 +99,12 @@
             "2": "MAT_TURTLE_EYE",
             "3": "MAT_TURTLE_CAP"
         }
+    },
+    {
+        "model": "OBJ_SWORD",
+        "defaultMaterial": "MAT_WOOD:SWORD",
+        "materialOverrides": {
+            "1": "MAT_METAL:SWORD"
+        }
     }
 ]

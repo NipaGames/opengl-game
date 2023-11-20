@@ -7,26 +7,30 @@ void Material::RestoreDefaultUniforms() {
     SetShaderUniform<glm::vec2>("offset", glm::vec2(0.0f));
 }
 
-void Material::Use() {
+void Material::Use(const Shader& shader) {
     if (texture_ == TEXTURE_NONE)
-        shader_.SetUniform("material.hasTexture", false);
+        shader.SetUniform("material.hasTexture", false);
     else
-        shader_.SetUniform("material.hasTexture", true);
+        shader.SetUniform("material.hasTexture", true);
     
     for (const auto& i : intUniforms_)
-        shader_.SetUniform(("material." + i.first).c_str(), i.second);
+        shader.SetUniform(("material." + i.first).c_str(), i.second);
     for (const auto& f : floatUniforms_)
-        shader_.SetUniform(("material." + f.first).c_str(), f.second);
+        shader.SetUniform(("material." + f.first).c_str(), f.second);
     for (const auto& mat2 : mat2Uniforms_)
-        shader_.SetUniform(("material." + mat2.first).c_str(), mat2.second);
+        shader.SetUniform(("material." + mat2.first).c_str(), mat2.second);
     for (const auto& mat3 : mat3Uniforms_)
-        shader_.SetUniform(("material." + mat3.first).c_str(), mat3.second);
+        shader.SetUniform(("material." + mat3.first).c_str(), mat3.second);
     for (const auto& mat4 : mat4Uniforms_)
-        shader_.SetUniform(("material." + mat4.first).c_str(), mat4.second);
+        shader.SetUniform(("material." + mat4.first).c_str(), mat4.second);
     for (const auto& vec2 : vec2Uniforms_)
-        shader_.SetUniform(("material." + vec2.first).c_str(), vec2.second);
+        shader.SetUniform(("material." + vec2.first).c_str(), vec2.second);
     for (const auto& vec3 : vec3Uniforms_)
-        shader_.SetUniform(("material." + vec3.first).c_str(), vec3.second);
+        shader.SetUniform(("material." + vec3.first).c_str(), vec3.second);
     for (const auto& vec4 : vec4Uniforms_)
-        shader_.SetUniform(("material." + vec4.first).c_str(), vec4.second);
+        shader.SetUniform(("material." + vec4.first).c_str(), vec4.second);
+}
+
+void Material::Use() {
+    Use(shader_);
 }

@@ -30,8 +30,9 @@ void MeshRenderer::Start() {
     }
     if (isStatic)
         CalculateModelMatrix();
-    if (!isAdded)
+    if (!isAdded) {
         GAME->GetRenderer().AddMeshRenderer(this);
+    }
     glm::vec3 aabbMin = glm::vec3(std::numeric_limits<float>::max());
     glm::vec3 aabbMax = glm::vec3(-std::numeric_limits<float>::max());
     for (const auto& mesh : meshes) {
@@ -51,32 +52,48 @@ void MeshRenderer::CalculateModelMatrix() {
     modelMatrix_ = glm::scale(modelMatrix_, parent->transform->size);
 }
 
+void MeshRenderer::UseMaterial(const std::shared_ptr<Material>& mat) const {
+    mat->Use();
+}
+
+void MeshRenderer::UpdateUniforms(const Shader& shader, const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix, const glm::mat4& transformMatrix) const {
+    shader.Use();
+    // default uniforms
+    // idk if it would be better to define these as default initializers for Material class
+    shader.SetUniform("material.color", glm::vec3(1.0f));
+    shader.SetUniform("material.opacity", 1.0f);
+
+    shader.SetUniform("projection", projectionMatrix);
+    shader.SetUniform("view", viewMatrix);
+    shader.SetUniform("model", modelMatrix_ * transformMatrix);
+    shader.SetUniform("viewPos", GAME->GetRenderer().GetCamera().pos);
+    shader.SetUniform("time", (float) glfwGetTime());
+}
+
+const Shader& MeshRenderer::GetMaterialShader(const std::shared_ptr<Material>& mat) const {
+    return mat->GetShader();
+}
+
 void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix, const Shader* shader, bool aabbDebug) const {
     if (disableDepthTest)
         glDisable(GL_DEPTH_TEST);
-    bool useDefaultShader = true;
-    if (shader != nullptr)
-        useDefaultShader = false;
     
+    bool useDefaultShaders = (shader == nullptr);
     for (const auto& mesh : meshes) {
         if (mesh->material == nullptr)
             continue;
-        if (useDefaultShader)
-            shader = &mesh->material->GetShader();
-        // default uniforms
-        // idk if it would be better to define these as default initializers for Material class
-        shader->Use();
-        shader->SetUniform("material.color", glm::vec3(1.0f));
-        shader->SetUniform("material.opacity", 1.0f);
+        
+        if (useDefaultShaders) {
+            const Shader& s = GetMaterialShader(mesh->material);
+            UpdateUniforms(s, projectionMatrix, viewMatrix, mesh->transformMatrix);
+            mesh->material->Use(s);
+        }
+        else {
+            UpdateUniforms(*shader, projectionMatrix, viewMatrix, mesh->transformMatrix);
+            mesh->material->Use();
+        }
 
-        mesh->material->Use();
         mesh->Bind();
-
-        shader->SetUniform("projection", projectionMatrix);
-        shader->SetUniform("view", viewMatrix);
-        shader->SetUniform("model", modelMatrix_ * mesh->transformMatrix);
-        shader->SetUniform("viewPos", GAME->GetRenderer().GetCamera().pos);
-        shader->SetUniform("time", (float) glfwGetTime());
         mesh->Render();
 
         // unbinding

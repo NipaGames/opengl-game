@@ -126,6 +126,9 @@
             },
             "POLE": {
                 "ambientColor": 0.25
+            },
+            "SWORD": {
+                "ambientColor": 0.25
             }
         }
     },
@@ -172,6 +175,9 @@
             },
             "POLE_2": {
                 "color": 0.25,
+                "ambientColor": 0.1
+            },
+            "SWORD": {
                 "ambientColor": 0.1
             }
         }

@@ -20,6 +20,7 @@
 #include "components/gate.h"
 #include "components/animationcomponent.h"
 #include "components/interactable.h"
+#include "components/huditem.h"
 #include "event.h"
 #include "eventparser.h"
 
@@ -266,23 +267,11 @@ void MonkeyGame::Start() {
     spawnInteractable->trigger = TriggerType::IN_PROXIMITY;
 
     Entity& hudItem = entityManager_.CreateEntity();
-    auto hudItemRenderer = hudItem.AddComponent<MeshRenderer>();
-    hudItemRenderer->meshes.push_back(Meshes::CreateMeshInstance(*resources.modelManager["chimp.fbx"].meshes.at(0)));
-    std::shared_ptr<Material> hudItemMaterial = std::make_shared<Material>();
-    hudItemMaterial->SetShader("HUD_ITEM_LIT");
-    hudItemMaterial->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(.25f));
-    hudItemMaterial->SetShaderUniform<int>("specularHighlight", 4);
-    hudItemMaterial->SetShaderUniform<float>("specularStrength", .1f);
-    hudItemMaterial->Use();
-    hudItemMaterial->GetShader().SetUniform("hudView", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
-    hudItemRenderer->meshes.at(0)->material = hudItemMaterial;
-    hudItemRenderer->isStatic = true;
-    hudItemRenderer->alwaysOnFrustum = true;
-    hudItemRenderer->renderLate = true;
-    hudItemRenderer->disableDepthTest = true;
+    auto hudItemRenderer = hudItem.AddComponent<HUDItemRenderer>();
+    hudItemRenderer->meshes = resources.modelManager["OBJ_SWORD"].meshes;
+    hudItemRenderer->renderAfterPostProcessing = true;
     hudItem.transform->size = glm::vec3(.1f);
     hudItem.transform->position = glm::vec3(.75f, -.5f, 0.0f);
-    hudItem.transform->rotation = glm::vec3(-M_PI / 2.0f, -M_PI / 4.0f, 0.0f);
 
     Entity& board = entityManager_.CreateEntity();
     auto boardRenderer = board.AddComponent<MeshRenderer>();

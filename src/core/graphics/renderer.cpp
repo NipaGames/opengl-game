@@ -178,9 +178,14 @@ void Renderer::Render() {
             mesh->CalculateModelMatrix();
     }
     std::vector<const MeshRenderer*> lateMeshes;
+    std::vector<const MeshRenderer*> afterPostProcessingMeshes;
     for (const MeshRenderer* mesh : entitiesOnFrustum_) {
         if (mesh->renderLate) {
             lateMeshes.push_back(mesh);
+            continue;
+        }
+        else if (mesh->renderAfterPostProcessing) {
+            afterPostProcessingMeshes.push_back(mesh);
             continue;
         }
         mesh->Render(camera_.projectionMatrix, viewMatrix, nullptr, showAabbs);
@@ -229,14 +234,21 @@ void Renderer::Render() {
     glBlitFramebuffer(0, 0, viewportSize_.x, viewportSize_.y, 0, 0, viewportSize_.x, viewportSize_.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
 
     framebufferShader_.Use();
     framebufferShape_.Bind();
     glBindTexture(GL_TEXTURE_2D, framebufferTexture_);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    for (const MeshRenderer* mesh : afterPostProcessingMeshes) {
+        mesh->Render(camera_.projectionMatrix, viewMatrix, nullptr, showAabbs);
+    }
+    
+    glDisable(GL_DEPTH_TEST);
     for (auto& c : canvases_) {
         c.second.Draw();
     }
