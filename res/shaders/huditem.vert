@@ -18,7 +18,7 @@ uniform vec3 viewPos;
 void main() {
   gl_Position = projection * hudView * model * vec4(pos, 1.0);
   fragmentPos = vec3(inverse(view) * vec4(pos, 1));
-  fragmentNormal = mat3(transpose(view * model)) * normal;
+  fragmentNormal = mat3(transpose(view) * model) * normal;
   fragmentTexCoord = texCoord;
   fragmentViewPos = -viewPos + 2.0 * fragmentPos;
 }
