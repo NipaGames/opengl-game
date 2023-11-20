@@ -249,6 +249,7 @@ void MonkeyGame::Start() {
         "graycloud_bk.jpg"
     };
     renderer_.skyboxTexture = Cubemap::LoadTextureFromFaces("cloud-skybox", faces, true);
+    
     renderer_.GetCamera().yaw = 90.0f;
     renderer_.GetCamera().pitch = 0.0f;
 
@@ -263,6 +264,24 @@ void MonkeyGame::Start() {
     spawnEvent.AddCommand("Spawn()");
     spawnInteractable->event = spawnEvent;
     spawnInteractable->trigger = TriggerType::IN_PROXIMITY;
+
+    Entity& hudItem = entityManager_.CreateEntity();
+    auto hudItemRenderer = hudItem.AddComponent<MeshRenderer>();
+    hudItemRenderer->meshes.push_back(Meshes::CreateMeshInstance(Meshes::CUBE));
+    std::shared_ptr<Material> hudItemMaterial = std::make_shared<Material>();
+    hudItemMaterial->SetShader("HUD_ITEM");
+    hudItemMaterial->SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(.25f));
+    hudItemMaterial->SetShaderUniform<int>("specularHighlight", 8);
+    hudItemMaterial->SetShaderUniform<float>("specularStrength", .5f);
+    hudItemMaterial->Use();
+    hudItemMaterial->GetShader().SetUniform("hudView", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+    hudItemRenderer->meshes.at(0)->material = hudItemMaterial;
+    hudItemRenderer->isStatic = true;
+    hudItemRenderer->alwaysOnFrustum = true;
+    hudItemRenderer->renderLate = true;
+    hudItemRenderer->disableDepthTest = true;
+    hudItem.transform->size = glm::vec3(.5f);
+    hudItem.transform->position = glm::vec3(.75f, -.5f, 0.0f);
 
     Entity& board = entityManager_.CreateEntity();
     auto boardRenderer = board.AddComponent<MeshRenderer>();

@@ -41,6 +41,7 @@ struct Material {
 in vec3 fragmentNormal;
 in vec3 fragmentPos;
 in vec2 fragmentTexCoord;
+in vec3 fragmentViewPos;
 
 #define MAX_POINT_LIGHTS 8
 uniform PointLight[MAX_POINT_LIGHTS] pointLights;
@@ -49,12 +50,11 @@ uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
 #define MAX_SPOT_LIGHTS 8
 uniform Spotlight[MAX_SPOT_LIGHTS] spotlights;
 uniform Material material;
-uniform vec3 viewPos;
 uniform sampler2D textureSampler;
 
 vec3 dirLight(vec3 lightDir, vec3 lightColor, vec3 normal) {
   vec3 diffuse = max(dot(normal, lightDir), 0.0) * lightColor;
-  vec3 viewDir = normalize(viewPos - fragmentPos);
+  vec3 viewDir = normalize(fragmentViewPos - fragmentPos);
   vec3 reflectDir = reflect(-lightDir, normal);
   float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.specularHighlight);
   vec3 specular = material.specularStrength * spec * lightColor;

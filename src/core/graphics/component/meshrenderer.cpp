@@ -52,6 +52,8 @@ void MeshRenderer::CalculateModelMatrix() {
 }
 
 void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix, const Shader* shader, bool aabbDebug) const {
+    if (disableDepthTest)
+        glDisable(GL_DEPTH_TEST);
     bool useDefaultShader = true;
     if (shader != nullptr)
         useDefaultShader = false;
@@ -126,6 +128,8 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     glBindVertexArray(0);
+    if (disableDepthTest)
+        glEnable(GL_DEPTH_TEST);
 }
 
 bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
