@@ -71,18 +71,6 @@
         },
         {
             "Transform": {
-                "position": [ 0, 145.5, 0 ]
-            },
-            "MeshRenderer": {
-                "object": "OBJ_SWORD",
-                "isStatic": true
-            },
-            "Physics::RigidBody": {
-                "mass": 0
-            }
-        },
-        {
-            "Transform": {
                 "position": [ -5, 155.5, 5 ],
                 "size": [ 2, 1, 2 ]
             },

@@ -61,7 +61,7 @@ void PlayerController::Update() {
     btVector3 rayTo(rayFrom.getX(), rayFrom.getY() - 1.5f, rayFrom.getZ());
     btCollisionWorld::ClosestRayResultCallback res(rayFrom, rayTo);
     Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
-    bool isOnGround = res.hasHit() || characterController_->onGround();
+    isOnGround_ = res.hasHit() || characterController_->onGround();
 
     if (gameOver_) {
         controlSpeedModifier_ -= (float) GAME->GetDeltaTime() / speedModifierTime_;
@@ -69,6 +69,7 @@ void PlayerController::Update() {
     }
 
     glm::vec3 velocity(0.0f);
+    isMoving_ = false;
     if (Input::IS_MOUSE_LOCKED) {
         if (Input::IsKeyDown(GLFW_KEY_W))
             velocity += front;
@@ -78,6 +79,10 @@ void PlayerController::Update() {
             velocity -= glm::normalize(glm::cross(front, cam.up));
         if (Input::IsKeyDown(GLFW_KEY_D))
             velocity += glm::normalize(glm::cross(front, cam.up));
+        
+        if (velocity != glm::vec3(0.0f)) {
+            isMoving_ = true;
+        }
 
         if (Input::IsKeyPressedDown(GLFW_KEY_LEFT_SHIFT))
             running_ = !running_;
@@ -97,7 +102,7 @@ void PlayerController::Update() {
                     ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
                 }
             }
-            if (isOnGround) {
+            if (isOnGround_) {
                 characterController_->setStepHeight(stepHeight_);
                 characterController_->setMaxPenetrationDepth(stepHeight_);
             }
@@ -105,7 +110,7 @@ void PlayerController::Update() {
                 characterController_->setStepHeight(0.0f);
                 characterController_->setMaxPenetrationDepth(0.05f);
             }
-            if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && isOnGround && !isFlying_) {
+            if (Input::IsKeyPressedDown(GLFW_KEY_SPACE) && isOnGround_ && !isFlying_) {
                 characterController_->jump();
             }
         }

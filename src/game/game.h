@@ -20,6 +20,7 @@ public:
     void PreLoad();
     void Start();
     void Update();
+    Entity& GetPlayer();
     
     static MonkeyGame* GetGame();
 };

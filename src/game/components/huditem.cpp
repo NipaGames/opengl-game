@@ -1,5 +1,8 @@
 #include "huditem.h"
 
+#include <core/entity/entity.h>
+#include <game/game.h>
+
 void HUDItemRenderer::SetupShaders() {
     SHADER_LIT_ = Shader("HUD_ITEM_LIT");
     SHADER_UNLIT_ = Shader("HUD_ITEM_UNLIT");
@@ -30,4 +33,20 @@ const Shader& HUDItemRenderer::GetMaterialShader(const std::shared_ptr<Material>
         return SHADER_UNLIT_;
     }
     return shader;
+}
+
+void ItemInHand::Start() {
+    player_ = MonkeyGame::GetGame()->GetPlayer().GetComponent<PlayerController>();
+    itemStartPos_ = parent->transform->position.y;
+}
+
+void ItemInHand::Update() {
+    bool bob = player_->IsMoving() && player_->IsOnGround();
+    if (bob || std::abs(parent->transform->position.y - itemStartPos_) > .0001f) {
+        bobbingPos_ += (float) GAME->GetDeltaTime();
+        parent->transform->position.y = itemStartPos_ + (std::cosf((float) M_PI * bobbingSpeed_ * bobbingPos_) / 2.0f - .5f) * bobbingAmount_;
+    }
+    else {
+        bobbingPos_ = 0.0f;
+    }
 }

@@ -24,6 +24,8 @@ private:
     float controlSpeedModifier_ = 1.0f;
     float speedModifierTime_ = .5f;
     float baseSensitivity_ = .2f;
+    bool isOnGround_ = false;
+    bool isMoving_ = false;
 public:
     float sensitivity;
 
@@ -32,6 +34,8 @@ public:
     void Start();
     void Update();
     void ActivateGameOverState();
+    bool IsMoving() { return isMoving_; }
+    bool IsOnGround() { return isOnGround_; }
 
     SDEF(float, speed) = SVAL(10.0f);
     SDEF(glm::vec3, spawnPosition) = SVAL(glm::vec3(0.0f));

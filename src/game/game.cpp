@@ -80,16 +80,16 @@ void ShowAreaMessage() {
 }
 
 void SpawnPlayer() {
-    GAME->GetEntityManager().GetEntity(playerId).GetComponent<PlayerController>()->Spawn();
+    MonkeyGame::GetGame()->GetPlayer().GetComponent<PlayerController>()->Spawn();
     ShowAreaMessage();
 }
 
 void KillPlayer() {
-    GAME->GetEntityManager().GetEntity(playerId).GetComponent<Player>()->SetHealth(0);
+    MonkeyGame::GetGame()->GetPlayer().GetComponent<Player>()->SetHealth(0);
 }
 
 void AddPlayerStatus(std::string type, float t) {
-    Player* player = GAME->GetEntityManager().GetEntity(playerId).GetComponent<Player>();
+    Player* player = MonkeyGame::GetGame()->GetPlayer().GetComponent<Player>();
     auto enumCast = magic_enum::enum_cast<StatusEffectType>(type);
     if (!enumCast.has_value()) {
         spdlog::warn("Invalid status effect '{}'!", type);
@@ -272,6 +272,7 @@ void MonkeyGame::Start() {
     hudItemRenderer->renderAfterPostProcessing = true;
     hudItem.transform->size = glm::vec3(.1f);
     hudItem.transform->position = glm::vec3(.75f, -.5f, 0.0f);
+    hudItem.AddComponent<ItemInHand>();
 
     Entity& board = entityManager_.CreateEntity();
     auto boardRenderer = board.AddComponent<MeshRenderer>();
@@ -355,6 +356,10 @@ void MonkeyGame::Start() {
 
     GAME->resources.stageManager.LoadStage("teststage");
     SpawnPlayer();
+}
+
+Entity& MonkeyGame::GetPlayer() {
+    return entityManager_.GetEntity(playerId);
 }
 
 void MonkeyGame::Update() {
