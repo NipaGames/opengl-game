@@ -4,11 +4,11 @@
 #include "player.h"
 
 class HUDItemRenderer : public MeshRenderer {
-private:
-    inline static Shader SHADER_LIT_;
-    inline static Shader SHADER_UNLIT_;
-    inline static bool SHADERS_DEFINED_ = false;
 public:
+    inline static Shader SHADER_LIT;
+    inline static Shader SHADER_UNLIT;
+    inline static bool SHADERS_DEFINED = false;
+
     static void SetupShaders();
     void Start() override;
     const Shader& GetMaterialShader(const std::shared_ptr<Material>&) const override;
@@ -30,8 +30,12 @@ private:
     float horizontalMovementSpeed_ = .001f;
     float horizontalMovementTarget_ = 0.0f;
 
+    bool hasGameOverStateActivated_ = false;
+
     void OnMouseMove();
 public:
+    void OnGameOver();
     void Start() override;
     void Update() override;
+    void FixedUpdate() override;
 };

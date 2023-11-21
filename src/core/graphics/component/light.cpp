@@ -5,6 +5,33 @@
 using namespace Lights;
 
 namespace Lights {
+    void ReserveIndex(int index, LightType type) {
+        RESERVED_LIGHTS |= (int) type << index * 2;
+    }
+    
+    bool IsReserved(int i, LightType t) {
+        return (Lights::RESERVED_LIGHTS >> i * 2) == (int) t;
+    }
+
+    void ResetIndices() {
+        POINT_LIGHTS_INDEX = 0;
+        DIRECTIONAL_LIGHTS_INDEX = 0;
+        SPOTLIGHTS_INDEX = 0;
+    }
+
+    int LIGHT_NONE_INDEX = -1;
+    int& GetIndex(LightType type) {
+        switch (type) {
+            case LightType::POINT:
+                return POINT_LIGHTS_INDEX;
+            case LightType::DIRECTIONAL:
+                return DIRECTIONAL_LIGHTS_INDEX;
+            case LightType::SPOTLIGHT:
+                return SPOTLIGHTS_INDEX;
+        }
+        return LIGHT_NONE_INDEX;
+    }
+
     Light::~Light() {
         if (isAdded)
             GAME->GetRenderer().RemoveLight(this);

@@ -5,22 +5,27 @@
 #include <core/entity/entity.h>
 
 namespace Lights {
+    enum class LightType {
+        NONE,
+        POINT,
+        DIRECTIONAL,
+        SPOTLIGHT
+    };
+    
     inline int POINT_LIGHTS_INDEX = 0;
     inline int DIRECTIONAL_LIGHTS_INDEX = 0;
     inline int SPOTLIGHTS_INDEX = 0;
 
-    inline void ResetIndices() {
-        POINT_LIGHTS_INDEX = 0;
-        DIRECTIONAL_LIGHTS_INDEX = 0;
-        SPOTLIGHTS_INDEX = 0;
-    }
+    // this is fucking evil right here
+    // we have max 8 lights, so divide this into 8 total 2 bit thingies
+    // one 2 bit thingy contains the light enum (they take 2 bits,
+    // will have to change if I add more light types)
+    inline uint16_t RESERVED_LIGHTS = 0x0;
 
-    enum class LightType {
-        POINT,
-        DIRECTIONAL,
-        SPOTLIGHT,
-        NONE
-    };
+    void ReserveIndex(int, LightType);
+    bool IsReserved(int, LightType);
+    int& GetIndex(LightType);
+    void ResetIndices();
 
     class Light : public Component<Light> {
     private:

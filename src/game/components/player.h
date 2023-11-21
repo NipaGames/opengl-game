@@ -39,6 +39,7 @@ public:
     bool IsMoving() { return isMoving_; }
     bool IsOnGround() { return isOnGround_; }
     bool IsInInputMode() { return isInInputMode_; }
+    bool IsGameOver() { return gameOver_; }
 
     SDEF(float, speed) = SVAL(10.0f);
     SDEF(glm::vec3, spawnPosition) = SVAL(glm::vec3(0.0f));

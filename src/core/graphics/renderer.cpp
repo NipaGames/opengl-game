@@ -114,22 +114,28 @@ void Renderer::UpdateLighting() {
         glUseProgram(shader);
         Lights::ResetIndices();
         for (auto l : lights_) {
+            while (Lights::IsReserved(Lights::GetIndex(l->GetType()), l->GetType())) {
+                Lights::GetIndex(l->GetType())++;
+            }
             l->UseAsNext();
             l->ApplyLight(shader);
         }
         if (Lights::POINT_LIGHTS_INDEX < maxRenderedPointLights_) {
             for (int i = Lights::POINT_LIGHTS_INDEX; i < maxRenderedPointLights_; i++) {
-                glUniform1i(glGetUniformLocation(shader, std::string("pointLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
+                if (!Lights::IsReserved(Lights::POINT_LIGHTS_INDEX, Lights::LightType::POINT))
+                    glUniform1i(glGetUniformLocation(shader, std::string("pointLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
             }
         }
         if (Lights::DIRECTIONAL_LIGHTS_INDEX < maxRenderedDirLights_) {
             for (int i = Lights::DIRECTIONAL_LIGHTS_INDEX; i < maxRenderedDirLights_; i++) {
-                glUniform1i(glGetUniformLocation(shader, std::string("directionalLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
+                if (!Lights::IsReserved(Lights::DIRECTIONAL_LIGHTS_INDEX, Lights::LightType::DIRECTIONAL))
+                    glUniform1i(glGetUniformLocation(shader, std::string("directionalLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
             }
         }
         if (Lights::SPOTLIGHTS_INDEX < maxRenderedSpotlights_) {
             for (int i = Lights::SPOTLIGHTS_INDEX; i < maxRenderedSpotlights_; i++) {
-                glUniform1i(glGetUniformLocation(shader, std::string("spotlights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
+                if (!Lights::IsReserved(Lights::SPOTLIGHTS_INDEX, Lights::LightType::SPOTLIGHT))
+                    glUniform1i(glGetUniformLocation(shader, std::string("spotlights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
             }
         }
     }
@@ -158,10 +164,9 @@ void Renderer::SortMeshesByDistance() {
 
 void Renderer::UpdateFrustum() {
     entitiesOnFrustum_.clear();
-    std::copy_if(meshes_.begin(), meshes_.end(), std::back_inserter(entitiesOnFrustum_),
-                [&] (auto mesh) {
-                    return mesh->IsOnFrustum(camera_.frustum);
-                });
+    std::copy_if(meshes_.begin(), meshes_.end(), std::back_inserter(entitiesOnFrustum_), [&] (auto mesh) {
+        return mesh->IsOnFrustum(camera_.frustum);
+    });
 }
 
 void Renderer::Render() {
