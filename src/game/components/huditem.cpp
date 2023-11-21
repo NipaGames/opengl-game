@@ -47,6 +47,13 @@ void ItemInHand::OnMouseMove() {
     }
 }
 
+void ItemInHand::FixPosition() {
+    int w, h;
+    glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &w, &h);
+    fixedItemStartPos_ = itemStartPos_;
+    fixedItemStartPos_.x *= (9.0f * w) / (16.0f * h);
+}
+
 const int HUD_LIGHT_INDEX = 0;
 const std::string HUD_LIGHT_NAME = "directionalLights[" + std::to_string(HUD_LIGHT_INDEX) + "]";
 
@@ -71,6 +78,10 @@ void ItemInHand::Start() {
     GAME->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
+    GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
+        this->FixPosition();
+    });
+    FixPosition();
 }
 
 void ItemInHand::FixedUpdate() {
@@ -92,7 +103,7 @@ void ItemInHand::Update() {
         OnGameOver();
         hasGameOverStateActivated_ = true;
     }
-    if (bob || std::abs(parent->transform->position.y - itemStartPos_.y) > .0001f) {
+    if (bob || std::abs(parent->transform->position.y - fixedItemStartPos_.y) > .0001f) {
         if (bob) {
             bobbingPos_ += (float) GAME->GetDeltaTime();
         }
@@ -106,7 +117,7 @@ void ItemInHand::Update() {
                 bobbingPos_ -= (float) GAME->GetDeltaTime();
             }
         }
-        parent->transform->position.y = itemStartPos_.y + (std::cosf((float) M_PI * bobbingSpeed_ * bobbingPos_) / 2.0f - .5f) * bobbingAmount_;
+        parent->transform->position.y = fixedItemStartPos_.y + (std::cosf((float) M_PI * bobbingSpeed_ * bobbingPos_) / 2.0f - .5f) * bobbingAmount_;
     }
     else {
         bobbingPos_ = 0.0f;
@@ -117,7 +128,7 @@ void ItemInHand::Update() {
         horizontalSpeed = 2.0f;
         horizontalMovementTarget_ = 0.0f;
     }
-    float targetPos = itemStartPos_.x + horizontalMovementTarget_;
+    float targetPos = fixedItemStartPos_.x + horizontalMovementTarget_;
     if (std::abs(parent->transform->position.x - targetPos) > .0001f) {
         parent->transform->position.x -= (parent->transform->position.x - targetPos) * (float) GAME->GetDeltaTime() * horizontalSpeed;
     }

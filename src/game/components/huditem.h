@@ -18,7 +18,7 @@ REGISTER_COMPONENT(HUDItemRenderer);
 class ItemInHand : public Component<ItemInHand> {
 private:
     PlayerController* player_;
-    glm::vec2 itemStartPos_;
+    glm::vec2 itemStartPos_, fixedItemStartPos_;
 
     float bobbingPos_;
     float bobbingAmount_ = .015f;
@@ -33,6 +33,7 @@ private:
     bool hasGameOverStateActivated_ = false;
 
     void OnMouseMove();
+    void FixPosition();
 public:
     void OnGameOver();
     void Start() override;
