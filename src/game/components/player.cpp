@@ -15,9 +15,10 @@ PlayerController::~PlayerController() {
 
 void PlayerController::OnMouseMove() {
     auto& cam = GAME->GetRenderer().GetCamera();
-
-    cam.yaw   += static_cast<float>(Input::MOUSE_MOVE_X) * sensitivity * baseSensitivity_ * controlSpeedModifier_;
-    cam.pitch += static_cast<float>(Input::MOUSE_MOVE_Y) * sensitivity * baseSensitivity_ * controlSpeedModifier_;
+    float f = sensitivity * baseSensitivity_ * controlSpeedModifier_;
+    mouseMove = glm::vec2(Input::MOUSE_MOVE_X, Input::MOUSE_MOVE_Y) * f;
+    cam.yaw   += mouseMove.x;
+    cam.pitch += mouseMove.y;
 
     if(cam.pitch > 89.0f)
         cam.pitch = 89.0f;
@@ -70,7 +71,8 @@ void PlayerController::Update() {
 
     glm::vec3 velocity(0.0f);
     isMoving_ = false;
-    if (Input::IS_MOUSE_LOCKED) {
+    isInInputMode_ = Input::IS_MOUSE_LOCKED;
+    if (isInInputMode_) {
         if (Input::IsKeyDown(GLFW_KEY_W))
             velocity += front;
         if (Input::IsKeyDown(GLFW_KEY_S))

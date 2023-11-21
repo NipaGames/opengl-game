@@ -35,18 +35,52 @@ const Shader& HUDItemRenderer::GetMaterialShader(const std::shared_ptr<Material>
     return shader;
 }
 
+void ItemInHand::OnMouseMove() {
+    if (player_->IsInInputMode()) {
+        horizontalMovementTarget_ -= player_->mouseMove.x * horizontalMovementSpeed_;
+        prevMouseMove_ = (float) glfwGetTime();
+        horizontalMovementTarget_ = std::min(horizontalMovementTarget_, horizontalMovement_);
+        horizontalMovementTarget_ = std::max(horizontalMovementTarget_, -horizontalMovement_);
+    }
+}
+
 void ItemInHand::Start() {
     player_ = MonkeyGame::GetGame()->GetPlayer().GetComponent<PlayerController>();
-    itemStartPos_ = parent->transform->position.y;
+    itemStartPos_ = glm::vec2(parent->transform->position.x, parent->transform->position.y);
+    GAME->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
+        this->OnMouseMove();
+    });
 }
 
 void ItemInHand::Update() {
     bool bob = player_->IsMoving() && player_->IsOnGround();
-    if (bob || std::abs(parent->transform->position.y - itemStartPos_) > .0001f) {
-        bobbingPos_ += (float) GAME->GetDeltaTime();
-        parent->transform->position.y = itemStartPos_ + (std::cosf((float) M_PI * bobbingSpeed_ * bobbingPos_) / 2.0f - .5f) * bobbingAmount_;
+    if (bob || std::abs(parent->transform->position.y - itemStartPos_.y) > .0001f) {
+        if (bob) {
+            bobbingPos_ += (float) GAME->GetDeltaTime();
+        }
+        else {
+            // check if the cosine slope is increasing with the derivative
+            bool hasCompletedHalf = -std::sinf((float) M_PI * bobbingSpeed_ * bobbingPos_) > 0.0f;
+            if (hasCompletedHalf) {
+                bobbingPos_ += (float) GAME->GetDeltaTime();
+            }
+            else {
+                bobbingPos_ -= (float) GAME->GetDeltaTime();
+            }
+        }
+        parent->transform->position.y = itemStartPos_.y + (std::cosf((float) M_PI * bobbingSpeed_ * bobbingPos_) / 2.0f - .5f) * bobbingAmount_;
     }
     else {
         bobbingPos_ = 0.0f;
+    }
+
+    float horizontalSpeed = 1.0f;
+    if ((float) glfwGetTime() - prevMouseMove_ > .1f) {
+        horizontalSpeed = 2.0f;
+        horizontalMovementTarget_ = 0.0f;
+    }
+    float targetPos = itemStartPos_.x + horizontalMovementTarget_;
+    if (std::abs(parent->transform->position.x - targetPos) > .0001f) {
+        parent->transform->position.x -= (parent->transform->position.x - targetPos) * (float) GAME->GetDeltaTime() * horizontalSpeed;
     }
 }

@@ -26,8 +26,10 @@ private:
     float baseSensitivity_ = .2f;
     bool isOnGround_ = false;
     bool isMoving_ = false;
+    bool isInInputMode_ = false;
 public:
     float sensitivity;
+    glm::vec2 mouseMove = glm::vec2(0.0f);
 
     ~PlayerController();
     void Spawn();
@@ -36,6 +38,7 @@ public:
     void ActivateGameOverState();
     bool IsMoving() { return isMoving_; }
     bool IsOnGround() { return isOnGround_; }
+    bool IsInInputMode() { return isInInputMode_; }
 
     SDEF(float, speed) = SVAL(10.0f);
     SDEF(glm::vec3, spawnPosition) = SVAL(glm::vec3(0.0f));

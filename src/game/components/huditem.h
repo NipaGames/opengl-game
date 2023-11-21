@@ -18,11 +18,19 @@ REGISTER_COMPONENT(HUDItemRenderer);
 class ItemInHand : public Component<ItemInHand> {
 private:
     PlayerController* player_;
-    float itemStartPos_;
+    glm::vec2 itemStartPos_;
+
     float bobbingPos_;
     float bobbingAmount_ = .015f;
     float bobbingSpeed_ = 3.0f;
     float bobbingReturnSpeed_ = 15.0f;
+
+    float prevMouseMove_ = 0.0f;
+    float horizontalMovement_ = .15f;
+    float horizontalMovementSpeed_ = .001f;
+    float horizontalMovementTarget_ = 0.0f;
+
+    void OnMouseMove();
 public:
     void Start() override;
     void Update() override;
