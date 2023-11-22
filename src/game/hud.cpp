@@ -93,7 +93,7 @@ void HUD::CreateHUDElements() {
     gameOverInstructionsText->SetText("[E] to retry");
     gameOverInstructionsText->AddToCanvas();
 
-    GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
+    GAME->GetGameWindow().eventHandler.Subscribe(WindowEvent::WINDOW_RESIZE, [this]() { 
         this->UpdateElementPositions();
     });
 }

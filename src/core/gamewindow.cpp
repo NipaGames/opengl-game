@@ -54,6 +54,47 @@ namespace Input {
         keysPressed_ = keysPressedBeforePoll_;
         keysPressedBeforePoll_.clear();
     }
+
+
+
+    void MouseButtonDown(int mouseButton){
+        std::lock_guard<std::mutex> lock(mouseButtonsMutex_);
+        mouseButtons_[mouseButton] = true;
+        mouseButtonsPressedBeforePoll_[mouseButton] = true;
+    }
+
+    void MouseButtonUp(int mouseButton){
+        std::lock_guard<std::mutex> lock(mouseButtonsMutex_);
+        mouseButtons_[mouseButton] = false;
+        mouseButtonsPressed_[mouseButton] = false;
+    }
+
+    bool IsMouseButtonDown(int mouseButton){
+        std::lock_guard<std::mutex> lock(mouseButtonsMutex_);
+        if (!mouseButtons_.count(mouseButton))
+            return false;
+        return mouseButtons_[mouseButton];
+    }
+
+    bool IsMouseButtonPressedDown(int mouseButton){
+        std::lock_guard<std::mutex> lock(mouseButtonsMutex_);
+        if (!mouseButtonsPressed_.count(mouseButton))
+            return false;
+        bool val = mouseButtonsPressed_[mouseButton];
+        return val;
+    }
+
+    void ClearMouseButtonsPressedDown() {
+        std::lock_guard<std::mutex> lock(mouseButtonsMutex_);
+        mouseButtonsPressed_.clear();
+    }
+
+    void PollMouseButtonsPressedDown() {
+        std::lock_guard<std::mutex> lock(mouseButtonsMutex_);
+        mouseButtonsPressed_.clear();
+        mouseButtonsPressed_ = mouseButtonsPressedBeforePoll_;
+        mouseButtonsPressedBeforePoll_.clear();
+    }
 }
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -72,6 +113,15 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
     else if (action == GLFW_RELEASE) {
         Input::KeyUp(key);
+    }
+}
+
+void MouseButtonCallback(GLFWwindow* window, int mouseButton, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        Input::MouseButtonDown(mouseButton);
+    }
+    else if (action == GLFW_RELEASE) {
+        Input::MouseButtonUp(mouseButton);
     }
 }
 
@@ -153,7 +203,7 @@ void GameWindow::Update() {
 
             prevCursorPos_ = { xPos, yPos };
 
-            DispatchEvent(EventType::MOUSE_MOVE);
+            eventHandler.Dispatch(WindowEvent::MOUSE_MOVE);
         }
     }
 
@@ -167,8 +217,10 @@ void GameWindow::Update() {
         Input::IS_MOUSE_LOCKED = !Input::IS_MOUSE_LOCKED;
         Input::CURSOR_MODE_CHANGE_PENDING = true;
     }
-
+    
     if (glfwGetMouseButton(window_, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !Input::IS_MOUSE_LOCKED && lockMouse_) {
+        Input::PollMouseButtonsPressedDown();
+        Input::ClearMouseButtonsPressedDown();
         Input::IS_MOUSE_LOCKED = true;
         Input::CURSOR_MODE_CHANGE_PENDING = true;
     }
@@ -180,27 +232,13 @@ void GameWindow::ResetCursorPos() {
     glfwSetCursorPos(window_, width / 2, height / 2);
 }
 
-void GameWindow::DispatchEvent(EventType eventType) {
-    for (auto event : events_) {
-        if (event.first == eventType)
-            event.second();
-    }
-}
-
-void GameWindow::OnEvent(EventType eventType, std::function<void()> event) {
-    events_.insert({ eventType, event });
-}
-
-void GameWindow::ClearEvents() {
-    events_.clear();
-}
-
 void GameWindow::SetupInputSystem() {
     Input::IS_MOUSE_LOCKED = true;
     Input::MOUSE_MOVE_PENDING = true;
 
     glfwSetFramebufferSizeCallback(window_, FramebufferSizeCallback);
     glfwSetKeyCallback(window_, KeyCallback);
+    glfwSetMouseButtonCallback(window_, MouseButtonCallback);
     glfwSetCursorPosCallback(window_, MouseCallback);
 }
 

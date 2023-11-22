@@ -18,7 +18,7 @@ REGISTER_COMPONENT(HUDItemRenderer);
 class ItemInHand : public Component<ItemInHand> {
 private:
     PlayerController* player_;
-    glm::vec2 itemStartPos_, fixedItemStartPos_;
+    glm::vec3 itemStartPos_, fixedItemStartPos_;
 
     float bobbingPos_;
     float bobbingAmount_ = .015f;
@@ -30,12 +30,20 @@ private:
     float horizontalMovementSpeed_ = .001f;
     float horizontalMovementTarget_ = 0.0f;
 
-    bool hasGameOverStateActivated_ = false;
+    float attackTime_ = 0.0f;
+    float attackAnimationLength_ = .25f;
+    float attackAnimationReturnLength_ = .75f;
+    glm::vec3 attackStartPos_;
+    glm::vec3 attackMove_ = glm::vec3(-.05f, -.025f, -.15f);
+    glm::vec3 attackRotation_ = glm::vec3(-15.0f, 5.0f, 2.5f);
+    bool isAttacking_ = false;
+    bool isReturningFromAttack_ = false;
 
     void OnMouseMove();
     void FixPosition();
+    void AttackAnimation();
+    void BringToBackground();
 public:
-    void OnGameOver();
     void Start() override;
     void Update() override;
     void FixedUpdate() override;

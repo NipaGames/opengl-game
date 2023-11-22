@@ -58,7 +58,7 @@ void Game::GameThreadStart() {
 void Game::GameThreadCleanUp() {
     CleanUp();
     Physics::Destroy();
-    window_.ClearEvents();
+    window_.eventHandler.ClearEvents();
     renderer_.CleanUpEntities();
     resources.stageManager.UnloadAllStages();
     entityManager_.ClearEntities();
@@ -84,7 +84,7 @@ void Game::GameThreadUpdate() {
     if (Input::SET_FULLSCREEN_PENDING) {
         const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         GAME->GetRenderer().UpdateCameraProjection(mode->width, mode->height);
-        window_.DispatchEvent(EventType::WINDOW_RESIZE);
+        window_.eventHandler.Dispatch(WindowEvent::WINDOW_RESIZE);
         Input::SET_FULLSCREEN_PENDING = false;
         Input::WINDOW_SIZE_CHANGE_PENDING = false;
     }
@@ -93,7 +93,7 @@ void Game::GameThreadUpdate() {
         glfwGetFramebufferSize(window_.GetWindow(), &width, &height);
         if (width > 0 && height > 0)
             renderer_.UpdateCameraProjection(width, height);
-        window_.DispatchEvent(EventType::WINDOW_RESIZE);
+        window_.eventHandler.Dispatch(WindowEvent::WINDOW_RESIZE);
         Input::WINDOW_SIZE_CHANGE_PENDING = false;
     }
 
@@ -101,6 +101,7 @@ void Game::GameThreadUpdate() {
     isFixedUpdate_ = currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_;
     if (isFixedUpdate_) {
         Input::PollKeysPressedDown();
+        Input::PollMouseButtonsPressedDown();
         prevFixedUpdate_ = currentTime;
         FixedUpdate();
         for (const auto& entity : entityManager_.entities_) {
@@ -125,6 +126,7 @@ void Game::GameThreadUpdate() {
     
     renderer_.Render();
     Input::ClearKeysPressedDown();
+    Input::ClearMouseButtonsPressedDown();
 }
 
 void Game::GameThread() {

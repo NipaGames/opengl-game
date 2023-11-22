@@ -82,12 +82,16 @@ namespace Convolution {
     }
     template <size_t S>
     constexpr std::array<float, S * S> BoxBlur() {
-        return Fill<S * S>(1.0f / S);
+        return Fill<S>(1.0f / (S * S));
     }
+    // tried decompiling and found out that cmath functions are not actually constexpr for whatever reason
+    // so, this isn't actually constexpr
+    // anyway, the decompiling was pretty fun :)
+    // obviously had no idea what i was doing but managed to make the player move 5 times as fast
     template <size_t S>
     constexpr std::array<float, S * S> GaussianBlur(int sigma = S) {
         std::array<float, S * S> kernel;
-        float s = 2.0f * std::pow((float) sigma, 2.0f);
+        float s = 2.0f * (float) (sigma * sigma);
         for (int y = 0; y < S; y++) {
             for (int x = 0; x < S; x++) {
                 float distX = std::abs((float) x - (S - 1));

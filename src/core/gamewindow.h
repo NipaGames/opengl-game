@@ -11,12 +11,16 @@
 #include <unordered_map>
 #include <vector>
 
-#include "subscriptionevent.h"
+#include "eventhandler.h"
 #include "graphics/renderer.h"
 
 inline constexpr int BASE_WIDTH = 1280;
 inline constexpr int BASE_HEIGHT = 720;
 
+enum class WindowEvent {
+    MOUSE_MOVE,
+    WINDOW_RESIZE
+};
 class GameWindow {
 private:
     GLFWwindow* window_ = nullptr;
@@ -28,8 +32,8 @@ private:
     glm::ivec2 prevWndSize_;
     glm::ivec2 baseWndSize_;
     bool useVsync_ = true;
-    std::multimap<EventType, std::function<void()>> events_;
 public:
+    EventHandler<WindowEvent> eventHandler;
     GameWindow() = default;
     GameWindow(const std::string&, int, int, bool = true);
     
@@ -38,9 +42,6 @@ public:
     void SetupInputSystem();
     void UpdateInputSystem();
     void ResetCursorPos();
-    void DispatchEvent(EventType);
-    void OnEvent(EventType, std::function<void()>);
-    void ClearEvents();
     bool IsUsingVsync() { return useVsync_; }
     void UseVsync(bool);
     void LockMouse(bool);

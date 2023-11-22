@@ -2,7 +2,6 @@
 
 #include <game/game.h>
 
-#include <core/subscriptionevent.h>
 #include <core/game.h>
 #include <core/input.h>
 #include <core/physics/utils.h>
@@ -46,8 +45,12 @@ void PlayerController::Start() {
     characterController_->setGravity(btVector3(0.0f, gravity_, 0.0f));
     characterController_->setJumpSpeed(btScalar(jumpSpeed_));
     Physics::dynamicsWorld->addCollisionObject(ghostObject_, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
-    GAME->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
+    GAME->GetGameWindow().eventHandler.Subscribe(WindowEvent::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
+    });
+    const std::vector<std::string> msgs = { "pow", "ouch", "crunch", "crick", "crack" };
+    eventHandler.Subscribe(PlayerEvent::ATTACK_ANIMATION_COMPLETE, [msgs]() {
+        std::cout << msgs[rand() % msgs.size()] << std::endl;
     });
     Spawn();
 }
@@ -73,6 +76,10 @@ void PlayerController::Update() {
     isMoving_ = false;
     isInInputMode_ = Input::IS_MOUSE_LOCKED;
     if (isInInputMode_) {
+        if (Input::IsMouseButtonPressedDown(GLFW_MOUSE_BUTTON_1) && glfwGetTime() - attackStart_ > attackCooldown_) {
+            eventHandler.Dispatch(PlayerEvent::ATTACK);
+            attackStart_ = (float) glfwGetTime();
+        }
         if (Input::IsKeyDown(GLFW_KEY_W))
             velocity += front;
         if (Input::IsKeyDown(GLFW_KEY_S))
@@ -140,6 +147,7 @@ void PlayerController::Update() {
 }
 
 void PlayerController::ActivateGameOverState() {
+    eventHandler.Dispatch(PlayerEvent::GAME_OVER);
     gameOver_ = true;
     controlSpeedModifier_ = 1.0f;
 }

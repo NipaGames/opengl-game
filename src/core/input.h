@@ -7,6 +7,11 @@ namespace Input {
     inline std::unordered_map<int, bool> keysPressedBeforePoll_;
     inline std::unordered_map<int, bool> keysPressed_;
 
+    inline std::mutex mouseButtonsMutex_;
+    inline std::unordered_map<int, bool> mouseButtons_;
+    inline std::unordered_map<int, bool> mouseButtonsPressedBeforePoll_;
+    inline std::unordered_map<int, bool> mouseButtonsPressed_;
+
     inline std::atomic_bool WINDOW_SIZE_CHANGE_PENDING(false);
     inline std::atomic_bool SET_FULLSCREEN_PENDING(false);
     inline std::atomic_bool CURSOR_MODE_CHANGE_PENDING(false);
@@ -21,10 +26,17 @@ namespace Input {
     inline double MOUSE_MOVE_X;
     inline double MOUSE_MOVE_Y;
 
-    void KeyDown(int key);
-    void KeyUp(int key);
-    bool IsKeyDown(int key);
-    bool IsKeyPressedDown(int key);
+    void KeyDown(int);
+    void KeyUp(int);
+    bool IsKeyDown(int);
+    bool IsKeyPressedDown(int);
     void ClearKeysPressedDown();
     void PollKeysPressedDown();
+
+    void MouseButtonDown(int);
+    void MouseButtonUp(int);
+    bool IsMouseButtonDown(int);
+    bool IsMouseButtonPressedDown(int);
+    void ClearMouseButtonsPressedDown();
+    void PollMouseButtonsPressedDown();
 }

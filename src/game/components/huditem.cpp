@@ -63,7 +63,7 @@ glm::vec3 GetHUDLightDir() {
 
 void ItemInHand::Start() {
     player_ = MonkeyGame::GetGame()->GetPlayer().GetComponent<PlayerController>();
-    itemStartPos_ = glm::vec2(parent->transform->position.x, parent->transform->position.y);
+    itemStartPos_ = parent->transform->position;
     
     Lights::ReserveIndex(HUD_LIGHT_INDEX, Lights::LightType::DIRECTIONAL);
     HUDItemRenderer::SHADER_LIT.Use();
@@ -75,11 +75,17 @@ void ItemInHand::Start() {
     HUDItemRenderer::SHADER_LIT.SetUniform(std::string(HUD_LIGHT_NAME + ".normal").c_str(), glm::vec3(1.0f, 1.0f, 0.0f));
     glUseProgram(0);
     
-    GAME->GetGameWindow().OnEvent(EventType::MOUSE_MOVE, [this]() { 
+    GAME->GetGameWindow().eventHandler.Subscribe(WindowEvent::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
-    GAME->GetGameWindow().OnEvent(EventType::WINDOW_RESIZE, [this]() { 
+    GAME->GetGameWindow().eventHandler.Subscribe(WindowEvent::WINDOW_RESIZE, [this]() { 
         this->FixPosition();
+    });
+    player_->eventHandler.Subscribe(PlayerEvent::GAME_OVER, [this]() {
+        this->BringToBackground();
+    });
+    player_->eventHandler.Subscribe(PlayerEvent::ATTACK, [this]() {
+        this->AttackAnimation();
     });
     FixPosition();
 }
@@ -92,44 +98,74 @@ void ItemInHand::FixedUpdate() {
     glUseProgram(0);
 }
 
-void ItemInHand::OnGameOver() {
+void ItemInHand::BringToBackground() {
     parent->GetComponent<HUDItemRenderer>()->renderAfterPostProcessing = false;
     parent->GetComponent<HUDItemRenderer>()->renderLate = true;
 }
 
+void ItemInHand::AttackAnimation() {
+    attackTime_ = (float) glfwGetTime();
+    isAttacking_ = true;
+    isReturningFromAttack_ = false;
+    attackStartPos_ = parent->transform->position;
+}
+
 void ItemInHand::Update() {
-    bool bob = player_->IsMoving() && player_->IsOnGround();
-    if (player_->IsGameOver() && !hasGameOverStateActivated_) {
-        OnGameOver();
-        hasGameOverStateActivated_ = true;
-    }
-    if (bob || std::abs(parent->transform->position.y - fixedItemStartPos_.y) > .0001f) {
-        if (bob) {
-            bobbingPos_ += (float) GAME->GetDeltaTime();
+    if (isAttacking_ || isReturningFromAttack_) {
+        float attackPos = (float) glfwGetTime() - attackTime_;
+        if (isAttacking_) {
+            attackPos /= attackAnimationLength_;
+            attackPos *= attackPos;
+            if (attackPos >= 1.0f) {
+                attackPos = 1.0f;
+                isAttacking_ = false;
+                isReturningFromAttack_ = true;
+                attackTime_ = (float) glfwGetTime();
+                player_->eventHandler.Dispatch(PlayerEvent::ATTACK_ANIMATION_COMPLETE);
+            }
         }
-        else {
-            // check if the cosine slope is increasing with the derivative
-            bool hasCompletedHalf = -std::sinf((float) M_PI * bobbingSpeed_ * bobbingPos_) > 0.0f;
-            if (hasCompletedHalf) {
+        else if (isReturningFromAttack_) {
+            attackPos /= attackAnimationReturnLength_;
+            attackPos = 1.0f - attackPos;
+            if (attackPos <= 0.0f) {
+                attackPos = 0.0f;
+                isReturningFromAttack_ = false;
+            }
+        }
+        parent->transform->position = attackStartPos_ + attackPos * attackMove_;
+        parent->transform->rotation = attackPos * glm::radians(attackRotation_);
+    }
+    else {
+        bool bob = player_->IsMoving() && player_->IsOnGround();
+        if (bob || std::abs(parent->transform->position.y - fixedItemStartPos_.y) > .0001f) {
+            if (bob) {
                 bobbingPos_ += (float) GAME->GetDeltaTime();
             }
             else {
-                bobbingPos_ -= (float) GAME->GetDeltaTime();
+                // check if the cosine slope is increasing with the derivative
+                bool hasCompletedHalf = -std::sinf((float) M_PI * bobbingSpeed_ * bobbingPos_) > 0.0f;
+                if (hasCompletedHalf) {
+                    bobbingPos_ += (float) GAME->GetDeltaTime();
+                }
+                else {
+                    bobbingPos_ -= (float) GAME->GetDeltaTime();
+                }
             }
+            parent->transform->position.y = fixedItemStartPos_.y + (std::cosf((float) M_PI * bobbingSpeed_ * bobbingPos_) / 2.0f - .5f) * bobbingAmount_;
         }
-        parent->transform->position.y = fixedItemStartPos_.y + (std::cosf((float) M_PI * bobbingSpeed_ * bobbingPos_) / 2.0f - .5f) * bobbingAmount_;
-    }
-    else {
-        bobbingPos_ = 0.0f;
-    }
+        else {
+            bobbingPos_ = 0.0f;
+        }
 
-    float horizontalSpeed = 1.0f;
-    if ((float) glfwGetTime() - prevMouseMove_ > .1f) {
-        horizontalSpeed = 2.0f;
-        horizontalMovementTarget_ = 0.0f;
-    }
-    float targetPos = fixedItemStartPos_.x + horizontalMovementTarget_;
-    if (std::abs(parent->transform->position.x - targetPos) > .0001f) {
-        parent->transform->position.x -= (parent->transform->position.x - targetPos) * (float) GAME->GetDeltaTime() * horizontalSpeed;
+        float horizontalSpeed = 1.0f;
+        if ((float) glfwGetTime() - prevMouseMove_ > .1f) {
+            horizontalSpeed = 2.0f;
+            horizontalMovementTarget_ = 0.0f;
+        }
+        float targetPos = fixedItemStartPos_.x + horizontalMovementTarget_;
+        if (std::abs(parent->transform->position.x - targetPos) > .0001f) {
+            parent->transform->position.x -= (parent->transform->position.x - targetPos) * (float) GAME->GetDeltaTime() * horizontalSpeed;
+        }
+
     }
 }

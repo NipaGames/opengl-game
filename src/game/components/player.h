@@ -6,8 +6,15 @@
 #include <core/entity/component.h>
 #include <core/physics/component/rigidbody.h>
 #include <core/entity/serializable.h>
+#include <core/eventhandler.h>
 #include <BulletDynamics/Character/btKinematicCharacterController.h>
 #include <BulletCollision/CollisionDispatch/btGhostObject.h>
+
+enum class PlayerEvent {
+    ATTACK,
+    ATTACK_ANIMATION_COMPLETE,
+    GAME_OVER
+};
 
 class PlayerController : public Component<PlayerController> {
 private:
@@ -27,7 +34,10 @@ private:
     bool isOnGround_ = false;
     bool isMoving_ = false;
     bool isInInputMode_ = false;
+    float attackCooldown_ = 1.0f;
+    float attackStart_ = -attackCooldown_;
 public:
+    EventHandler<PlayerEvent> eventHandler;
     float sensitivity;
     glm::vec2 mouseMove = glm::vec2(0.0f);
 
