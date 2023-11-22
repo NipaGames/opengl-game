@@ -142,6 +142,9 @@ public:
     size_t typeHash;
     virtual IComponent* Clone() const = 0;
     virtual ~IComponent() = default;
+    IComponent() { }
+    IComponent(const IComponent&);
+    IComponent(IComponent&&);
     virtual void IStart() = 0;
     virtual void IFirstUpdate() = 0;
     virtual void IUpdate() = 0;

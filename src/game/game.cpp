@@ -305,11 +305,16 @@ void MonkeyGame::Start() {
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
     }
     Entity& mogus = entityManager_.CreateEntity();
+    mogus.id = "amongus";
     auto mogusRenderer = mogus.AddComponent<MeshRenderer>();
     mogusRenderer->meshes = resources.modelManager["OBJ_MOGUS"].meshes;
     mogusRenderer->isStatic = true;
     mogus.transform->position = glm::vec3(0.0f, 155.25f, 0.0f);
     mogus.transform->size = glm::vec3(.5f);
+    Physics::RigidBody* mogusRigidbody = mogus.AddComponent<Physics::RigidBody>();
+    mogusRigidbody->colliderFrom = Physics::ColliderConstructor::AABB;
+    mogusRigidbody->mass = 0.0f;
+    mogus.AddComponent<LivingEntity>();
 
     Entity& lightEntity = entityManager_.CreateEntity();
     lightEntity.transform->position = glm::vec3(0.0f, 157.5f, 0.0f);
@@ -360,6 +365,24 @@ void MonkeyGame::Start() {
 
 Entity& MonkeyGame::GetPlayer() {
     return entityManager_.GetEntity(playerId);
+}
+
+bool MonkeyGame::TryHitEntity(const btVector3& from, const btVector3& to, std::function<void(LivingEntity*)> callback) {
+    btCollisionWorld::ClosestRayResultCallback res(from, to);
+    Physics::dynamicsWorld->rayTest(from, to, res);
+    if (!res.hasHit())
+        return false;
+    for (const auto& entity : entityManager_.GetEntities()) {
+        Physics::RigidBody* rb = entity->GetComponent<Physics::RigidBody>();
+        LivingEntity* living = entity->GetComponent<LivingEntity>();
+        if (rb == nullptr || living == nullptr)
+            continue;
+        if (rb->collider == res.m_collisionObject->getCollisionShape()) {
+            callback(living);
+            return true;
+        }
+    }
+    return false;
 }
 
 void MonkeyGame::Update() {

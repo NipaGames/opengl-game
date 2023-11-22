@@ -3,13 +3,19 @@
 #include <core/entity/component.h>
 
 class StatusEffect;
-class LivingEntity : public Component<LivingEntity>, public std::enable_shared_from_this<LivingEntity> {
+class LivingEntity : public Component<LivingEntity> {
 protected:
     int health_ = 100;
     int maxHealth_ = 100;
     std::vector<std::shared_ptr<StatusEffect>> statuses_;
     bool statusesActive_ = true;
+    bool deathAnimation_ = false;
+    float deathAnimationStart_;
 public:
+    DEFINE_COMPONENT_DATA_VALUE(bool, animateMesh, true);
+    DEFINE_COMPONENT_DATA_VALUE(bool, destroyWhenDead, true);
+    DEFINE_COMPONENT_DATA_VALUE(float, deathAnimationLength, .5f);
+    virtual void TryDestroy();
     virtual void SetHealth(int);
     virtual int GetHealth() const;
     virtual void CheckHealth();
@@ -17,6 +23,7 @@ public:
     virtual void SetMaxHealth(int);
     virtual int GetMaxHealth() const;
     virtual void AddHealth(int);
+    virtual void TakeDamage(int);
     virtual void AddStatus(const std::shared_ptr<StatusEffect>&);
     virtual void RemoveStatus(const std::shared_ptr<StatusEffect>&);
     virtual void Update() override;

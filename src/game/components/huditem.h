@@ -31,10 +31,10 @@ private:
     float horizontalMovementTarget_ = 0.0f;
 
     float attackTime_ = 0.0f;
-    float attackAnimationLength_ = .25f;
-    float attackAnimationReturnLength_ = .75f;
+    float attackAnimationLength_ = .3f;
+    float attackAnimationReturnLength_ = .7f;
     glm::vec3 attackStartPos_;
-    glm::vec3 attackMove_ = glm::vec3(-.05f, -.025f, -.15f);
+    glm::vec3 attackMove_ = glm::vec3(-.1f, -.05f, -.2f);
     glm::vec3 attackRotation_ = glm::vec3(-15.0f, 5.0f, 2.5f);
     bool isAttacking_ = false;
     bool isReturningFromAttack_ = false;

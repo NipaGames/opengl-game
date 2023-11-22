@@ -30,6 +30,15 @@ void PlayerController::Spawn() {
 	characterController_->warp(Physics::GLMVectorToBtVector3(spawnPosition));
 }
 
+void PlayerController::CheckForAttacks() {
+    auto& cam = GAME->GetRenderer().GetCamera();
+    btVector3 rayFrom = Physics::GLMVectorToBtVector3(cam.pos);
+    btVector3 rayTo = rayFrom + Physics::GLMVectorToBtVector3(cam.front * attackRange_);
+    MonkeyGame::GetGame()->TryHitEntity(rayFrom, rayTo, [](LivingEntity* e) {
+        e->TakeDamage(50);
+    });
+}
+
 void PlayerController::Start() {
     sensitivity = MonkeyGame::GetGame()->controlsConfig.sensitivity;
     controlSpeedModifier_ = 1.0f;
@@ -48,9 +57,8 @@ void PlayerController::Start() {
     GAME->GetGameWindow().eventHandler.Subscribe(WindowEvent::MOUSE_MOVE, [this]() { 
         this->OnMouseMove();
     });
-    const std::vector<std::string> msgs = { "pow", "ouch", "crunch", "crick", "crack" };
-    eventHandler.Subscribe(PlayerEvent::ATTACK_ANIMATION_COMPLETE, [msgs]() {
-        std::cout << msgs[rand() % msgs.size()] << std::endl;
+    eventHandler.Subscribe(PlayerEvent::ATTACK_ANIMATION_COMPLETE, [this]() {
+        this->CheckForAttacks();
     });
     Spawn();
 }
@@ -155,6 +163,8 @@ void PlayerController::ActivateGameOverState() {
 void Player::Start() {
     maxHealth_ = 100;
     health_ = maxHealth_;
+    animateMesh = false;
+    destroyWhenDead = false;
     UpdateHUD();
 }
 

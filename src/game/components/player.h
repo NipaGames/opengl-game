@@ -36,6 +36,9 @@ private:
     bool isInInputMode_ = false;
     float attackCooldown_ = 1.0f;
     float attackStart_ = -attackCooldown_;
+    float attackRange_ = 2.5f;
+
+    void CheckForAttacks();
 public:
     EventHandler<PlayerEvent> eventHandler;
     float sensitivity;

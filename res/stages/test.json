@@ -117,7 +117,8 @@
             "Physics::RigidBody": {
                 "mass": 0,
                 "colliderFrom": "AABB"
-            }
+            },
+            "LivingEntity": { }
         }
     ]
 }

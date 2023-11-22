@@ -7,7 +7,18 @@ void Material::RestoreDefaultUniforms() {
     SetShaderUniform<glm::vec2>("offset", glm::vec2(0.0f));
 }
 
-void Material::Use(const Shader& shader) {
+void Material::ClearUniforms() {
+    intUniforms_.clear();
+    floatUniforms_.clear();
+    mat2Uniforms_.clear();
+    mat3Uniforms_.clear();
+    mat4Uniforms_.clear();
+    vec2Uniforms_.clear();
+    vec3Uniforms_.clear();
+    vec4Uniforms_.clear();
+}
+
+void Material::Use(const Shader& shader) const {
     if (texture_ == TEXTURE_NONE)
         shader.SetUniform("material.hasTexture", false);
     else
@@ -31,6 +42,6 @@ void Material::Use(const Shader& shader) {
         shader.SetUniform(("material." + vec4.first).c_str(), vec4.second);
 }
 
-void Material::Use() {
+void Material::Use() const {
     Use(shader_);
 }

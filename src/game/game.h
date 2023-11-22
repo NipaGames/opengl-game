@@ -5,6 +5,7 @@
 #include "console.h"
 #include "hud.h"
 #include "configs.h"
+#include "components/livingentity.h"
 
 #define SPDLOG_PATTERN "[%T] %-10l %v"
 
@@ -21,6 +22,7 @@ public:
     void Start();
     void Update();
     Entity& GetPlayer();
+    bool TryHitEntity(const btVector3&, const btVector3&, std::function<void(LivingEntity*)>);
     
     static MonkeyGame* GetGame();
 };

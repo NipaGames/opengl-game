@@ -1,6 +1,8 @@
 #include "livingentity.h"
 
 #include <opengl.h>
+#include <core/entity/entity.h>
+#include <core/graphics/component/meshrenderer.h>
 
 void LivingEntity::SetHealth(int health) {
     health_ = health;
@@ -30,6 +32,18 @@ void LivingEntity::AddHealth(int health) {
     SetHealth(health_ + health);
 }
 
+void LivingEntity::TryDestroy() {
+    if (destroyWhenDead) {
+        parent->Destroy();
+    }
+}
+
+void LivingEntity::TakeDamage(int dmg) {
+    AddHealth(-dmg);
+    if (health_ > 0 && animateMesh) {
+        
+    }
+}
 
 void LivingEntity::Update() {
     for (int i = 0; i < statuses_.size(); i++) {
@@ -41,10 +55,39 @@ void LivingEntity::Update() {
             i--;
         }
     }
+
+    if (deathAnimation_) {
+        MeshRenderer* renderer = parent->GetComponent<MeshRenderer>();
+        if (renderer != nullptr) {
+            float t = ((float) glfwGetTime() - deathAnimationStart_)  / deathAnimationLength;
+            if (t >= 1.0f) {
+                t = 1.0f;
+                TryDestroy();
+                if (destroyWhenDead)
+                    return;
+            }
+            renderer->useCustomMaterial = true;
+            renderer->customMaterial.ClearUniforms();
+            renderer->customMaterial.SetShaderUniform("opacity", 1.0f - t);
+        }
+    }
 }
 
 void LivingEntity::Die() {
     statusesActive_ = false;
+    if (animateMesh) {
+        deathAnimation_ = true;
+        deathAnimationStart_ = (float) glfwGetTime();
+        MeshRenderer* renderer = parent->GetComponent<MeshRenderer>();
+        if (renderer != nullptr) {
+            renderer->renderLate = true;
+            renderer->useCustomMaterial = true;
+            renderer->customMaterial.ClearUniforms();
+        }
+    }
+    else {
+        TryDestroy();
+    }
 }
 
 void LivingEntity::AddStatus(const std::shared_ptr<StatusEffect>& status) {
@@ -85,5 +128,5 @@ void StatusEffect::Update(LivingEntity* entity) {
 
 void PoisonEffect::Tick(LivingEntity* entity) {
     if (entity->GetHealth() > 1 || !stopAt1HP)
-        entity->AddHealth(-1);
+        entity->TakeDamage(1);
 }

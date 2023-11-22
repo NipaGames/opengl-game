@@ -22,6 +22,8 @@ public:
     DEFINE_COMPONENT_DATA_VALUE(std::string, object, "");
     DEFINE_COMPONENT_DATA_VALUE_VECTOR(std::shared_ptr<Mesh>, meshes);
     DEFINE_COMPONENT_DATA_VALUE(bool, copyMeshes, false);
+    DEFINE_COMPONENT_DATA_VALUE_DEFAULT(Material, customMaterial);
+    DEFINE_COMPONENT_DATA_VALUE(bool, useCustomMaterial, false);
     // render over skybox and any other entities
     DEFINE_COMPONENT_DATA_VALUE(bool, renderLate, false);
     DEFINE_COMPONENT_DATA_VALUE(bool, renderAfterPostProcessing, false);

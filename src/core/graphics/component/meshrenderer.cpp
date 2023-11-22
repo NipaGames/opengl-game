@@ -87,11 +87,18 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
             const Shader& s = GetMaterialShader(mesh->material);
             UpdateUniforms(s, projectionMatrix, viewMatrix, mesh->transformMatrix);
             mesh->material->Use(s);
+            if (useCustomMaterial) {
+                customMaterial.Use(s);
+            }
         }
         else {
             UpdateUniforms(*shader, projectionMatrix, viewMatrix, mesh->transformMatrix);
             mesh->material->Use();
+            if (useCustomMaterial) {
+                customMaterial.Use(*shader);
+            }
         }
+
 
         mesh->Bind();
         mesh->Render();
