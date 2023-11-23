@@ -303,6 +303,13 @@ void MonkeyGame::Start() {
         double rad = ((2 * M_PI) / monkeyCount) * i;
         monkey.transform->position = glm::vec3(cos(rad) * range, 155.0, sin(rad) * range);
         monkey.transform->size = glm::vec3(1.0f, 1.0f, .5f);
+
+        Physics::RigidBody* monkeyRigidbody = monkey.AddComponent<Physics::RigidBody>();
+        monkeyRigidbody->colliderFrom = Physics::ColliderConstructor::AABB;
+        monkeyRigidbody->mass = 0.0f;
+        monkeyRigidbody->overwriteTransform = false;
+        monkeyRigidbody->disableCollisions = true;
+        monkey.AddComponent<LivingEntity>()->health = 1;
     }
     Entity& mogus = entityManager_.CreateEntity();
     mogus.id = "amongus";

@@ -26,6 +26,7 @@ namespace Physics {
         DEFINE_COMPONENT_DATA_VALUE(bool, interpolate, false);
         DEFINE_COMPONENT_DATA_VALUE(bool, overwriteTransform, true);
         DEFINE_COMPONENT_DATA_VALUE(bool, doesMassAffectGravity, false);
+        DEFINE_COMPONENT_DATA_VALUE(bool, disableCollisions, false);
         ~RigidBody();
         void Start();
         void Update();

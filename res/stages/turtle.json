@@ -20,6 +20,14 @@
                 ],
                 "range": 15.0,
                 "trigger": "IN_PROXIMITY_UPDATE"
+            },
+            "Physics::RigidBody": {
+                "colliderFrom": "MESH",
+                "mass": 0.0,
+                "overwriteTransform": false
+            },
+            "LivingEntity": {
+                "health": 250
             }
         }
     ]
