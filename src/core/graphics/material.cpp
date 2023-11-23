@@ -20,10 +20,7 @@ void Material::ClearUniforms() {
 }
 
 void Material::Use(const Shader& shader) const {
-    if (texture_ == TEXTURE_NONE)
-        shader.SetUniform("material.hasTexture", false);
-    else
-        shader.SetUniform("material.hasTexture", true);
+    shader.SetUniform("material.hasTexture", texture_ != TEXTURE_NONE);
     
     for (const auto& i : intUniforms_)
         shader.SetUniform(("material." + i.first).c_str(), i.second);

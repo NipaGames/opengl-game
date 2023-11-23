@@ -89,14 +89,12 @@ void MeshRenderer::Render(const glm::mat4& projectionMatrix, const glm::mat4& vi
             mesh->material->Use(s);
             if (useCustomMaterial) {
                 customMaterial.Use(s);
+                s.SetUniform("material.hasTexture", mesh->material->GetTexture() != TEXTURE_NONE);
             }
         }
         else {
             UpdateUniforms(*shader, projectionMatrix, viewMatrix, mesh->transformMatrix);
             mesh->material->Use();
-            if (useCustomMaterial) {
-                customMaterial.Use(*shader);
-            }
         }
 
 

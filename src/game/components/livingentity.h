@@ -11,6 +11,10 @@ protected:
     bool statusesActive_ = true;
     bool deathAnimation_ = false;
     float deathAnimationStart_;
+
+    bool damageFlash_ = false;
+    float damageFlashStart_;
+    float damageFlashLength_ = .1f;
 public:
     DEFINE_COMPONENT_DATA_VALUE(bool, animateMesh, true);
     DEFINE_COMPONENT_DATA_VALUE(bool, destroyWhenDead, true);

@@ -32,6 +32,9 @@
             },
             "Physics::RigidBody": {
                 "mass": 2
+            },
+            "LivingEntity": {
+                "health": 100
             }
         },
         {
@@ -49,6 +52,9 @@
             },
             "Physics::RigidBody": {
                 "mass": 1
+            },
+            "LivingEntity": {
+                "health": 1
             }
         },
         {
@@ -117,8 +123,7 @@
             "Physics::RigidBody": {
                 "mass": 0,
                 "colliderFrom": "AABB"
-            },
-            "LivingEntity": { }
+            }
         }
     ]
 }

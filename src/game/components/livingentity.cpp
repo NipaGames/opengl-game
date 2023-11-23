@@ -41,7 +41,12 @@ void LivingEntity::TryDestroy() {
 void LivingEntity::TakeDamage(int dmg) {
     AddHealth(-dmg);
     if (health_ > 0 && animateMesh) {
-        
+        damageFlash_ = true;
+        damageFlashStart_ = (float) glfwGetTime();
+        MeshRenderer* renderer = parent->GetComponent<MeshRenderer>();
+        if (renderer != nullptr) {
+            renderer->useCustomMaterial = true;
+        }
     }
 }
 
@@ -53,6 +58,16 @@ void LivingEntity::Update() {
         if (status->IsFinished() || (!statusesActive_ && status->GetTimeRemaining() < 0.0f)) {
             RemoveStatus(status);
             i--;
+        }
+    }
+
+    if (damageFlash_) {
+        if ((float) glfwGetTime() - damageFlashStart_ >= damageFlashLength_) {
+            MeshRenderer* renderer = parent->GetComponent<MeshRenderer>();
+            if (renderer != nullptr) {
+                renderer->useCustomMaterial = false;
+            }
+            damageFlash_ = false;
         }
     }
 
@@ -74,6 +89,14 @@ void LivingEntity::Update() {
 void LivingEntity::Start() {
     health_ = health;
     maxHealth_ = maxHealth;
+    if (animateMesh) {
+        MeshRenderer* renderer = parent->GetComponent<MeshRenderer>();
+        if (renderer != nullptr) {
+            renderer->useCustomMaterial = false;
+            renderer->customMaterial.ClearUniforms();
+            renderer->customMaterial.SetShaderUniform("tint", glm::vec3(.25f, -.125f, -.125f));
+        }
+    }
 }
 
 void LivingEntity::Die() {
@@ -85,8 +108,6 @@ void LivingEntity::Die() {
         if (renderer != nullptr) {
             renderer->renderLate = true;
             renderer->useCustomMaterial = true;
-            renderer->customMaterial.ClearUniforms();
-            renderer->customMaterial.SetShaderUniform("tint", glm::vec3(.25f, -.25f, -.25f));
         }
     }
     else {
