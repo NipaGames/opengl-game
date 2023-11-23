@@ -66,11 +66,14 @@ void LivingEntity::Update() {
                 if (destroyWhenDead)
                     return;
             }
-            renderer->useCustomMaterial = true;
-            renderer->customMaterial.ClearUniforms();
             renderer->customMaterial.SetShaderUniform("opacity", 1.0f - t);
         }
     }
+}
+
+void LivingEntity::Start() {
+    health_ = health;
+    maxHealth_ = maxHealth;
 }
 
 void LivingEntity::Die() {
@@ -83,6 +86,7 @@ void LivingEntity::Die() {
             renderer->renderLate = true;
             renderer->useCustomMaterial = true;
             renderer->customMaterial.ClearUniforms();
+            renderer->customMaterial.SetShaderUniform("tint", glm::vec3(.25f, -.25f, -.25f));
         }
     }
     else {

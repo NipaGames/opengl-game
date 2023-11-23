@@ -5,8 +5,8 @@
 class StatusEffect;
 class LivingEntity : public Component<LivingEntity> {
 protected:
-    int health_ = 100;
-    int maxHealth_ = 100;
+    int health_;
+    int maxHealth_;
     std::vector<std::shared_ptr<StatusEffect>> statuses_;
     bool statusesActive_ = true;
     bool deathAnimation_ = false;
@@ -15,6 +15,8 @@ public:
     DEFINE_COMPONENT_DATA_VALUE(bool, animateMesh, true);
     DEFINE_COMPONENT_DATA_VALUE(bool, destroyWhenDead, true);
     DEFINE_COMPONENT_DATA_VALUE(float, deathAnimationLength, .5f);
+    DEFINE_COMPONENT_DATA_VALUE(int, health, 100);
+    DEFINE_COMPONENT_DATA_VALUE(int, maxHealth, 100);
     virtual void TryDestroy();
     virtual void SetHealth(int);
     virtual int GetHealth() const;
@@ -27,6 +29,7 @@ public:
     virtual void AddStatus(const std::shared_ptr<StatusEffect>&);
     virtual void RemoveStatus(const std::shared_ptr<StatusEffect>&);
     virtual void Update() override;
+    virtual void Start() override;
     template<typename T>
     void AddStatusType(float t = 0.0f) {
         std::shared_ptr<StatusEffect> status = std::make_shared<T>(t);

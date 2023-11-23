@@ -161,10 +161,11 @@ void PlayerController::ActivateGameOverState() {
 }
 
 void Player::Start() {
-    maxHealth_ = 100;
-    health_ = maxHealth_;
+    maxHealth = 200;
+    health = maxHealth;
     animateMesh = false;
     destroyWhenDead = false;
+    LivingEntity::Start();
     UpdateHUD();
 }
 

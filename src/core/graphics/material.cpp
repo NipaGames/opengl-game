@@ -2,6 +2,7 @@
 
 void Material::RestoreDefaultUniforms() {
     SetShaderUniform<glm::vec3>("color", glm::vec3(1.0f));
+    SetShaderUniform<glm::vec3>("tint", glm::vec3(0.0f));
     SetShaderUniform<glm::vec3>("ambientColor", glm::vec3(0.0f));
     SetShaderUniform<glm::vec2>("tiling", glm::vec2(1.0f));
     SetShaderUniform<glm::vec2>("offset", glm::vec2(0.0f));

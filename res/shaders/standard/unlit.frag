@@ -2,6 +2,7 @@
 
 struct Material {
   vec3 color;
+  vec3 tint;
   float opacity;
   bool hasTexture;
   vec2 tiling;
@@ -16,7 +17,9 @@ uniform Material material;
 uniform sampler2D textureSampler;
 
 void main() {
-  color = vec4(material.color, material.opacity);
+  vec3 col = material.color;
   if (material.hasTexture)
-    color *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset);
+    col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset);
+  col += material.tint;
+  color = vec4(col, material.opacity);
 }

@@ -29,6 +29,7 @@ struct Spotlight {
 
 struct Material {
   vec3 color;
+  vec3 tint;
   float opacity;
   float specularStrength;
   int specularHighlight;
@@ -62,12 +63,12 @@ vec3 dirLight(vec3 lightDir, vec3 lightColor, vec3 normal) {
 }
 
 vec3 calcDirectionalLight(DirectionalLight light, vec3 normal) {
-  return (dirLight(light.dir, light.color, normal) * light.intensity) * material.color;
+  return dirLight(light.dir, light.color, normal) * light.intensity;
 }
 
 vec3 calcPointLight(PointLight light, vec3 normal) {
   vec3 lightDir = normalize(light.pos - fragmentPos);
-  return (dirLight(lightDir, light.color, normal) * light.intensity) / max(1.0, pow(abs(distance(fragmentPos, light.pos)) / light.range, 2)) * material.color;
+  return (dirLight(lightDir, light.color, normal) * light.intensity) / max(1.0, pow(abs(distance(fragmentPos, light.pos)) / light.range, 2));
 }
 
 vec3 calcSpotlight(Spotlight light, vec3 normal) {
@@ -88,23 +89,25 @@ vec3 calcSpotlight(Spotlight light, vec3 normal) {
 void main() {
   vec3 normal = normalize(fragmentNormal);
   vec3 col = vec3(0.0);
+  vec3 materialColor = material.color + material.tint;
 
   for(int i = 0; i < pointLights.length(); i++) {
     if (pointLights[i].enabled == true)
-      col += calcPointLight(pointLights[i], normal);
+      col += calcPointLight(pointLights[i], normal) * material.color;
   }
   for(int i = 0; i < directionalLights.length(); i++) {
     if (directionalLights[i].enabled == true)
-      col += calcDirectionalLight(directionalLights[i], normal);
+      col += calcDirectionalLight(directionalLights[i], normal) * material.color;
   }
   for(int i = 0; i < spotlights.length(); i++) {
     if (spotlights[i].enabled == true)
-      col += calcSpotlight(spotlights[i], normal);
+      col += calcSpotlight(spotlights[i], normal) * material.color;
   }
   // more advanced ambient lighting (not necessary):
   // col += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
   col += material.ambientColor;
   if (material.hasTexture)
     col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset).xyz;
+  col += material.tint;
   color = vec4(col, material.opacity);
 }
