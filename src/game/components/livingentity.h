@@ -15,12 +15,15 @@ protected:
     bool damageFlash_ = false;
     float damageFlashStart_;
     float damageFlashLength_ = .1f;
+
+    bool isDead_ = false;
 public:
     DEFINE_COMPONENT_DATA_VALUE(bool, animateMesh, true);
     DEFINE_COMPONENT_DATA_VALUE(bool, destroyWhenDead, true);
     DEFINE_COMPONENT_DATA_VALUE(float, deathAnimationLength, .5f);
     DEFINE_COMPONENT_DATA_VALUE(int, health, 100);
     DEFINE_COMPONENT_DATA_VALUE(int, maxHealth, 100);
+    DEFINE_COMPONENT_DATA_VALUE(int, xpReceived, 0);
     virtual void TryDestroy();
     virtual void SetHealth(int);
     virtual int GetHealth() const;

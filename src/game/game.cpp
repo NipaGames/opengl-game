@@ -321,7 +321,7 @@ void MonkeyGame::Start() {
     Physics::RigidBody* mogusRigidbody = mogus.AddComponent<Physics::RigidBody>();
     mogusRigidbody->colliderFrom = Physics::ColliderConstructor::AABB;
     mogusRigidbody->mass = 0.0f;
-    mogus.AddComponent<LivingEntity>();
+    mogus.AddComponent<LivingEntity>()->xpReceived = 10;
 
     Entity& lightEntity = entityManager_.CreateEntity();
     lightEntity.transform->position = glm::vec3(0.0f, 157.5f, 0.0f);

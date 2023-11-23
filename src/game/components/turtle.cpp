@@ -3,6 +3,15 @@
 #include <core/graphics/component/meshrenderer.h>
 #include <core/game.h>
 
+Turtle::~Turtle() {
+    if (light_ != nullptr) {
+        GAME->GetRenderer().RemoveLight(light_);
+        light_->isAdded = false;
+        GAME->GetRenderer().UpdateLighting();
+        light_ = nullptr;
+    }
+}
+
 void Turtle::Interpolate(float t) {
     if (t < .2f) {
         for (const auto& material : materials_) {

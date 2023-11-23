@@ -27,7 +27,8 @@
                 "overwriteTransform": false
             },
             "LivingEntity": {
-                "health": 250
+                "health": 250,
+                "xpReceived": 1000
             }
         }
     ]

@@ -10,6 +10,7 @@ private:
     Lights::PointLight* light_ = nullptr;
 public:
     DEFINE_COMPONENT_DATA_VALUE(float, drop, 15.0f);
+    ~Turtle();
     void Interpolate(float) override;
     void End() override;
     void FirstUpdate() override;

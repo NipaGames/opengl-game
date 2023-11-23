@@ -201,3 +201,8 @@ void Player::RemoveStatus(const std::shared_ptr<StatusEffect>& status) {
     MonkeyGame::GetGame()->hud.RemoveStatus(status->GetName());
     LivingEntity::RemoveStatus(status);
 }
+
+void Player::AddXP(int xp) {
+    xp_ += xp;
+    MonkeyGame().GetGame()->hud.ReceiveXP(xp);
+}

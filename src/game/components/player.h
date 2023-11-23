@@ -62,6 +62,7 @@ public:
 class Player : public LivingEntity {
 private:
     void UpdateHUD();
+    int xp_ = 0;
 public:
     void Start();
     void SetHealth(int) override;
@@ -69,5 +70,6 @@ public:
     void Die() override;
     void AddStatus(const std::shared_ptr<StatusEffect>&) override;
     void RemoveStatus(const std::shared_ptr<StatusEffect>&) override;
+    void AddXP(int);
 };
 REGISTER_COMPONENT(Player);

@@ -89,9 +89,18 @@ void HUD::CreateHUDElements() {
     gameOverInstructionsText->font = "FONT_MORRIS";
     gameOverInstructionsText->alignment = Text::TextAlignment::CENTER;
     gameOverInstructionsText->isVisible = false;
-    gameOverInstructionsText->lineSpacing = 20;
     gameOverInstructionsText->SetText("[E] to retry");
     gameOverInstructionsText->AddToCanvas();
+
+    Entity& xpTextEntity = GAME->GetEntityManager().CreateEntity();
+    xpTextEntity.transform->position.x = 1280 / 2;
+    xpTextEntity.transform->position.y = 30;
+    xpTextEntity.transform->size.z = 1.0f;
+    xpText = xpTextEntity.AddComponent<TextComponent>(&c);
+    xpText->font = "FONT_MORRIS";
+    xpText->alignment = Text::TextAlignment::CENTER;
+    xpText->isVisible = false;
+    xpText->AddToCanvas();
 
     GAME->GetGameWindow().eventHandler.Subscribe(WindowEvent::WINDOW_RESIZE, [this]() { 
         this->UpdateElementPositions();
@@ -106,6 +115,14 @@ void HUD::UpdateHP(int hp, int maxHp) {
     hpText->SetText("HP: " + std::to_string(hp));
     maxHpText->SetText(" / " + std::to_string(maxHp));
     UpdateElementPositions();
+}
+
+void HUD::ReceiveXP(int xp) {
+    xpReceived_ += xp;
+    xpText->SetText(std::to_string(xpReceived_) + " xp received");
+    xpText->isVisible = true;
+    isXpShown_ = true;
+    xpReceiveTime_ = (float) glfwGetTime();
 }
 
 void HUD::UpdateStatusText() {
@@ -206,6 +223,11 @@ void HUD::Update() {
         isAreaTextShown_ = false;
         areaAnimation->playReverse = true;
         areaAnimation->Play();
+    }
+    if (isXpShown_ && glfwGetTime() - xpReceiveTime_ >= showXpTime_) {
+        isXpShown_ = false;
+        xpText->isVisible = false;
+        xpReceived_ = 0;
     }
 }
 

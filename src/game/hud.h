@@ -21,7 +21,11 @@ private:
     float gameOverContinueEffect_ = 0.0f;
     bool gameOverContinueEffectFinished_ = false;
     float gameOverContinueTime_ = 1.0f;
-    
+
+    bool isXpShown_ = false;
+    float xpReceiveTime_;
+    float showXpTime_ = 2.0f;
+    int xpReceived_ = 0;
 public:
     std::string canvasId = "hud";
     UI::TextComponent* interactText = nullptr;
@@ -32,6 +36,7 @@ public:
     FloatAnimation* areaAnimation = nullptr;
     UI::TextComponent* gameOverText = nullptr;
     UI::TextComponent* gameOverInstructionsText = nullptr;
+    UI::TextComponent* xpText = nullptr;
     void CreateHUDElements();
     void ShowInteractText(const std::string&, int = -1);
     void HideInteractMessage();
@@ -39,6 +44,7 @@ public:
     void UpdateElementPositions();
     void GameOver();
     void UpdateHP(int, int);
+    void ReceiveXP(int);
     void UpdateStatusText();
     void AddStatus(const std::string&);
     void RemoveStatus(const std::string&);

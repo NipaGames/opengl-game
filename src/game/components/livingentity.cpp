@@ -1,8 +1,10 @@
 #include "livingentity.h"
+#include "player.h"
 
 #include <opengl.h>
 #include <core/entity/entity.h>
 #include <core/graphics/component/meshrenderer.h>
+#include <game/game.h>
 
 void LivingEntity::SetHealth(int health) {
     health_ = health;
@@ -16,7 +18,8 @@ int LivingEntity::GetHealth() const {
 void LivingEntity::CheckHealth() {
     if (health_ <= 0) {
         health_ = 0;
-        Die();
+        if (!isDead_)
+            Die();
     }
 }
 
@@ -100,7 +103,11 @@ void LivingEntity::Start() {
 }
 
 void LivingEntity::Die() {
+    isDead_ = true;
     statusesActive_ = false;
+    if (xpReceived > 0) {
+        MonkeyGame().GetGame()->GetPlayer().GetComponent<Player>()->AddXP(xpReceived);
+    }
     if (animateMesh) {
         deathAnimation_ = true;
         deathAnimationStart_ = (float) glfwGetTime();
