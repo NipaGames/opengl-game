@@ -19,7 +19,7 @@ uniform sampler2D textureSampler;
 void main() {
   vec3 col = material.color;
   if (material.hasTexture)
-    col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset);
+    col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset).xyz;
   col += material.tint;
   color = vec4(col, material.opacity);
 }
