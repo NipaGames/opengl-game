@@ -1,5 +1,5 @@
 #include "eventparser.h"
-#include "strutils.h"
+#include <game/strutils.h>
 
 #include <regex>
 #include <sstream>

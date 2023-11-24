@@ -2,10 +2,10 @@
 
 #include <core/game.h>
 #include <core/graphics/postprocessing.h>
-#include "console.h"
-#include "hud.h"
 #include "configs.h"
 #include "components/livingentity.h"
+#include "console/console.h"
+#include "ui/hud.h"
 
 #define SPDLOG_PATTERN "[%T] %-10l %v"
 
@@ -16,6 +16,12 @@ public:
     PostProcessing postProcessing;
     Config::Controls controlsConfig;
     Config::General generalConfig;
+
+    static void LoadStage(std::string);
+    static void UnloadStage(std::string);
+    static void ShowAreaMessage();
+    static void SpawnPlayer();
+    static void KillPlayer();
 
     bool InitWindow() override;
     void PreLoad();

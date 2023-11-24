@@ -21,14 +21,9 @@
 #include "components/animationcomponent.h"
 #include "components/interactable.h"
 #include "components/huditem.h"
-#include "event.h"
-#include "eventparser.h"
-
-#ifdef _WIN32
-#undef APIENTRY
-#include <windows.h>
-#include <shellapi.h>
-#endif
+#include "event/event.h"
+#include "event/eventparser.h"
+#include "console/commands.h"
 
 #include <magic_enum/magic_enum.hpp>
 
@@ -55,12 +50,12 @@ void WhatIs(std::string str) {
     spdlog::info(str);
 }
 
-void LoadStage(std::string stage) {
+void MonkeyGame::LoadStage(std::string stage) {
     if (!GAME->resources.stageManager.LoadStage(stage))
         spdlog::warn("Stage '{}' not found!", stage);
 }
 
-void UnloadStage(std::string stage) {
+void MonkeyGame::UnloadStage(std::string stage) {
     if (stage == "all") {
         GAME->resources.stageManager.UnloadAllStages();
         return;
@@ -69,7 +64,7 @@ void UnloadStage(std::string stage) {
         spdlog::warn("Stage '{}' not loaded!", stage);
 }
 
-void ShowAreaMessage() {
+void MonkeyGame::ShowAreaMessage() {
     MonkeyGame* game = MonkeyGame::GetGame();
     const std::vector<std::string>& stages = GAME->resources.stageManager.GetLoadedStages();
     if (!stages.empty()) {
@@ -79,12 +74,12 @@ void ShowAreaMessage() {
     }
 }
 
-void SpawnPlayer() {
+void MonkeyGame::SpawnPlayer() {
     MonkeyGame::GetGame()->GetPlayer().GetComponent<PlayerController>()->Spawn();
     ShowAreaMessage();
 }
 
-void KillPlayer() {
+void MonkeyGame::KillPlayer() {
     MonkeyGame::GetGame()->GetPlayer().GetComponent<Player>()->SetHealth(0);
 }
 
@@ -105,102 +100,6 @@ void AddPlayerStatus(std::string type, float t) {
     }
 }
 
-void RegisterCommands(Console& console) {
-    console.RegisterCommand("quit", [](const std::string&) {
-        spdlog::info("byee!! :3");
-        // yeah could clean up or something before quitting
-        exit(0);
-    });
-    console.RegisterCommand("event", [](const std::string& args) {
-        EVENT_PARSER.SetKeyword("this", playerId);
-        EventReturnStatus err = EVENT_PARSER.ParseCommand(args);
-        if (err != EventReturnStatus::OK) {
-            spdlog::warn("failed: {}", magic_enum::enum_name(err));
-        }
-    });
-    console.RegisterCommand("build", [](const std::string&) {
-        bool debug = false;
-        #ifdef DEBUG_BUILD
-        debug = true;
-        #endif
-        #ifdef VERSION_SPECIFIED
-        spdlog::info("v{}.{} [{}]", VERSION_MAJ, VERSION_MIN, debug ? "Debug" : "Release");
-        // yeah this is actually the timestamp of this file, would have to recompile this specifically every time
-        spdlog::info("built {}", __DATE__);
-        #else
-        spdlog::warn("can't get version info");
-        #endif
-    });
-    console.RegisterCommand("github", [](const std::string&) {
-        #ifdef _WIN32
-        ShellExecuteW(0, 0, L"https://github.com/NipaGames/opengl-game", 0, 0 , SW_SHOW);
-        #endif
-    });
-    console.RegisterCommand("hi", [](const std::string&) {
-        spdlog::info("haiii!! :3");
-    });
-    // the cis male command
-    console.RegisterCommand("goodgirl", [](const std::string&) {
-        spdlog::info("you're such a good girl <3");
-    });
-    console.RegisterCommand("list", [&](const std::string& strArgs) {
-        std::vector<std::string> args = Console::SplitArgs(strArgs);
-        bool listCommands = std::find(args.begin(), args.end(), "commands") != args.end();
-        bool listEvents = std::find(args.begin(), args.end(), "events") != args.end();
-        bool listEntityComponents = std::find(args.begin(), args.end(), "entities+c") != args.end();
-        bool listEntities = listEntityComponents || std::find(args.begin(), args.end(), "entities") != args.end();
-        if (args.empty()) {
-            listCommands = true;
-            listEvents = true;
-            listEntities = true;
-        }
-        bool needsHeaders = args.size() != 1;
-        if (listCommands) {
-            if (needsHeaders)
-                spdlog::info("COMMANDS");
-            for (const std::string& c : console.ListCommands()) {
-                spdlog::info("- {}", c);
-            }
-        }
-        if (listEvents) {
-            if (needsHeaders)
-                spdlog::info("EVENTS");
-            for (const std::string& c : EVENT_MANAGER.ListEvents()) {
-                spdlog::info("- {}", c);
-            }
-        }
-        if (listEntities) {
-            if (needsHeaders)
-                spdlog::info("ENTITIES");
-            const auto& entities = GAME->GetEntityManager().GetEntities();
-            size_t entityCount = entities.size();
-            if (args.empty())
-                entityCount = 5;
-            size_t i = 0;
-            for (const auto& e : entities) {
-                spdlog::info("- {} {}", e->GetHash(), e->id);
-                if (listEntityComponents) {
-                    for (const std::string& c : e->ListComponentNames()) {
-                        spdlog::info("    {}", c);
-                    }
-                }
-                if (++i >= entityCount)
-                    break;
-            }
-            if (entityCount < entities.size())
-                spdlog::info("...");
-        }
-    });
-    console.RegisterCommand("load", LoadStage);
-    console.RegisterCommand("unload", UnloadStage);
-    console.RegisterCommand("spawn", [](const std::string&) {
-        SpawnPlayer();
-    });
-    console.RegisterCommand("die", [](const std::string&) {
-        KillPlayer();
-    });
-}
-
 void MonkeyGame::PreLoad() {
     LOG_FN();
 
@@ -212,7 +111,7 @@ void MonkeyGame::PreLoad() {
     EVENT_MANAGER.RegisterEvent("PlayerStatus", AddPlayerStatus);
     EVENT_MANAGER.RegisterEvent("PlayAnimation", AnimationComponent::PlayAnimation);
 
-    RegisterCommands(console);
+    Commands::RegisterCommands(console);
 }
 
 void MonkeyGame::Start() {

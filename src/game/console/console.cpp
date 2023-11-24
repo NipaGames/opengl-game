@@ -1,5 +1,5 @@
 #include "console.h"
-#include "strutils.h"
+#include <game/strutils.h>
 
 #include <spdlog/spdlog.h>
 

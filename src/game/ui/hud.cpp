@@ -1,5 +1,5 @@
 #include "hud.h"
-#include "game.h"
+#include <game/game.h>
 #include <core/input.h>
 
 #include <sstream>

@@ -2,7 +2,7 @@
 
 #include <core/entity/component.h>
 #include <core/entity/transform.h>
-#include <game/event.h>
+#include <game/event/event.h>
 
 enum class TriggerType {
     IN_PROXIMITY,

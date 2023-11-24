@@ -1,6 +1,6 @@
 #include "interactable.h"
-#include "../eventparser.h"
-#include "../game.h"
+#include <game/event/eventparser.h>
+#include <game/game.h>
 
 #include <core/entity/entity.h>
 #include <core/game.h>

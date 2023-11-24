@@ -1,6 +1,6 @@
 #include "event.h"
 #include "eventparser.h"
-#include "strutils.h"
+#include <game/strutils.h>
 
 void EventManager::RegisterEvent(const std::string& id, void(*event)(const EventArgs&)) {
     events_[id] = [=](const EventArgs& args) {
