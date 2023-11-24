@@ -40,7 +40,6 @@ void ParseUniforms(std::shared_ptr<Material>& m, const json& uniformsJson) {
         if (it == uniforms.end())
             continue;
         const ShaderUniform& uniform = *it;
-        std::cout << uniform.name << std::endl;
         switch (uniform.type) {
             case GL_FLOAT:
                 float f;
