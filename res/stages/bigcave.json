@@ -92,8 +92,7 @@
             },
             "Physics::RigidBody": {
                 "mass": 0,
-                "colliderFrom": "MESH",
-                "colliderMeshes": [ 0 ]
+                "colliderFrom": "MESH"
             }
         }
     ]
