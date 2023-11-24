@@ -41,9 +41,7 @@ void Mesh::Bind() const {
 }
 
 void Mesh::Render() const {
-    if (cullFaces)
-        glEnable(GL_CULL_FACE);
-    else
+    if (!cullFaces)
         glDisable(GL_CULL_FACE);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }

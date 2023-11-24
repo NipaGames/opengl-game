@@ -111,6 +111,12 @@ std::vector<std::pair<std::string, std::shared_ptr<Material>>> ParseMaterials(co
             spdlog::warn("Texture '{}' not found!", textureJson["src"]);
         }
     }
+
+    if (materialJson.contains("cullFaces")) {
+        if (!materialJson["cullFaces"].is_boolean())
+            return ParsingException(invalidMaterials);
+        m->cullFaces = materialJson["cullFaces"];
+    }
     
     if (materialJson.contains("uniforms")) {
         const json& uniformsJson = materialJson["uniforms"];

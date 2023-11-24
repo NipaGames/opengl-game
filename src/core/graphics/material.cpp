@@ -38,6 +38,11 @@ void Material::Use(const Shader& shader) const {
         shader.SetUniform(("material." + vec3.first).c_str(), vec3.second);
     for (const auto& vec4 : vec4Uniforms_)
         shader.SetUniform(("material." + vec4.first).c_str(), vec4.second);
+
+    if (cullFaces)
+        glEnable(GL_CULL_FACE);
+    else
+        glDisable(GL_CULL_FACE);
 }
 
 void Material::Use() const {

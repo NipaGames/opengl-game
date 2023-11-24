@@ -332,6 +332,7 @@
         "texture": {
             "src": "church-glass.jpg"
         },
+        "cullFaces": false,
         "uniforms": {
             "color": 0.2,
             "opacity": 0.25
