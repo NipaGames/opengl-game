@@ -117,7 +117,35 @@
         "size": 10,
         "defaultMaterial": "MAT_TILE:CHURCH",
         "materialOverrides": {
-            "1": "MAT_CHURCH_GLASS"
+            "1": "MAT_CHURCH_GLASS",
+            "2": "MAT_TILE:CHURCH_CEILING_1",
+            "3": "MAT_TILE:CHURCH_CEILING_2"
+        }
+    },
+    {
+        "model": "OBJ_BRIDGE",
+        "size": 1,
+        "defaultMaterial": "MAT_WOOD:BRIDGE"
+    },
+    {
+        "model": "OBJ_TORCH_2",
+        "size": 2,
+        "defaultMaterial": "MAT_WOOD:POLE",
+        "materialOverrides": {
+            "1": "MAT_TORCH_FLAME:2"
+        }
+    },
+    {
+        "model": "OBJ_FENCE",
+        "size": 0.25,
+        "defaultMaterial": "MAT_FENCE"
+    },
+    {
+        "model": "OBJ_MAN",
+        "size": 0.5,
+        "defaultMaterial": "BLOODY_POLE",
+        "materialOverrides": {
+            "2": "GUYS_EYES"
         }
     }
 ]

@@ -7,6 +7,7 @@
 #include <core/physics/component/rigidbody.h>
 #include <core/entity/serializable.h>
 #include <core/eventhandler.h>
+
 #include <BulletDynamics/Character/btKinematicCharacterController.h>
 #include <BulletCollision/CollisionDispatch/btGhostObject.h>
 
@@ -14,6 +15,11 @@ enum class PlayerEvent {
     ATTACK,
     ATTACK_ANIMATION_COMPLETE,
     GAME_OVER
+};
+
+enum class BufferActionType {
+    NONE,
+    ATTACK
 };
 
 class PlayerController : public Component<PlayerController> {
@@ -37,8 +43,13 @@ private:
     float attackCooldown_ = 1.0f;
     float attackStart_ = -attackCooldown_;
     float attackRange_ = 2.5f;
+    // see dark souls input buffering
+    BufferActionType actionBuffer_ = BufferActionType::NONE;
+    // buffering time (seconds)
+    float bufferOnset_ = 0.25f;
 
     void CheckForAttacks();
+    void ClearBuffer();
 public:
     EventHandler<PlayerEvent> eventHandler;
     float sensitivity;

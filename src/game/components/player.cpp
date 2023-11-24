@@ -39,6 +39,10 @@ void PlayerController::CheckForAttacks() {
     });
 }
 
+void PlayerController::ClearBuffer() {
+    actionBuffer_ = BufferActionType::NONE;
+}
+
 void PlayerController::Start() {
     sensitivity = MonkeyGame::GetGame()->controlsConfig.sensitivity;
     controlSpeedModifier_ = 1.0f;
@@ -87,10 +91,19 @@ void PlayerController::Update() {
     isMoving_ = false;
     isInInputMode_ = Input::IS_MOUSE_LOCKED;
     if (isInInputMode_) {
-        if (Input::IsMouseButtonPressedDown(GLFW_MOUSE_BUTTON_1) && glfwGetTime() - attackStart_ > attackCooldown_) {
+        bool m1Pressed = Input::IsMouseButtonPressedDown(GLFW_MOUSE_BUTTON_1);
+        bool attack = (m1Pressed || actionBuffer_ == BufferActionType::ATTACK)
+                    && glfwGetTime() - attackStart_ > attackCooldown_;
+        
+        if (attack) {
             eventHandler.Dispatch(PlayerEvent::ATTACK);
+            ClearBuffer();
             attackStart_ = (float) glfwGetTime();
         }
+        else if (m1Pressed && glfwGetTime() - attackStart_ > attackCooldown_ - bufferOnset_) {
+            actionBuffer_ = BufferActionType::ATTACK;
+        }
+        
         if (Input::IsKeyDown(GLFW_KEY_W))
             velocity += front;
         if (Input::IsKeyDown(GLFW_KEY_S))

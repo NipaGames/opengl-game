@@ -158,7 +158,7 @@ bool MeshRenderer::IsOnFrustum(const ViewFrustum& frustum) const {
     if (alwaysOnFrustum)
         return true;
     
-    glm::vec3 center = parent->transform->position + glm::vec3(parent->transform->rotation * glm::vec4(aabb_.center * parent->transform->size, 1.0f));
+    glm::vec3 center = modelMatrix_  * glm::vec4(aabb_.center, 1.0f);
 
     // Scaled orientation
     glm::vec3 right = modelMatrix_[0] * aabb_.extents.x;

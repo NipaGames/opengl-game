@@ -71,7 +71,17 @@
                 "tiling": 1.5
             },
             "CHURCH": {
-                "tiling": 25
+                "tiling": 15
+            },
+            "CHURCH_CEILING_1": {
+                "tiling": 15,
+                "color": 0.5,
+                "ambientColor": 0.04
+            },
+            "CHURCH_CEILING_2": {
+                "tiling": 15,
+                "color": 0.25,
+                "ambientColor": 0.03
             }
         }
     },
@@ -140,6 +150,9 @@
             },
             "SWORD": {
                 "ambientColor": 0.25
+            },
+            "BRIDGE": {
+                "tiling": 75
             }
         }
     },
@@ -199,6 +212,11 @@
         "uniforms": {
             "color": [ 1.0, 0.8, 0.25 ],
             "opacity": 0.75
+        },
+        "children": {
+            "2": {
+                "color": [ 1.0, 0.5, 0.25 ]
+            }
         }
     },
     {
@@ -212,6 +230,16 @@
             "specularStrength": 0,
             "color": 0.5,
             "tiling": [ 1, 7 ]
+        }
+    },
+    {
+        "id": "MAT_FENCE",
+        "shader": "LIT",
+        "uniforms": {
+            "specularHighlight": 8,
+            "specularStrength": 0,
+            "color": 0.5,
+            "ambientColor": 0.05
         }
     },
     {
@@ -343,6 +371,25 @@
         "shader": "UNLIT",
         "uniforms": {
             "opacity": 0.0
+        }
+    },
+    {
+        "id": "BLOODY_POLE",
+        "shader": "LIT",
+        "texture": {
+            "src": "bloody-pole.jpg"
+        },
+        "uniforms": {
+            "color": 1.0,
+            "specularStrength": 0.5,
+            "specularHighlight": 8
+        }
+    },
+    {
+        "id": "GUYS_EYES",
+        "shader": "UNLIT",
+        "uniforms": {
+            "color": 1.0
         }
     }
 ]

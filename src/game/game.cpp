@@ -266,8 +266,8 @@ void MonkeyGame::Start() {
     hud.CreateHUDElements();
 
     GAME->resources.stageManager.LoadStage("teststage");
+    GAME->resources.stageManager.LoadStage("sanctuary-entrance");
     SpawnPlayer();
-    GAME->resources.stageManager.LoadStage("bigcave");
 }
 
 Entity& MonkeyGame::GetPlayer() {

@@ -1,0 +1,262 @@
+{
+    "id": "sanctuary-entrance",
+    "data": {
+        "location": "Sanctuary Entrance"
+    },
+    "entities": [
+        {
+            "id": "Player",
+            "PlayerController": {
+                "spawnPosition": [ 41, -80, -42 ]
+            }
+        },
+        {
+            "Lights::DirectionalLight": {
+                "dir": [ 0, -1, 0 ],
+                "intensity": 0.05,
+                "color": [ 0.75, 0.5, 0.35 ]
+            }
+        },
+        {
+            "Transform": {
+                "position": [ -10, -45, 22 ]
+            },
+            "Lights::Spotlight": {
+                "cutOffMin": 0.98,
+                "cutOffMax": 0.95,
+                "range": 25,
+                "dir": [ -0.25, -0.8, 0.4 ],
+                "intensity": 0.15,
+                "color": [ 1.0, 0.0, 0.0 ]
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 0, -91, 0 ]
+            },
+            "Lights::DirectionalLightPlane": {
+                "dir": [ 0, 1, 0 ],
+                "intensity": 0.75,
+                "color": [ 1.0, 0.5, 0.35 ],
+                "range": 4
+            }
+        },
+        {
+            "id": "lava",
+            "Transform": {
+                "position": [ 0, -88, 0 ],
+                "rotation": [ 0, 45, 0 ],
+                "size": [ 150, 0.5, 500 ]
+            },
+            "MeshRenderer": {
+                "meshes": [
+                    {
+                        "type": "TERRAIN",
+                        "tiling": [ 50, 10 ],
+                        "material": "MAT_LAVA"
+                    }
+                ],
+                "isStatic": true
+            },
+            "VerticalKillPlane": {
+                "isLava": true
+            }
+        },
+        {
+            "id": "bridge",
+            "Transform": {
+                "position": [ 10, -84.2, -23.5 ],
+                "rotation": [ 0, 60, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_BRIDGE",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "id": "bigcave",
+            "Transform": {
+                "position": [ 0, -70, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_BIG_CAVE",
+                "alwaysOnFrustum": true,
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "MESH",
+                "colliderMeshes": [ 0 ]
+            }
+        },
+        {
+            "id": "church",
+            "Transform": {
+                "position": [ -15, -58, 30 ],
+                "rotation": [ 0, 60, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_CHURCH",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "MESH"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 25, -77, 7 ],
+                "rotation": [ 10, 150, 0 ]
+            },
+            "Lights::PointLight": {
+                "color": [ 1.0, 0.5, 0.25 ],
+                "range": 3.5
+            },
+            "MeshRenderer": {
+                "object": "OBJ_TORCH_2",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 32, -68, 47 ],
+                "rotation": [ 10, 120, 0 ]
+            },
+            "Lights::PointLight": {
+                "color": [ 1.0, 0.5, 0.25 ],
+                "range": 3.5
+            },
+            "MeshRenderer": {
+                "object": "OBJ_TORCH_2",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 4, -68, 18 ],
+                "rotation": [ 0, 50, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_FENCE",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 0.1, -68, 15 ],
+                "rotation": [ 0, 60, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_FENCE",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ -4.25, -68, 12.5 ],
+                "rotation": [ 0, 70, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_FENCE",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ -9, -68, 10.75 ],
+                "rotation": [ 0, 60, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_FENCE",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ -8.65, -64, 10.75 ],
+                "rotation": [ 10, 150, 0 ]
+            },
+            "Lights::PointLight": {
+                "color": [ 1.0, 0.5, 0.25 ],
+                "range": 3.5
+            },
+            "MeshRenderer": {
+                "object": "OBJ_TORCH_2",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 0.5, -64, 15 ],
+                "rotation": [ 10, 120, 0 ]
+            },
+            "Lights::PointLight": {
+                "color": [ 1.0, 0.5, 0.25 ],
+                "range": 3.5
+            },
+            "MeshRenderer": {
+                "object": "OBJ_TORCH_2",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            }
+        },
+        {
+            "Transform": {
+                "position": [ -4, -68, 12 ],
+                "rotation": [ 5, -120, -10 ]
+            },
+            "Lights::PointLight": {
+                "color": [ 1.0, 0.5, 0.25 ],
+                "range": 3.5
+            },
+            "MeshRenderer": {
+                "object": "OBJ_MAN",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            },
+            "LivingEntity": {
+                "health": 1,
+                "xpReceived": 666
+            }
+        }
+    ]
+}
