@@ -6,26 +6,22 @@
 
 namespace Lights {
     enum class LightType {
-        NONE,
-        POINT,
-        DIRECTIONAL,
-        SPOTLIGHT,
-        DIRECTIONAL_PLANE
+        NONE = 0,
+        POINT = 1,
+        SPOTLIGHT = 2,
+        DIRECTIONAL = 3,
+        DIRECTIONAL_PLANE = 4
     };
     
-    inline int POINT_LIGHTS_INDEX = 0;
-    inline int DIRECTIONAL_LIGHTS_INDEX = 0;
-    inline int DIRECTIONAL_LIGHT_PLANES_INDEX = 0;
-    inline int SPOTLIGHTS_INDEX = 0;
+    inline int LIGHTS_INDEX = 0;
+    const inline int MAX_LIGHTS = 32;
 
     // this is fucking evil right here
-    // we have max 8 lights, so divide this into 8 total 2 bit thingies
-    // one 2 bit thingy contains the light enum (they take 2 bits,
-    // will have to change if I add more light types)
-    inline uint16_t RESERVED_LIGHTS = 0x0;
+    // 32 lights, 1 bit for reserved, 0 for not
+    inline uint32_t RESERVED_LIGHTS = 0x0;
 
-    void ReserveIndex(int, LightType);
-    bool IsReserved(int, LightType);
+    void ReserveIndex(int);
+    bool IsReserved(int);
     int& GetIndex(LightType);
     void ResetIndices();
 
@@ -44,7 +40,7 @@ namespace Lights {
         IComponent* Clone() const override;
         void Start() override;
         LightType GetType() { return type_; }
-        virtual void UseAsNext() { }
+        virtual void UseAsNext();
         virtual void ApplyLight(GLuint) const;
         virtual void ApplyForAllShaders() const;
     };
@@ -54,7 +50,6 @@ namespace Lights {
         DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
 
         PointLight() { Light::SetType(LightType::POINT); }
-        void UseAsNext() override;
         void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(PointLight);
@@ -64,7 +59,6 @@ namespace Lights {
         DEFINE_COMPONENT_DATA_VALUE_DEFAULT(glm::vec3, dir);
         
         DirectionalLight() { Light::SetType(LightType::DIRECTIONAL); }
-        void UseAsNext() override;
         void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(DirectionalLight);
@@ -75,7 +69,6 @@ namespace Lights {
         DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
         
         DirectionalLightPlane() { Light::SetType(LightType::DIRECTIONAL_PLANE); }
-        void UseAsNext() override;
         void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(DirectionalLightPlane);
@@ -88,7 +81,6 @@ namespace Lights {
         DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
 
         Spotlight() { Light::SetType(LightType::SPOTLIGHT); }
-        void UseAsNext() override;
         void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(Spotlight);

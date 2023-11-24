@@ -1,39 +1,24 @@
 #version 330 core
 out vec4 color;
 
-struct PointLight {
+#define LIGHT_NONE 0
+#define LIGHT_POINT_LIGHT 1
+#define LIGHT_SPOTLIGHT 2
+#define LIGHT_DIRECTIONAL_LIGHT 3
+#define LIGHT_DIRECTIONAL_LIGHT_PLANE 4
+
+struct Light {
   bool enabled;
+  vec3 color;
+  float intensity;
+  int type;
+
   vec3 pos;
-  vec3 color;
   float range;
-  float intensity;
-};
-
-struct DirectionalLight {
-  bool enabled;
   vec3 dir;
-  vec3 color;
-  float intensity;
-};
-
-struct DirectionalLightPlane {
-  bool enabled;
-  vec3 dir;
-  vec3 color;
-  float intensity;
   float y;
-  float range;
-};
-
-struct Spotlight {
-  bool enabled;
-  vec3 pos;
-  vec3 dir;
   float cutOffMin;
   float cutOffMax;
-  vec3 color;
-  float range;
-  float intensity;
 };
 
 struct Fog {
@@ -61,14 +46,9 @@ in vec3 fragmentPos;
 in vec2 fragmentTexCoord;
 in vec3 fragmentViewPos;
 
-#define MAX_POINT_LIGHTS 8
-uniform PointLight[MAX_POINT_LIGHTS] pointLights;
-#define MAX_DIRECTIONAL_LIGHTS 8
-uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
-#define MAX_DIRECTIONAL_LIGHT_PLANES 8
-uniform DirectionalLightPlane[MAX_DIRECTIONAL_LIGHT_PLANES] directionalLightPlanes;
-#define MAX_SPOT_LIGHTS 8
-uniform Spotlight[MAX_SPOT_LIGHTS] spotlights;
+#define MAX_LIGHTS 32
+uniform Light[MAX_LIGHTS] lights;
+
 uniform Material material;
 uniform sampler2D textureSampler;
 
@@ -81,27 +61,24 @@ vec3 dirLight(vec3 lightDir, vec3 lightColor, vec3 normal) {
   return diffuse + specular;
 }
 
-vec3 calcDirectionalLight(DirectionalLight light, vec3 normal) {
+vec3 calcDirectionalLight(Light light, vec3 normal) {
   return dirLight(light.dir, light.color, normal) * light.intensity;
 }
 
-vec3 calcDirectionalLightPlane(DirectionalLightPlane light, vec3 normal) {
+vec3 calcDirectionalLightPlane(Light light, vec3 normal) {
   return (dirLight(light.dir, light.color, normal) * light.intensity) / max(1.0, pow(abs(distance(fragmentPos.y, light.y)) / light.range, 2));
 }
 
-vec3 calcPointLight(PointLight light, vec3 normal) {
+vec3 calcPointLight(Light light, vec3 normal) {
   vec3 lightDir = normalize(light.pos - fragmentPos);
   return (dirLight(lightDir, light.color, normal) * light.intensity) / max(1.0, pow(abs(distance(fragmentPos, light.pos)) / light.range, 2));
 }
 
-vec3 calcSpotlight(Spotlight light, vec3 normal) {
+vec3 calcSpotlight(Light light, vec3 normal) {
   vec3 lightDir = normalize(light.pos - fragmentPos);
   float theta = dot(lightDir, normalize(-light.dir));
   if(theta > light.cutOffMax) {
-    PointLight pointLight;
-    pointLight.pos = light.pos;
-    pointLight.color = light.color;
-    pointLight.range = light.range;
+    Light pointLight = light;
     pointLight.intensity = clamp((theta - light.cutOffMax) / (light.cutOffMin - light.cutOffMax), 0.0, 1.0) * light.intensity;
     return calcPointLight(pointLight, normal);
   }
@@ -121,21 +98,26 @@ void main() {
   vec3 col = vec3(0.0);
   vec3 materialColor = material.color + material.tint;
 
-  for(int i = 0; i < pointLights.length(); i++) {
-    if (pointLights[i].enabled == true)
-      col += calcPointLight(pointLights[i], normal) * material.color;
-  }
-  for(int i = 0; i < directionalLights.length(); i++) {
-    if (directionalLights[i].enabled == true)
-      col += calcDirectionalLight(directionalLights[i], normal) * material.color;
-  }
-  for(int i = 0; i < directionalLightPlanes.length(); i++) {
-    if (directionalLightPlanes[i].enabled == true)
-      col += calcDirectionalLightPlane(directionalLightPlanes[i], normal) * material.color;
-  }
-  for(int i = 0; i < spotlights.length(); i++) {
-    if (spotlights[i].enabled == true)
-      col += calcSpotlight(spotlights[i], normal) * material.color;
+  for(int i = 0; i < lights.length(); i++) {
+    if (!lights[i].enabled)
+      continue;
+    switch (lights[i].type) {
+      case LIGHT_POINT_LIGHT:
+        col += calcPointLight(lights[i], normal) * material.color;
+        break;
+      case LIGHT_SPOTLIGHT:
+        col += calcSpotlight(lights[i], normal) * material.color;
+        break;
+      case LIGHT_DIRECTIONAL_LIGHT:
+        col += calcDirectionalLight(lights[i], normal) * material.color;
+        break;
+      case LIGHT_DIRECTIONAL_LIGHT_PLANE:
+        col += calcDirectionalLightPlane(lights[i], normal) * material.color;
+        break;
+      case LIGHT_NONE:
+      default:
+        break;
+    }
   }
   // more advanced ambient lighting (not necessary):
   // col += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;

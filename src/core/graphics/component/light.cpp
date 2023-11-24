@@ -5,31 +5,21 @@
 using namespace Lights;
 
 namespace Lights {
-    void ReserveIndex(int index, LightType type) {
-        RESERVED_LIGHTS |= (int) type << index * 2;
+    void ReserveIndex(int index) {
+        RESERVED_LIGHTS |= (1 << index);
     }
     
-    bool IsReserved(int i, LightType t) {
-        return (Lights::RESERVED_LIGHTS >> i * 2) == (int) t;
+    bool IsReserved(int i) {
+        return (RESERVED_LIGHTS >> i) == 0x1;
     }
 
     void ResetIndices() {
-        POINT_LIGHTS_INDEX = 0;
-        DIRECTIONAL_LIGHTS_INDEX = 0;
-        SPOTLIGHTS_INDEX = 0;
+        LIGHTS_INDEX = 0;
     }
 
     int LIGHT_NONE_INDEX = -1;
     int& GetIndex(LightType type) {
-        switch (type) {
-            case LightType::POINT:
-                return POINT_LIGHTS_INDEX;
-            case LightType::DIRECTIONAL:
-                return DIRECTIONAL_LIGHTS_INDEX;
-            case LightType::SPOTLIGHT:
-                return SPOTLIGHTS_INDEX;
-        }
-        return LIGHT_NONE_INDEX;
+        return LIGHTS_INDEX;
     }
 
     Light::~Light() {
@@ -41,9 +31,13 @@ namespace Lights {
         if (!isAdded)
             GAME->GetRenderer().AddLight(this);
     }
-
+    
+    void Light::UseAsNext() {
+        lightUniform_ = "lights[" + std::to_string(LIGHTS_INDEX++) + "]";
+    }
     void Light::ApplyLight(GLuint shader) const {
         glUniform1i(glGetUniformLocation(shader, std::string(lightUniform_ + ".enabled").c_str()), GL_TRUE);
+        glUniform1i(glGetUniformLocation(shader, std::string(lightUniform_ + ".type").c_str()), static_cast<int>(type_));
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".color").c_str()), color.x, color.y, color.z);
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform_ + ".intensity").c_str()), intensity);
     }
@@ -74,10 +68,6 @@ namespace Lights {
         }
         return c;
     }
-
-    void PointLight::UseAsNext() {
-        lightUniform_ = "pointLights[" + std::to_string(POINT_LIGHTS_INDEX++) + "]";
-    }
     
     void PointLight::ApplyLight(GLuint shader) const {
         Light::ApplyLight(shader);
@@ -85,17 +75,11 @@ namespace Lights {
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform_ + ".range").c_str()), range);
     }
 
-    void DirectionalLight::UseAsNext() {
-        lightUniform_ = "directionalLights[" + std::to_string(DIRECTIONAL_LIGHTS_INDEX++) + "]";
-    }
     void DirectionalLight::ApplyLight(GLuint shader) const {
-        Light::ApplyLight(shader);
+        Light::ApplyLight(shader);        
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".dir").c_str()), dir.x, dir.y, dir.z);
     }
 
-    void DirectionalLightPlane::UseAsNext() {
-        lightUniform_ = "directionalLightPlanes[" + std::to_string(DIRECTIONAL_LIGHT_PLANES_INDEX++) + "]";
-    }
     void DirectionalLightPlane::ApplyLight(GLuint shader) const {
         Light::ApplyLight(shader);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".dir").c_str()), dir.x, dir.y, dir.z);
@@ -103,9 +87,6 @@ namespace Lights {
         glUniform1f(glGetUniformLocation(shader, std::string(lightUniform_ + ".range").c_str()), range);
     }
 
-    void Spotlight::UseAsNext() {
-        lightUniform_ = "spotlights[" + std::to_string(SPOTLIGHTS_INDEX++) + "]";
-    }
     void Spotlight::ApplyLight(GLuint shader) const {
         Light::ApplyLight(shader);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".dir").c_str()), dir.x, dir.y, dir.z);

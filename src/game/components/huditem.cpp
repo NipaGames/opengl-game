@@ -54,8 +54,8 @@ void ItemInHand::FixPosition() {
     fixedItemStartPos_.x *= (9.0f * w) / (16.0f * h);
 }
 
-const int HUD_LIGHT_INDEX = 0;
-const std::string HUD_LIGHT_NAME = "directionalLights[" + std::to_string(HUD_LIGHT_INDEX) + "]";
+const int HUD_LIGHT_INDEX = 31;
+const std::string HUD_LIGHT_NAME = "lights[" + std::to_string(HUD_LIGHT_INDEX) + "]";
 
 glm::vec3 GetHUDLightDir() {
     return -GAME->GetRenderer().GetCamera().front;
@@ -65,8 +65,9 @@ void ItemInHand::Start() {
     player_ = MonkeyGame::GetGame()->GetPlayer().GetComponent<PlayerController>();
     itemStartPos_ = parent->transform->position;
     
-    Lights::ReserveIndex(HUD_LIGHT_INDEX, Lights::LightType::DIRECTIONAL);
+    Lights::ReserveIndex(HUD_LIGHT_INDEX);
     HUDItemRenderer::SHADER_LIT.Use();
+    HUDItemRenderer::SHADER_LIT.SetUniform(std::string(HUD_LIGHT_NAME + ".type").c_str(), static_cast<int>(Lights::LightType::DIRECTIONAL));
     HUDItemRenderer::SHADER_LIT.SetUniform(std::string(HUD_LIGHT_NAME + ".enabled").c_str(), true);
     HUDItemRenderer::SHADER_LIT.SetUniform(std::string(HUD_LIGHT_NAME + ".intensity").c_str(), .1f);
     HUDItemRenderer::SHADER_LIT.SetUniform(std::string(HUD_LIGHT_NAME + ".color").c_str(), glm::vec3(1.0f));
