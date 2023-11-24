@@ -25,6 +25,7 @@ private:
     Shader shader_;
     Texture::TextureID texture_ = TEXTURE_NONE;
 public:
+    bool cullFaces = true;
     Material() { RestoreDefaultUniforms(); }
     Material(const Shader& shader) : shader_(shader) { RestoreDefaultUniforms(); }
     Material(const Shader& shader, Texture::TextureID textureId) : shader_(shader), texture_(textureId) { RestoreDefaultUniforms(); }
