@@ -69,6 +69,9 @@
             "LEVER": {
                 "color": 0.5,
                 "tiling": 1.5
+            },
+            "CHURCH": {
+                "tiling": 25
             }
         }
     },
@@ -104,7 +107,15 @@
             },
             "FLOOR": {
                 "color": 0.5,
-                "ambientColor": [0.07, 0.07, 0.05]
+                "ambientColor": [ 0.07, 0.07, 0.05 ]
+            },
+            "LAVA_CAVE": {
+                "color": 0.5,
+                "ambientColor": 0.05,
+                "fog.use": true,
+                "fog.color": [ 0.075, 0.035, 0.025 ],
+                "fog.near": 0.1,
+                "fog.far": 100
             }
         }
     },
@@ -240,6 +251,16 @@
         }
     },
     {
+        "id": "MAT_LAVA",
+        "shader": "LAVA",
+        "texture": {
+            "src": "lava.jpg"
+        },
+        "uniforms": {
+            "tiling": [ 0.5, 1.25 ]
+        }
+    },
+    {
         "id": "MAT_INSTRUCTIONS",
         "shader": "LIT",
         "texture": {
@@ -303,6 +324,17 @@
             "ambientColor": 0.1,
             "specularStrength": 0.25,
             "specularHighlight": 4
+        }
+    },
+    {
+        "id": "MAT_CHURCH_GLASS",
+        "shader": "UNLIT",
+        "texture": {
+            "src": "church-glass.jpg"
+        },
+        "uniforms": {
+            "color": 0.2,
+            "opacity": 0.25
         }
     },
     {

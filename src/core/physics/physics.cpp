@@ -1,4 +1,5 @@
 #include "physics.h"
+#include <BulletCollision/CollisionDispatch/btGhostObject.h>
 #include <core/game.h>
 
 void Physics::Init() {

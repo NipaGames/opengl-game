@@ -65,6 +65,9 @@ namespace Lights {
         case LightType::DIRECTIONAL:
             c = new DirectionalLight(*static_cast<const DirectionalLight*>(this));
             break;
+        case LightType::DIRECTIONAL_PLANE:
+            c = new DirectionalLightPlane(*static_cast<const DirectionalLightPlane*>(this));
+            break;
         case LightType::SPOTLIGHT:
             c = new Spotlight(*static_cast<const Spotlight*>(this));
             break;
@@ -88,6 +91,16 @@ namespace Lights {
     void DirectionalLight::ApplyLight(GLuint shader) const {
         Light::ApplyLight(shader);
         glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".dir").c_str()), dir.x, dir.y, dir.z);
+    }
+
+    void DirectionalLightPlane::UseAsNext() {
+        lightUniform_ = "directionalLightPlanes[" + std::to_string(DIRECTIONAL_LIGHT_PLANES_INDEX++) + "]";
+    }
+    void DirectionalLightPlane::ApplyLight(GLuint shader) const {
+        Light::ApplyLight(shader);
+        glUniform3f(glGetUniformLocation(shader, std::string(lightUniform_ + ".dir").c_str()), dir.x, dir.y, dir.z);
+        glUniform1f(glGetUniformLocation(shader, std::string(lightUniform_ + ".y").c_str()), parent->transform->position.y);
+        glUniform1f(glGetUniformLocation(shader, std::string(lightUniform_ + ".range").c_str()), range);
     }
 
     void Spotlight::UseAsNext() {

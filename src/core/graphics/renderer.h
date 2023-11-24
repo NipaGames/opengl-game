@@ -40,6 +40,7 @@ private:
     glm::ivec2 viewportSize_;
     int maxRenderedPointLights_ = 0;
     int maxRenderedDirLights_ = 0;
+    int maxRenderedDirPlanes_ = 0;
     int maxRenderedSpotlights_ = 0;
     std::vector<GLuint> shaders_;
     std::vector<MeshRenderer*> entitiesOnFrustum_;

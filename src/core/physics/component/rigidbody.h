@@ -22,6 +22,7 @@ namespace Physics {
         btRigidBody* rigidBody = nullptr;
         DEFINE_COMPONENT_DATA_VALUE(btCollisionShape*, collider, nullptr);
         DEFINE_COMPONENT_DATA_VALUE(ColliderConstructor, colliderFrom, ColliderConstructor::TRANSFORM);
+        DEFINE_COMPONENT_DATA_VALUE_VECTOR(int, colliderMeshes);
         DEFINE_COMPONENT_DATA_VALUE(float, mass, 1.0f);
         DEFINE_COMPONENT_DATA_VALUE(bool, interpolate, false);
         DEFINE_COMPONENT_DATA_VALUE(bool, overwriteTransform, true);

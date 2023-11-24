@@ -106,5 +106,18 @@
         "materialOverrides": {
             "1": "MAT_METAL:SWORD"
         }
+    },
+    {
+        "model": "OBJ_BIG_CAVE",
+        "size": 1.5,
+        "defaultMaterial": "MAT_CAVE:LAVA_CAVE"
+    },
+    {
+        "model": "OBJ_CHURCH",
+        "size": 10,
+        "defaultMaterial": "MAT_TILE:CHURCH",
+        "materialOverrides": {
+            "1": "MAT_CHURCH_GLASS"
+        }
     }
 ]

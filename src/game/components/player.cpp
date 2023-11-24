@@ -63,17 +63,20 @@ void PlayerController::Start() {
     Spawn();
 }
 
+bool RayTest(const btVector3& from, const btVector3& to) {
+    btCollisionWorld::ClosestRayResultCallback res(from, to);
+    Physics::dynamicsWorld->rayTest(from, to, res);
+    return res.hasHit();
+}
+
 void PlayerController::Update() {
     auto& cam = GAME->GetRenderer().GetCamera();
     glm::vec3 front = cam.front;
     front.y = 0.0f;
     front = glm::normalize(front);
 
-    btVector3 rayFrom(parent->transform->position.x, parent->transform->position.y, parent->transform->position.z);
-    btVector3 rayTo(rayFrom.getX(), rayFrom.getY() - 1.5f, rayFrom.getZ());
-    btCollisionWorld::ClosestRayResultCallback res(rayFrom, rayTo);
-    Physics::dynamicsWorld->rayTest(rayFrom, rayTo, res);
-    isOnGround_ = res.hasHit() || characterController_->onGround();
+    btVector3 groundRay(parent->transform->btGetPos().getX(), parent->transform->btGetPos().getY() - 1.5f, parent->transform->btGetPos().getZ());
+    isOnGround_ = RayTest(parent->transform->btGetPos(), groundRay) || characterController_->onGround();
 
     if (gameOver_) {
         controlSpeedModifier_ -= (float) GAME->GetDeltaTime() / speedModifierTime_;
@@ -119,7 +122,10 @@ void PlayerController::Update() {
                     ghostObject_->setCollisionFlags(ghostObject_->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
                 }
             }
-            if (isOnGround_) {
+            btVector3 rayFrom(parent->transform->position.x, parent->transform->position.y + 1.0f, parent->transform->position.z);
+            btVector3 rayTo = rayFrom + Physics::GLMVectorToBtVector3(velocity) * 2.0f;
+            bool isWalkingToWall = RayTest(rayFrom, rayTo);
+            if (isOnGround_ && !isWalkingToWall) {
                 characterController_->setStepHeight(stepHeight_);
                 characterController_->setMaxPenetrationDepth(stepHeight_);
             }
@@ -185,6 +191,8 @@ void Player::SetMaxHealth(int health) {
 }
 
 void Player::Die() {
+    if (isDead_)
+        return;
     LivingEntity::Die();
     parent->GetComponent<PlayerController>()->ActivateGameOverState();
     MonkeyGame::GetGame()->hud.GameOver();

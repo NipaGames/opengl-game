@@ -132,6 +132,11 @@ void Renderer::UpdateLighting() {
                     glUniform1i(glGetUniformLocation(shader, std::string("directionalLights[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
             }
         }
+        if (Lights::DIRECTIONAL_LIGHT_PLANES_INDEX < maxRenderedDirPlanes_) {
+            for (int i = Lights::DIRECTIONAL_LIGHT_PLANES_INDEX; i < maxRenderedDirPlanes_; i++) {
+                glUniform1i(glGetUniformLocation(shader, std::string("directionalLightPlanes[" + std::to_string(i) + "].enabled").c_str()), GL_FALSE);
+            }
+        }
         if (Lights::SPOTLIGHTS_INDEX < maxRenderedSpotlights_) {
             for (int i = Lights::SPOTLIGHTS_INDEX; i < maxRenderedSpotlights_; i++) {
                 if (!Lights::IsReserved(Lights::SPOTLIGHTS_INDEX, Lights::LightType::SPOTLIGHT))
@@ -141,6 +146,7 @@ void Renderer::UpdateLighting() {
     }
     maxRenderedPointLights_ = std::max(Lights::POINT_LIGHTS_INDEX, maxRenderedPointLights_);
     maxRenderedDirLights_ = std::max(Lights::DIRECTIONAL_LIGHTS_INDEX, maxRenderedDirLights_);
+    maxRenderedDirLights_ = std::max(Lights::DIRECTIONAL_LIGHT_PLANES_INDEX, maxRenderedDirPlanes_);
     maxRenderedSpotlights_ = std::max(Lights::SPOTLIGHTS_INDEX, maxRenderedSpotlights_);
 }
 

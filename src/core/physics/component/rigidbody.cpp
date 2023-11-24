@@ -33,6 +33,8 @@ btCollisionShape* RigidBody::CreateMeshCollider() {
     meshData_ = new btTriangleIndexVertexArray();
     const std::vector<std::shared_ptr<Mesh>>& meshes = parent->GetComponent<MeshRenderer>()->meshes;
     for (int meshIndex = 0; meshIndex < meshes.size(); meshIndex++) {
+        if (colliderMeshes.size() > 0 && std::find(colliderMeshes.begin(), colliderMeshes.end(), meshIndex) == colliderMeshes.end())
+            continue;
         const std::shared_ptr<Mesh>& m = meshes.at(meshIndex);
         btIndexedMesh tempMesh;
         meshData_->addIndexedMesh(tempMesh, PHY_FLOAT);
@@ -127,10 +129,11 @@ void RigidBody::Start() {
     EnableRotation(enableRotation_);
     rigidBody->setRestitution(0.0f);
     rigidBody->setDamping(0.0f, 1.0f);
+    rigidBody->setCollisionFlags(rigidBody->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     if (doesMassAffectGravity)
         rigidBody->setGravity(rigidBody->getGravity() * mass);
     if (disableCollisions)
-        rigidBody->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+        rigidBody->setCollisionFlags(rigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 }
 
 void RigidBody::UpdateTransform() {

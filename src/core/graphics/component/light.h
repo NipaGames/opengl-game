@@ -9,11 +9,13 @@ namespace Lights {
         NONE,
         POINT,
         DIRECTIONAL,
-        SPOTLIGHT
+        SPOTLIGHT,
+        DIRECTIONAL_PLANE
     };
     
     inline int POINT_LIGHTS_INDEX = 0;
     inline int DIRECTIONAL_LIGHTS_INDEX = 0;
+    inline int DIRECTIONAL_LIGHT_PLANES_INDEX = 0;
     inline int SPOTLIGHTS_INDEX = 0;
 
     // this is fucking evil right here
@@ -66,6 +68,17 @@ namespace Lights {
         void ApplyLight(GLuint) const;
     };
     REGISTER_COMPONENT(DirectionalLight);
+
+    class DirectionalLightPlane : public Light {
+    public:
+        DEFINE_COMPONENT_DATA_VALUE_DEFAULT(glm::vec3, dir);
+        DEFINE_COMPONENT_DATA_VALUE(float, range, 20.0f);
+        
+        DirectionalLightPlane() { Light::SetType(LightType::DIRECTIONAL_PLANE); }
+        void UseAsNext() override;
+        void ApplyLight(GLuint) const;
+    };
+    REGISTER_COMPONENT(DirectionalLightPlane);
 
     class Spotlight : public Light {
     public:

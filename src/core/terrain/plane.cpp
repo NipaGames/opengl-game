@@ -25,13 +25,13 @@ void Plane::GenerateVertices() {
                 }
             }
             
-            pos.x = static_cast<float>(y) * tileSize.x - .5f + v.x * tileSize.x;
-            pos.y = static_cast<float>(x) * tileSize.y - .5f + v.y * tileSize.y;
-            vertices.push_back(pos.x);
+            pos.x = static_cast<float>(x) * tileSize.x - .5f + v.x * tileSize.x;
+            pos.y = static_cast<float>(y) * tileSize.y - .5f + v.y * tileSize.y;
+            vertices.push_back(pos.y);
             float height = (((float) rand() / (RAND_MAX)) - .5f) * heightVariation;
             heightGrid_[y][x] = height;
             vertices.push_back(height);
-            vertices.push_back(pos.y);
+            vertices.push_back(pos.x);
 
             texCoords.push_back(x + v.x * tileSize.x);
             texCoords.push_back(y + v.y * tileSize.y);

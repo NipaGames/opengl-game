@@ -105,6 +105,7 @@ void LivingEntity::Start() {
 void LivingEntity::Die() {
     isDead_ = true;
     statusesActive_ = false;
+    SetHealth(0);
     if (xpReceived > 0) {
         MonkeyGame().GetGame()->GetPlayer().GetComponent<Player>()->AddXP(xpReceived);
     }
