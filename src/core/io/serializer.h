@@ -174,6 +174,9 @@ namespace Serializer {
         const T& GetItem(const std::string& item) const {
             return items_.at(item);
         }
+        bool HasItem(const std::string& item) const {
+            return items_.count(item) > 0;
+        }
         // copy all items into an external container
         virtual void Register(ItemsContainer& container) {
             for (auto& item : items_) {

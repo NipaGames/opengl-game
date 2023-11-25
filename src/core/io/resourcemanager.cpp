@@ -47,5 +47,9 @@ void ResourceManager::LoadAll() {
 
     fontManager.LoadAll(imports->ListImports("fonts"));
 
+    Serializer::BlueprintSerializer blueprints;
+    blueprints.SerializeFile(Paths::BLUEPRINTS_PATH.string());
+    stageManager.UseBlueprints(&blueprints);
     stageManager.LoadAll(imports->ListImports("stages"));
+    stageManager.UseBlueprints(nullptr);
 }

@@ -15,6 +15,7 @@ namespace Paths {
     inline std::fs::path IMPORTS_PATH = RESOURCES_DIR / "imports.cfg";
     inline std::fs::path MATERIALS_PATH = RESOURCES_DIR / "materials.json";
     inline std::fs::path OBJECTS_PATH = RESOURCES_DIR / "objects.json";
+    inline std::fs::path BLUEPRINTS_PATH = RESOURCES_DIR / "blueprints.json";
 
     inline std::fs::path VIDEO_SETTINGS_PATH = USER_SETTINGS_DIR / "video.cfg";
 

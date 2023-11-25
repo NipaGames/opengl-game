@@ -40,6 +40,31 @@ void Entity::CopyFrom(const Entity& e) {
     transform = GetComponent<Transform>();
 }
 
+IComponent* Entity::AddComponent(const type_info* type, const ComponentData& data) {
+    IComponent* c = IComponent::CreateComponent(type, data);
+    if (c == nullptr)
+        return nullptr;
+    c->parent = this;
+    components_.push_back((IComponent*) c);
+    if (type == &typeid(Transform))
+        transform = static_cast<Transform*>(c);
+    return c;
+}
+IComponent* Entity::AddComponent(const std::string& name, const ComponentData& data) {
+    for (auto& c : IComponent::COMPONENT_TYPES_) {
+        if (c.name == name)
+            return AddComponent(c.type, data);
+    }
+    return nullptr;
+}
+IComponent* Entity::AddComponent(size_t hash, const ComponentData& data) {
+    for (auto& c : IComponent::COMPONENT_TYPES_) {
+        if (c.type->hash_code() == hash)
+            return AddComponent(c.type, data);
+    }
+    return nullptr;
+}
+
 void Entity::OverrideComponentValues(const Entity& e) {
     for (auto c : e.components_) {
         IComponent* mc = GetComponent(c->typeHash);

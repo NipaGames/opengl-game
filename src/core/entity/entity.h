@@ -101,36 +101,9 @@ public:
             transform = dynamic_cast<Transform*>(c);
         return c;
     }
-    IComponent* AddComponent(const type_info* type, const ComponentData& data = ComponentData()) {
-        int i = 0;
-        for (;i < IComponent::COMPONENT_TYPES_.size(); i++) {
-            if (IComponent::COMPONENT_TYPES_[i].type == type)
-                break;
-        }
-        if (i == IComponent::COMPONENT_TYPES_.size())
-            return nullptr;
-        IComponent* c = IComponent::COMPONENT_TYPES_[i].initializer(data);
-        c->parent = this;
-        c->typeHash = type->hash_code();
-        components_.push_back((IComponent*) c);
-        if (type == &typeid(Transform))
-            transform = static_cast<Transform*>(c);
-        return c;
-    }
-    IComponent* AddComponent(const std::string& name, const ComponentData& data = ComponentData()) {
-        for (auto& c : IComponent::COMPONENT_TYPES_) {
-            if (c.name == name)
-                return AddComponent(c.type, data);
-        }
-        return nullptr;
-    }
-    IComponent* AddComponent(size_t hash, const ComponentData& data = ComponentData()) {
-        for (auto& c : IComponent::COMPONENT_TYPES_) {
-            if (c.type->hash_code() == hash)
-                return AddComponent(c.type, data);
-        }
-        return nullptr;
-    }
+    IComponent* AddComponent(const type_info*, const ComponentData& = ComponentData());
+    IComponent* AddComponent(const std::string&, const ComponentData& = ComponentData());
+    IComponent* AddComponent(size_t, const ComponentData& = ComponentData());
     std::vector<std::string> ListComponentNames() const;
     void OverrideComponentValues(const Entity& e);
 };

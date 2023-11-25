@@ -14,6 +14,7 @@
 #include "serializablestruct.h"
 #include "files/materials.h"
 #include "files/objects.h"
+#include "files/blueprints.h"
 #include <core/gamewindow.h>
 #include <core/stage.h>
 #include <core/graphics/shader.h>
@@ -154,13 +155,15 @@ namespace Resources {
     class StageManager : public ResourceManager<Stage> {
     protected:
         std::optional<Stage> LoadResource(const std::fs::path&) override;
-        std::vector<std::string> loadedStages;
+        std::vector<std::string> loadedStages_;
+        Serializer::BlueprintSerializer* blueprints_ = nullptr;
     public:
         StageManager();
         const std::vector<std::string>& GetLoadedStages();
         bool LoadStage(const std::string&);
         bool UnloadStage(const std::string&);
         void UnloadAllStages();
+        void UseBlueprints(Serializer::BlueprintSerializer*);
     };
 
     struct VideoSettings : SerializableStruct {

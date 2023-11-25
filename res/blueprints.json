@@ -1,0 +1,26 @@
+{
+    "EVIL_TORCH": {
+        "Lights::PointLight": {
+            "color": [ 1.0, 0.5, 0.25 ],
+            "range": 3.5
+        },
+        "MeshRenderer": {
+            "object": "OBJ_TORCH_2",
+            "isStatic": true
+        },
+        "Physics::RigidBody": {
+            "mass": 0,
+            "colliderFrom": "AABB"
+        }
+    },
+    "CHURCH_FENCE": {
+        "MeshRenderer": {
+            "object": "OBJ_FENCE",
+            "isStatic": true
+        },
+        "Physics::RigidBody": {
+            "mass": 0,
+            "colliderFrom": "AABB"
+        }
+    }
+}

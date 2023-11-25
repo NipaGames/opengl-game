@@ -10,7 +10,9 @@
 #include "io/resourcemanager.h"
 
 std::optional<Stage> Resources::StageManager::LoadResource(const std::fs::path& path) {
-    Serializer::StageSerializer serializer(path.generic_string());
+    Serializer::StageSerializer serializer;
+    serializer.UseBlueprints(blueprints_);
+    serializer.SerializeFile(path.generic_string());
     if (!serializer.Success())
         return std::nullopt;
     Stage s = serializer.GetStage();
@@ -45,7 +47,7 @@ bool Resources::StageManager::LoadStage(const std::string& id) {
             entity.Start();
         }
     }
-    loadedStages.insert(loadedStages.begin(), s.id);
+    loadedStages_.insert(loadedStages_.begin(), s.id);
     spdlog::info("Loaded stage '" + id + "' (" + std::to_string(s.entities.size()) + " entities modified)");
     GAME->GetRenderer().UpdateLighting();
     GAME->GetRenderer().UpdateFrustum();
@@ -53,25 +55,29 @@ bool Resources::StageManager::LoadStage(const std::string& id) {
 }
 
 bool Resources::StageManager::UnloadStage(const std::string& id) {
-    auto idIt = std::find(loadedStages.begin(), loadedStages.end(), id);
-    if (idIt == loadedStages.end())
+    auto idIt = std::find(loadedStages_.begin(), loadedStages_.end(), id);
+    if (idIt == loadedStages_.end())
         return false;
     const Stage& s = items_[id];
     for (size_t hash : s.instantiatedEntities) {
         GAME->GetEntityManager().RemoveEntity(hash);
     }
-    loadedStages.erase(idIt);
+    loadedStages_.erase(idIt);
     GAME->GetRenderer().UpdateLighting();
     GAME->GetRenderer().UpdateFrustum();
     return true;
 }
 
 void Resources::StageManager::UnloadAllStages() {
-    for (int i = 0; i < loadedStages.size(); i++) {
-        UnloadStage(loadedStages.at(i--));
+    for (int i = 0; i < loadedStages_.size(); i++) {
+        UnloadStage(loadedStages_.at(i--));
     }
 }
 
 const std::vector<std::string>& Resources::StageManager::GetLoadedStages() {
-    return loadedStages;
+    return loadedStages_;
+}
+
+void Resources::StageManager::UseBlueprints(Serializer::BlueprintSerializer* blueprints) {
+    blueprints_ = blueprints;
 }

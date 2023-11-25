@@ -144,7 +144,6 @@ public:
     virtual ~IComponent() = default;
     IComponent() { }
     IComponent(const IComponent&);
-    IComponent(IComponent&&);
     virtual void IStart() = 0;
     virtual void IFirstUpdate() = 0;
     virtual void IUpdate() = 0;
@@ -157,6 +156,11 @@ public:
         }
         return c;
     }
+
+    static IComponent* CreateComponent(const type_info*, const ComponentData& = ComponentData());
+    static IComponent* CreateComponent(const std::string&, const ComponentData& = ComponentData());
+    static IComponent* CreateComponent(size_t, const ComponentData& = ComponentData());
+
     template<typename C>
     static bool RegisterComponent() {
         const type_info* type = &typeid(C);
