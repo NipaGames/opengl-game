@@ -147,5 +147,13 @@
         "materialOverrides": {
             "2": "GUYS_EYES"
         }
+    },
+    {
+        "model": "OBJ_PORTAL",
+        "size": 4,
+        "defaultMaterial": "PORTAL_FRAME",
+        "materialOverrides": {
+            "1": "PORTAL"
+        }
     }
 ]

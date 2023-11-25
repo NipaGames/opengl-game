@@ -20,7 +20,9 @@ std::vector<std::string> EventManager::ListEvents() const {
 }
 
 void Event::Trigger() {
-    for (const std::string& c : commands_) {
+    // copy the commands in case the entity gets destroyed
+    std::vector<std::string> commands = commands_;
+    for (const std::string& c : commands) {
         parser_->ParseCommand(c);
     }
 }

@@ -9,7 +9,8 @@ using namespace UI;
 const std::unordered_map<std::string, std::string> INTERACT_MESSAGES = {
     { "INTERACT", "interact" },
     { "OPEN_GATE", "open the gate" },
-    { "SPAWN", "return to the spawn" }
+    { "SPAWN", "return to the spawn" },
+    { "ENTER_SANCTUARY", "enter Sanctuary" }
 };
 
 void HUD::CreateHUDElements() {

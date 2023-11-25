@@ -45,24 +45,26 @@ IComponent* Entity::AddComponent(const type_info* type, const ComponentData& dat
     if (c == nullptr)
         return nullptr;
     c->parent = this;
-    components_.push_back((IComponent*) c);
+    components_.push_back(c);
     if (type == &typeid(Transform))
-        transform = static_cast<Transform*>(c);
+        transform = dynamic_cast<Transform*>(c);
     return c;
 }
 IComponent* Entity::AddComponent(const std::string& name, const ComponentData& data) {
-    for (auto& c : IComponent::COMPONENT_TYPES_) {
-        if (c.name == name)
-            return AddComponent(c.type, data);
-    }
-    return nullptr;
+    auto it = std::find_if(IComponent::COMPONENT_TYPES_.begin(), IComponent::COMPONENT_TYPES_.end(), [&](const auto& t) {
+        return t.name == name;
+    });
+    if (it == IComponent::COMPONENT_TYPES_.end())
+        return nullptr;
+    return AddComponent(it->type, data);
 }
 IComponent* Entity::AddComponent(size_t hash, const ComponentData& data) {
-    for (auto& c : IComponent::COMPONENT_TYPES_) {
-        if (c.type->hash_code() == hash)
-            return AddComponent(c.type, data);
-    }
-    return nullptr;
+    auto it = std::find_if(IComponent::COMPONENT_TYPES_.begin(), IComponent::COMPONENT_TYPES_.end(), [&](const auto& t) {
+        return t.type->hash_code() == hash;
+    });
+    if (it == IComponent::COMPONENT_TYPES_.end())
+        return nullptr;
+    return AddComponent(it->type, data);
 }
 
 void Entity::OverrideComponentValues(const Entity& e) {
@@ -87,7 +89,8 @@ void Entity::Start() {
 }
 
 void Entity::Update() {
-    for (IComponent* component : components_) {
+    for (int i = 0; i < components_.size(); i++) {
+        IComponent* component = components_.at(i);
         if (!component->hasHadFirstUpdate_) {
             component->IFirstUpdate();
             component->hasHadFirstUpdate_ = true;

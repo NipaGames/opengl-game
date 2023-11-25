@@ -293,6 +293,10 @@ bool MonkeyGame::TryHitEntity(const btVector3& from, const btVector3& to, std::f
 }
 
 void MonkeyGame::Update() {
+    while (!eventsNextUpdate_.empty()) {
+        eventsNextUpdate_.front()();
+        eventsNextUpdate_.pop();
+    }
     if (playerLight != nullptr)
         playerLight->ApplyForAllShaders();
     hud.Update();
@@ -345,4 +349,8 @@ void MonkeyGame::Update() {
         Input::CURSOR_MODE_CHANGE_PENDING = true;
         Input::WINDOW_FOCUS_PENDING = true;
     }
+}
+
+void MonkeyGame::RequestEventNextUpdate(const std::function<void()>& e) {
+    eventsNextUpdate_.push(e);
 }

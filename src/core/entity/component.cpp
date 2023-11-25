@@ -22,16 +22,14 @@ IComponent* IComponent::CreateComponent(const type_info* type, const ComponentDa
     return c;
 }
 IComponent* IComponent::CreateComponent(const std::string& name, const ComponentData& data) {
-    for (auto& c : IComponent::COMPONENT_TYPES_) {
-        if (c.name == name)
-            return CreateComponent(c.type, data);
-    }
-    return nullptr;
+    auto it = std::find_if(COMPONENT_TYPES_.begin(), COMPONENT_TYPES_.end(), [&](const auto& t) { return t.name == name; });
+    if (it == COMPONENT_TYPES_.end())
+        return nullptr;
+    return CreateComponent(it->type, data);
 }
 IComponent* IComponent::CreateComponent(size_t hash, const ComponentData& data) {
-    for (auto& c : IComponent::COMPONENT_TYPES_) {
-        if (c.type->hash_code() == hash)
-            return CreateComponent(c.type, data);
-    }
-    return nullptr;
+    auto it = std::find_if(COMPONENT_TYPES_.begin(), COMPONENT_TYPES_.end(), [&](const auto& t) { return t.type->hash_code() == hash; });
+    if (it == COMPONENT_TYPES_.end())
+        return nullptr;
+    return CreateComponent(it->type, data);
 }

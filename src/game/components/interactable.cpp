@@ -17,8 +17,16 @@ void Interactable::Start() {
 }
 
 void Interactable::Trigger() {
-    event.GetParser()->SetKeyword("this", parent->id);
-    event.Trigger();
+    auto e = [&] () {
+        event.GetParser()->SetKeyword("this", parent->id);
+        event.Trigger();
+    };
+    if (requestNextUpdate) {
+        MonkeyGame::GetGame()->RequestEventNextUpdate(e);
+    }
+    else {
+        e();
+    }
 }
 
 void Interactable::Update() {

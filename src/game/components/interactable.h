@@ -21,6 +21,7 @@ public:
     DEFINE_COMPONENT_DATA_VALUE(int, keyCode, GLFW_KEY_E);
     DEFINE_COMPONENT_DATA_VALUE(TriggerType, trigger, TriggerType::INTERACT);
     DEFINE_COMPONENT_DATA_VALUE(bool, oneUse, false);
+    DEFINE_COMPONENT_DATA_VALUE(bool, requestNextUpdate, false);
     DEFINE_COMPONENT_DATA_VALUE(std::string, message, "INTERACT");
     DEFINE_COMPONENT_DATA_VALUE_DEFAULT(Event, event);
 

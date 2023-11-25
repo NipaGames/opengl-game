@@ -109,6 +109,42 @@
             }
         },
         {
+            "id": "sanctuary-portal",
+            "Transform": {
+                "position": [ -25, -62, 48 ],
+                "rotation": [ 0, 150, 0 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_PORTAL",
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "AABB"
+            },
+            "Interactable": {
+                "event": [
+                    "UnloadStage('all')",
+                    "LoadStage('teststage')",
+                    "Spawn()"
+                ],
+                "message": "ENTER_SANCTUARY",
+                "oneUse": true,
+                "requestNextUpdate": true,
+                "range": 5
+            }
+        },
+        {
+            "Transform": {
+                "position": [ -24, -62, 46 ],
+                "rotation": [ 0, 150, 0 ]
+            },
+            "Lights::PointLight": {
+                "color": [ 0.5, 0.5, 1.0 ],
+                "range": 5
+            }
+        },
+        {
             "blueprint": "EVIL_TORCH",
             "Transform": {
                 "position": [ 25, -77, 7 ],

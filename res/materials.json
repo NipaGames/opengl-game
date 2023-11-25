@@ -391,5 +391,22 @@
         "uniforms": {
             "color": 1.0
         }
+    },
+    {
+        "id": "PORTAL",
+        "shader": "PORTAL",
+        "uniforms": {
+            "color": [ 0.5, 0.5, 1.0 ]
+        }
+    },
+    {
+        "id": "PORTAL_FRAME",
+        "shader": "LIT",
+        "uniforms": {
+            "color": 0.1,
+            "ambientColor": 0.025,
+            "specularStrength": 1.0,
+            "specularHighlight": 4
+        }
     }
 ]
