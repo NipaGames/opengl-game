@@ -2,7 +2,7 @@
     "EVIL_TORCH": {
         "Lights::PointLight": {
             "color": [ 1.0, 0.5, 0.25 ],
-            "range": 3.5
+            "range": 15
         },
         "MeshRenderer": {
             "object": "OBJ_TORCH_2",

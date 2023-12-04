@@ -23,9 +23,9 @@ struct Light {
 
 struct Fog {
   bool use;
-  float near;// = 0.1;
-  float far;// = 50.0;
-  vec3 color;// = vec3(0.075, 0.035, 0.025);
+  float near;
+  float far;
+  vec3 color;
 };
 
 struct Material {
@@ -70,8 +70,11 @@ vec3 calcDirectionalLightPlane(Light light, vec3 normal) {
 }
 
 vec3 calcPointLight(Light light, vec3 normal) {
+  float dist = distance(fragmentPos, light.pos);
+  if (dist > light.range)
+    return vec3(0.0);
   vec3 lightDir = normalize(light.pos - fragmentPos);
-  return (dirLight(lightDir, light.color, normal) * light.intensity) / max(1.0, pow(abs(distance(fragmentPos, light.pos)) / light.range, 2));
+  return (dirLight(lightDir, light.color, normal) * light.intensity) * pow(1.0 - dist / light.range, 2);
 }
 
 vec3 calcSpotlight(Light light, vec3 normal) {

@@ -17,7 +17,7 @@
             "Lights::Spotlight": {
                 "cutOffMin": 0.95,
                 "cutOffMax": 0.9,
-                "range": 25,
+                "range": 100,
                 "dir": [ 1.0, -0.4, 0.15 ],
                 "intensity": 1
             }
@@ -68,7 +68,7 @@
             },
             "Lights::PointLight": {
                 "color": [ 1, 0.8, 0.5 ],
-                "range": 3.5
+                "range": 10
             }
         },
         {
@@ -142,7 +142,7 @@
             },
             "Lights::PointLight": {
                 "color": [ 1, 0.8, 0.5 ],
-                "range": 5
+                "range": 15
             },
             "MeshRenderer": {
                 "object": "OBJ_TORCH",

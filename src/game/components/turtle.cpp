@@ -41,7 +41,7 @@ void Turtle::FirstUpdate() {
     animationLength = 5.0f;
     light_ = parent->AddComponent<Lights::PointLight>();
     light_->intensity = 0.0f;
-    light_->range = 10.0f;
+    light_->range = 25.0f;
     light_->Start();
     light_->color = glm::vec3(1.0f, 0.0f, 0.0f);
     GAME->GetRenderer().UpdateLighting();
