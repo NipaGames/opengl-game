@@ -159,6 +159,7 @@ void Renderer::Render() {
     // first pass (draw into framebuffer)
     glBindFramebuffer(GL_FRAMEBUFFER, MSAAFbo_);
     
+    glClearColor(skyboxColor.r, skyboxColor.g, skyboxColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 viewMatrix = glm::lookAt(camera_.pos, camera_.pos + camera_.front, camera_.up);

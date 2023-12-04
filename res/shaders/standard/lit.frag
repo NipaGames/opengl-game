@@ -98,7 +98,7 @@ float linearizeDepth(float depth, float near, float far) {
 
 void main() {
   vec3 normal = normalize(fragmentNormal);
-  vec3 col = vec3(0.0);
+  vec4 col = vec4(vec3(0.0), 1.0);
   vec3 materialColor = material.color + material.tint;
 
   for(int i = 0; i < lights.length(); i++) {
@@ -106,16 +106,16 @@ void main() {
       continue;
     switch (lights[i].type) {
       case LIGHT_POINT_LIGHT:
-        col += calcPointLight(lights[i], normal) * material.color;
+        col.rgb += calcPointLight(lights[i], normal) * material.color;
         break;
       case LIGHT_SPOTLIGHT:
-        col += calcSpotlight(lights[i], normal) * material.color;
+        col.rgb += calcSpotlight(lights[i], normal) * material.color;
         break;
       case LIGHT_DIRECTIONAL_LIGHT:
-        col += calcDirectionalLight(lights[i], normal) * material.color;
+        col.rgb += calcDirectionalLight(lights[i], normal) * material.color;
         break;
       case LIGHT_DIRECTIONAL_LIGHT_PLANE:
-        col += calcDirectionalLightPlane(lights[i], normal) * material.color;
+        col.rgb += calcDirectionalLightPlane(lights[i], normal) * material.color;
         break;
       case LIGHT_NONE:
       default:
@@ -124,15 +124,16 @@ void main() {
   }
   // more advanced ambient lighting (not necessary):
   // col += max(dot(normal, vec3(0.0, 1.0, 0.0)), length(material.ambientColor)) * material.ambientColor * material.color;
-  col += material.ambientColor;
+  col.rgb += material.ambientColor;
   if (material.hasTexture)
-    col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset).xyz;
-  col += material.tint;
+    col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset);
+  col.a *= material.opacity;
+  col.rgb += material.tint;
 
   if (material.fog.use) {
     float fog = linearizeDepth(gl_FragCoord.z, material.fog.near, material.fog.far) / material.fog.far;
-    col *= vec3(1.0 - fog);
-    col += fog * material.fog.color;
+    col.rgb *= vec3(1.0 - fog);
+    col.rgb += fog * material.fog.color;
   }
-  color = vec4(col, material.opacity);
+  color = col;
 }

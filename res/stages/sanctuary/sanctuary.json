@@ -1,0 +1,81 @@
+{
+    "id": "sanctuary",
+    "data": {
+        "location": "Sanctuary"
+    },
+    "entities": [
+        {
+            "id": "Player",
+            "PlayerController": {
+                "spawnPosition": [ 10000, 729, 10000 ]
+            }
+        },
+        {
+            "Lights::DirectionalLight": {
+                "intensity": 0.5
+            },
+            "SanctuarySun": { }
+        },
+        {
+            "id": "sanctuary-mountains",
+            "Transform": {
+                "position": [ 10000, 500, 9975 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_SANCTUARY_MOUNTAINS",
+                "alwaysOnFrustum": true,
+                "isStatic": true
+            }
+        },
+        {
+            "Transform": {
+                "position": [ 10000, 725, 10000 ]
+            },
+            "MeshRenderer": {
+                "object": "OBJ_SANCTUARY",
+                "alwaysOnFrustum": true,
+                "isStatic": true
+            },
+            "Physics::RigidBody": {
+                "mass": 0,
+                "colliderFrom": "MESH"
+            }
+        },
+        {
+            "blueprint": "LANTERN",
+            "Transform": {
+                "position": [ 9975, 732, 10012 ]
+            }
+        },
+        {
+            "blueprint": "LANTERN",
+            "Transform": {
+                "position": [ 9975, 732, 9988 ]
+            }
+        },
+        {
+            "blueprint": "LANTERN",
+            "Transform": {
+                "position": [ 10025, 732, 9988 ]
+            }
+        },
+        {
+            "blueprint": "LANTERN",
+            "Transform": {
+                "position": [ 10025, 732, 10012 ]
+            }
+        },
+        {
+            "blueprint": "LANTERN",
+            "Transform": {
+                "position": [ 10000, 732, 9988 ]
+            }
+        },
+        {
+            "blueprint": "LANTERN",
+            "Transform": {
+                "position": [ 10000, 732, 10012 ]
+            }
+        }
+    ]
+}

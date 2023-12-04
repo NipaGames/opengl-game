@@ -155,5 +155,28 @@
         "materialOverrides": {
             "1": "PORTAL"
         }
+    },
+    {
+        "model": "OBJ_SANCTUARY_MOUNTAINS",
+        "size": 50,
+        "defaultMaterial": "SANCTUARY_MOUNTAINS"
+    },
+    {
+        "model": "OBJ_SANCTUARY",
+        "size": 15,
+        "defaultMaterial": "SANCTUARY_WALL",
+        "materialOverrides": {
+            "1": "SANCTUARY_FLOOR",
+            "2": "SANCTUARY_CEILING",
+            "3": "SANCTUARY_WINDOWS"
+        }
+    },
+    {
+        "model": "OBJ_LANTERN",
+        "size": 0.5,
+        "defaultMaterial": "SANCTUARY_LANTERN",
+        "materialOverrides": {
+            "1": "SANCTUARY_LANTERN_CHAIN"
+        }
     }
 ]

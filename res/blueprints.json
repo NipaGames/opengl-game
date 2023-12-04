@@ -22,5 +22,17 @@
             "mass": 0,
             "colliderFrom": "AABB"
         }
+    },
+    "LANTERN": {
+        "Lights::PointLight": {
+            "color": [ 1.0, 1.0, 0.75 ],
+            "range": 40,
+            "intensity": 0.25
+        },
+        "MeshRenderer": {
+            "object": "OBJ_LANTERN",
+            "isStatic": true,
+            "renderLate": true
+        }
     }
 }

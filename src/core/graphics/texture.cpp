@@ -31,8 +31,10 @@ std::optional<TextureID> Resources::TextureManager::LoadResource(const std::fs::
     if (data == nullptr) {
         spdlog::warn("Can't load texture!");
     }
- 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    GLuint channels = GL_RGB;
+    if (path.extension() == ".png")
+        channels = GL_RGBA;
+    glTexImage2D(GL_TEXTURE_2D, 0, channels, width, height, 0, channels, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
 

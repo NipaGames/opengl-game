@@ -62,6 +62,7 @@ void MeshRenderer::UpdateUniforms(const Shader& shader, const glm::mat4& project
     // idk if it would be better to define these as default initializers for Material class
     shader.SetUniform("material.color", glm::vec3(1.0f));
     shader.SetUniform("material.opacity", 1.0f);
+    shader.SetUniform("material.fog.use", false);
 
     shader.SetUniform("projection", projectionMatrix);
     shader.SetUniform("view", viewMatrix);

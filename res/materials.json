@@ -408,5 +408,96 @@
             "specularStrength": 1.0,
             "specularHighlight": 4
         }
+    },
+    {
+        "id": "SANCTUARY_MOUNTAINS",
+        "shader": "LIT",
+        "texture": {
+            "src": "grass2.jpg"
+        },
+        "uniforms": {
+            "color": [ 0.5, 0.5, 0.25 ],
+            "ambientColor": 0.05,
+            "specularHighlight": 8,
+            "specularStrength": 0,
+            "tiling": 50,
+            "fog.use": true,
+            "fog.color": [ 0.5, 0.5, 0.5 ],
+            "fog.near": 0.1,
+            "fog.far": 1250
+        }
+    },
+    {
+        "id": "SANCTUARY_WINDOWS",
+        "shader": "LIT",
+        "texture": {
+            "src": "window.png"
+        },
+        "uniforms": {
+            "tiling": [ 50, 1 ],
+            "specularHighlight": 4,
+            "specularStrength": 0.25
+        }
+    },
+    {
+        "id": "SANCTUARY_FLOOR",
+        "shader": "LIT",
+        "texture": {
+            "src": "wood-floor.jpg"
+        },
+        "uniforms": {
+            "color": 0.5,
+            "specularHighlight": 4,
+            "specularStrength": 0.25,
+            "tiling": 10
+        }
+    },
+    {
+        "id": "SANCTUARY_WALL",
+        "shader": "LIT",
+        "uniforms": {
+            "color": 1.0,
+            "specularStrength": 0.0
+        }
+    },
+    {
+        "id": "SANCTUARY_LANTERN",
+        "shader": "LIT",
+        "texture": {
+            "src": "lantern.jpg"
+        },
+        "uniforms": {
+            "ambientColor": 0.25,
+            "specularStrength": 0.0
+        }
+    },
+    {
+        "id": "SANCTUARY_LANTERN_CHAIN",
+        "shader": "LIT",
+        "texture": {
+            "src": "chain.png"
+        },
+        "cullFaces": false,
+        "uniforms": {
+            "color": 0.25,
+            "specularHighlight": 16,
+            "specularStrength": 0.5
+        }
+    },
+    {
+        "id": "SANCTUARY_CEILING",
+        "shader": "LIT",
+        "texture": {
+            "src": "ceiling.jpg"
+        },
+        "uniforms": {
+            "ambientColor": 0.25,
+            "specularStrength": 0.0,
+            "tiling": 15,
+            "fog.use": true,
+            "fog.color": 0.0,
+            "fog.near": 0.1,
+            "fog.far": 50
+        }
     }
 ]

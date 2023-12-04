@@ -31,14 +31,14 @@ float linearizeDepth(float depth, float near, float far) {
 }
 
 void main() {
-  vec3 col = material.color;
+  vec4 col = vec4(material.color, material.opacity);
   if (material.hasTexture)
-    col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset).xyz;
-  col += material.tint;
+    col *= texture(textureSampler, fragmentTexCoord * material.tiling + material.offset);
+  col.rgb += material.tint;
   if (material.fog.use) {
     float fog = linearizeDepth(gl_FragCoord.z, material.fog.near, material.fog.far) / material.fog.far;
-    col *= vec3(1.0 - fog);
-    col += fog * material.fog.color;
+    col.rgb *= vec3(1.0 - fog);
+    col.rgb += fog * material.fog.color;
   }
-  color = vec4(col, material.opacity);
+  color = col;
 }

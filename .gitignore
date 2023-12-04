@@ -11,3 +11,5 @@
 /status.bat
 /status.py
 /Poppins-Medium.ttf
+*.pdn
+*.mtl
