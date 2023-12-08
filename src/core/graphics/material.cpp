@@ -19,9 +19,17 @@ void Material::ClearUniforms() {
     vec4Uniforms_.clear();
 }
 
+void Material::SetTexture(Texture::TextureID t) {
+    texture_ = t;
+}
+
+void Material::BindTexture() const {
+    glBindTexture(GL_TEXTURE_2D, texture_);
+}
+
 void Material::Use(const Shader& shader) const {
     shader.SetUniform("material.hasTexture", texture_ != TEXTURE_NONE);
-    
+ 
     for (const auto& i : intUniforms_)
         shader.SetUniform(("material." + i.first).c_str(), i.second);
     for (const auto& f : floatUniforms_)

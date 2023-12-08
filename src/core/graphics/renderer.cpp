@@ -27,6 +27,12 @@ Renderer::~Renderer() {
         glDeleteFramebuffers(1, &MSAAFbo_);
 
     shaders_.clear();
+
+    for (const auto& [k, v] : canvases_) {
+        if (v->isOwnedByRenderer)
+            delete v;
+    }
+    canvases_.clear();
 }
 
 bool Renderer::Init() {
@@ -242,7 +248,7 @@ void Renderer::Render() {
     
     glDisable(GL_DEPTH_TEST);
     for (auto& c : canvases_) {
-        c.second.Draw();
+        c.second->Draw();
     }
 
     glEnable(GL_DEPTH_TEST);
@@ -264,7 +270,7 @@ void Renderer::UpdateCameraProjection(int width, int height) {
     camera_.projectionMatrix = glm::perspective(glm::radians(camera_.fov), camera_.aspectRatio, camera_.clippingNear, camera_.clippingFar);
     
     for (auto& c : canvases_) {
-        c.second.UpdateWindowSize();
+        c.second->UpdateWindowSize();
     }
 }
 
@@ -310,6 +316,10 @@ void Renderer::RemoveMeshRenderer(MeshRenderer* mesh) {
 }
 
 void Renderer::CleanUpEntities() {
+    for (const auto& [k, v] : canvases_) {
+        if (v->isOwnedByRenderer)
+            delete v;
+    }
     canvases_.clear();
     meshes_.clear();
     entitiesOnFrustum_.clear();
@@ -323,10 +333,22 @@ std::shared_ptr<Material> Renderer::GetMaterial(const std::string& mat) {
 }
 
 UI::Canvas& Renderer::CreateCanvas(std::string id) {
-    auto [ it, inserted ] = canvases_.insert({ id, UI::Canvas() });
-    return it->second;
+    UI::Canvas* c = new UI::Canvas();
+    c->isOwnedByRenderer = true;
+    auto [ it, inserted ] = canvases_.insert({ id, c });
+    it->second->GenerateBackgroundShape();
+    return *it->second;
 }
 
 UI::Canvas& Renderer::GetCanvas(const std::string& id) {
-    return canvases_.at(id);
+    return *canvases_.at(id);
+}
+
+void Renderer::AssignCanvas(const std::string& id, UI::Canvas* c) {
+    canvases_.insert({ id, c });
+}
+
+void Renderer::MoveCanvas(const std::string& id, UI::Canvas* c) {
+    AssignCanvas(id, c);
+    c->isOwnedByRenderer = true;
 }

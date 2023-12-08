@@ -35,7 +35,7 @@ void Mesh::GenerateVAO() {
 }
 
 void Mesh::Bind() const {
-    glBindTexture(GL_TEXTURE_2D, material->GetTexture());
+    material->BindTexture();
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 }

@@ -36,12 +36,9 @@ public:
     template<typename T>
     void SetShader(T s) {
         shader_ = Shader(s);
-        shader_.Use();
     }
-    void SetTexture(Texture::TextureID t) {
-        texture_ = t;
-        shader_.Use();
-    }
+    void SetTexture(Texture::TextureID t);
+    void BindTexture() const;
     const Shader& GetShader() { return shader_; }
     Texture::TextureID GetTexture() { return texture_; }
 

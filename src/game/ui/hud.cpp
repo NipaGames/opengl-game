@@ -14,12 +14,11 @@ const std::unordered_map<std::string, std::string> INTERACT_MESSAGES = {
 };
 
 void HUD::CreateHUDElements() {
-    Canvas& c = GAME->GetRenderer().CreateCanvas(canvasId);
     Entity& interactTextEntity = GAME->GetEntityManager().CreateEntity();
     interactTextEntity.transform->position.x = 10;
     interactTextEntity.transform->position.y = 15;
     interactTextEntity.transform->size.z = .75f;
-    interactText = interactTextEntity.AddComponent<TextComponent>(&c);
+    interactText = interactTextEntity.AddComponent<TextComponent>(GetCanvas());
     interactText->font = "FONT_MORRIS";
     interactText->isVisible = false;
     interactText->AddToCanvas();
@@ -29,7 +28,7 @@ void HUD::CreateHUDElements() {
     hpTextEntity.transform->position.x = 10;
     hpTextEntity.transform->position.y = 680;
     hpTextEntity.transform->size.z = .75f;
-    hpText = hpTextEntity.AddComponent<TextComponent>(&c);
+    hpText = hpTextEntity.AddComponent<TextComponent>(GetCanvas());
     hpText->font = "FONT_CELTIC";
     hpText->AddToCanvas();
     hpTextEntity.Start();
@@ -37,7 +36,7 @@ void HUD::CreateHUDElements() {
     Entity& maxHpTextEntity = GAME->GetEntityManager().CreateEntity();
     maxHpTextEntity.transform->position.y = hpTextEntity.transform->position.y;
     maxHpTextEntity.transform->size.z = .5f;
-    maxHpText = maxHpTextEntity.AddComponent<TextComponent>(&c);
+    maxHpText = maxHpTextEntity.AddComponent<TextComponent>(GetCanvas());
     maxHpText->color = glm::vec4(glm::vec3(1.0f), .75f);
     maxHpText->font = "FONT_CELTIC";
     maxHpText->AddToCanvas();
@@ -47,7 +46,7 @@ void HUD::CreateHUDElements() {
     statusTextEntity.transform->position.x = hpTextEntity.transform->position.x;
     statusTextEntity.transform->position.y = hpTextEntity.transform->position.y - 30;
     statusTextEntity.transform->size.z = .6f;
-    statusText = statusTextEntity.AddComponent<TextComponent>(&c);
+    statusText = statusTextEntity.AddComponent<TextComponent>(GetCanvas());
     statusText->font = "FONT_MORRIS";
     statusText->lineSpacing = 20;
     statusText->SetShader("STATUS_TEXT");
@@ -58,7 +57,7 @@ void HUD::CreateHUDElements() {
     areaTextEntity.transform->position.x = 1270;
     areaTextEntity.transform->position.y = 25;
     areaTextEntity.transform->size.z = 2.0f;
-    areaText = areaTextEntity.AddComponent<TextComponent>(&c);
+    areaText = areaTextEntity.AddComponent<TextComponent>(GetCanvas());
     areaText->font = "FONT_ENCHANTED";
     areaText->SetShader("AREA_TEXT");
     areaText->alignment = Text::TextAlignment::RIGHT;
@@ -74,7 +73,7 @@ void HUD::CreateHUDElements() {
     gameOverTextEntity.transform->position.x = 1280 / 2;
     gameOverTextEntity.transform->position.y = 720 / 2;
     gameOverTextEntity.transform->size.z = 3.0f;
-    gameOverText = gameOverTextEntity.AddComponent<TextComponent>(&c);
+    gameOverText = gameOverTextEntity.AddComponent<TextComponent>(GetCanvas());
     gameOverText->font = "FONT_ENCHANTED";
     gameOverText->alignment = Text::TextAlignment::CENTER;
     gameOverText->color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -86,7 +85,7 @@ void HUD::CreateHUDElements() {
     gameOverInstructionsTextEntity.transform->position.x = 1280 / 2;
     gameOverInstructionsTextEntity.transform->position.y = 720 / 2 - 100;
     gameOverInstructionsTextEntity.transform->size.z = 1.0f;
-    gameOverInstructionsText = gameOverInstructionsTextEntity.AddComponent<TextComponent>(&c);
+    gameOverInstructionsText = gameOverInstructionsTextEntity.AddComponent<TextComponent>(GetCanvas());
     gameOverInstructionsText->font = "FONT_MORRIS";
     gameOverInstructionsText->alignment = Text::TextAlignment::CENTER;
     gameOverInstructionsText->isVisible = false;
@@ -97,7 +96,7 @@ void HUD::CreateHUDElements() {
     xpTextEntity.transform->position.x = 1280 / 2;
     xpTextEntity.transform->position.y = 30;
     xpTextEntity.transform->size.z = 1.0f;
-    xpText = xpTextEntity.AddComponent<TextComponent>(&c);
+    xpText = xpTextEntity.AddComponent<TextComponent>(GetCanvas());
     xpText->font = "FONT_MORRIS";
     xpText->alignment = Text::TextAlignment::CENTER;
     xpText->isVisible = false;

@@ -90,8 +90,8 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
         shape_.Bind();
 
         glBindTexture(GL_TEXTURE_2D, texture_);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
     }

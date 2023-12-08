@@ -23,7 +23,8 @@ void Shape::Bind() {
 
 Shape::Shape(const Shape& s) : 
     numVertexAttributes(s.numVertexAttributes),
-    numVertices(s.numVertices)
+    numVertices(s.numVertices),
+    stride(s.stride)
 {
     if (s.vao != NULL)
         GenerateVAO();
@@ -34,6 +35,7 @@ Shape::Shape(const Shape& s) :
 Shape::Shape(Shape&& s) :
     numVertexAttributes(s.numVertexAttributes),
     numVertices(s.numVertices),
+    stride(s.stride),
     vao(s.vao),
     vbo(s.vbo),
     vertexData(s.vertexData)

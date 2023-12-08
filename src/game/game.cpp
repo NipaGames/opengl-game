@@ -264,6 +264,7 @@ void MonkeyGame::Start() {
     }
     hud = HUD();
     hud.CreateHUDElements();
+    renderer_.AssignCanvas(hud.canvasId, hud.GetCanvas());
 
     GAME->resources.stageManager.LoadStage("teststage");
     GAME->resources.stageManager.LoadStage("sanctuary-entrance");
@@ -327,7 +328,7 @@ void MonkeyGame::Update() {
         std::cout << std::endl;
         spdlog::set_pattern("  %v");
         spdlog::info("--------- Opened console, 'exit' to return ----------");
-        spdlog::info("[copyright nipagames information systems corporation]");
+        spdlog::info("[copyright emmiaurora information systems corporation]");
         std::cout << std::endl;
         bool exit = false;
         FreezeDeltaTime();

@@ -15,6 +15,7 @@ struct DebugTextElement {
     std::string str = "";
 };
 
+// this should probably derive from UI::Canvas instead of being a component but cmon it's just a debug overlay
 class DebugOverlay : public Component<DebugOverlay> {
 private:
     double lastTime_ = 0;
@@ -38,5 +39,4 @@ public:
     void AppendElement(const std::string&, const std::string& vars);
     void AppendNewline();
     void UpdateText();
-
 };

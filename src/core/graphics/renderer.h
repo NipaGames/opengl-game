@@ -33,7 +33,8 @@ private:
     Shape framebufferShape_;
     std::vector<MeshRenderer*> meshes_;
     std::vector<Lights::Light*> lights_;
-    std::unordered_map<std::string, UI::Canvas> canvases_;
+    // smart pointers would be ideal here but i'm too lazy and tired to start rewriting
+    std::unordered_map<std::string, UI::Canvas*> canvases_;
     Camera camera_ = Camera();
     Shader framebufferShader_;
     Shader normalShader_;
@@ -59,8 +60,10 @@ public:
     void Start();
     void Render();
     void UpdateCameraProjection(int, int);
+    // doesn't take ownership
     void AddMeshRenderer(MeshRenderer*);
     void RemoveMeshRenderer(MeshRenderer*);
+    // doesn't take ownership
     void AddLight(Lights::Light*);
     void RemoveLight(Lights::Light*);
     void CopyShadersFromResources();
@@ -69,8 +72,13 @@ public:
     void UpdateVideoSettings(const Resources::VideoSettings&);
     void ApplyPostProcessing(const PostProcessing&);
     void CleanUpEntities();
+    // has the ownership and marks it with isOwnedByRenderer
     UI::Canvas& CreateCanvas(std::string);
     UI::Canvas& GetCanvas(const std::string&);
+    // doesn't take ownership, but can be given with MoveCanvas
+    void AssignCanvas(const std::string&, UI::Canvas*);
+    // takes the ownership
+    void MoveCanvas(const std::string&, UI::Canvas*);
     size_t CountEntitiesOnFrustum() { return entitiesOnFrustum_.size(); }
     std::shared_ptr<Material> GetMaterial(const std::string&);
     std::unordered_map<std::string, std::shared_ptr<Material>>& GetMaterials() { return materials_; }

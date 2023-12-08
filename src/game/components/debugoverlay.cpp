@@ -20,7 +20,8 @@
 void DebugOverlay::Start() {
     Canvas& c = GAME->GetRenderer().CreateCanvas(canvasId);
     c.isVisible = false;
-    c.bgColor = glm::vec4(.5f);
+    c.bgMaterial = std::make_shared<Material>();
+    c.bgMaterial->SetShaderUniform("color", glm::vec4(.5f));
     c.offset = { 0, 720 };
     textComponent_ = parent->AddComponent<TextComponent>(&c);
     textComponent_->font = fontId;

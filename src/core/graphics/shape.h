@@ -14,6 +14,8 @@ public:
     Shape() = default;
     Shape(const Shape&);
     Shape(Shape&&);
+    Shape& operator=(const Shape&) = default;
+    Shape& operator=(Shape&&) = default;
     void GenerateVAO();
     void Bind();
     void SetVertexData(float*, bool);

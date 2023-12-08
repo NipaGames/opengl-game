@@ -3,32 +3,60 @@
 #include <core/game.h>
 
 UI::Canvas::Canvas() : bgShader_(Shaders::ShaderID::UI_SHAPE) {
-    bgShape_.numVertexAttributes = 2;
-    bgShape_.GenerateVAO();
+
+}
+
+UI::Canvas::Canvas(Canvas&& c) : 
+    bgShader_(c.bgShader_),
+    bgShape_(c.bgShape_),
+    isVisible(c.isVisible),
+    offset(c.offset),
+    bgMaterial(c.bgMaterial),
+    bgSize(c.bgSize),
+    components_(c.components_)
+{
+    for (auto it : components_) {
+        it.second->canvas_ = this;
+    }
+    c.components_.clear();
 }
 
 UI::Canvas::~Canvas() {
-    for (auto it : components_)
-        it.second->canvas_ = nullptr;
+    for (auto it : components_) {
+        if (it.second->canvas_ == this)
+            it.second->canvas_ = nullptr;
+    }
+}
+
+UI::Canvas* UI::Canvas::GetCanvas() {
+    return dynamic_cast<Canvas*>(this);
+}
+
+void UI::Canvas::GenerateBackgroundShape() {
+    bgShape_.numVertexAttributes = 4;
+    bgShape_.stride = 4;
+    bgShape_.GenerateVAO();
 }
 
 void UI::Canvas::Draw() {
     if (!isVisible)
         return;
     auto proj = GetProjectionMatrix();
-    if (bgColor != glm::vec4(0.0f)) {
+    if (bgMaterial != nullptr) {
         bgShader_.Use();
         bgShader_.SetUniform("projection", proj);
-        bgShader_.SetUniform("shapeColor", bgColor);
+        bgMaterial->Use(bgShader_);
+        bgMaterial->BindTexture();
         float w = bgSize.x;
         float h = bgSize.y;
         float vertices[] = {
-            0,  0,
-            0, -h,
-            w, -h,
-            0,  0,
-            w, -h,
-            w,  0
+            // pos      // texCoords
+            0,  0,      0.0f, 0.0f,
+            0, -h,      0.0f, 1.0f,
+            w, -h,      1.0f, 1.0f,
+            0,  0,      0.0f, 0.0f,
+            w, -h,      1.0f, 1.0f,
+            w,  0,      1.0f, 0.0f
         };
         bgShape_.SetVertexData(vertices);
         bgShape_.Bind();

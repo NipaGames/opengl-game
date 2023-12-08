@@ -4,7 +4,7 @@
 #include <core/ui/component/textcomponent.h>
 #include <game/components/animationcomponent.h>
 
-class HUD {
+class HUD : public UI::Canvas {
 private:
     float fadeAreaTextAway_;
     bool isAreaTextShown_ = false;

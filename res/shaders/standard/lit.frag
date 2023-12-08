@@ -101,7 +101,7 @@ void main() {
   vec4 col = vec4(vec3(0.0), 1.0);
   vec3 materialColor = material.color + material.tint;
 
-  for(int i = 0; i < lights.length(); i++) {
+  for (int i = 0; i < lights.length(); i++) {
     if (!lights[i].enabled)
       continue;
     switch (lights[i].type) {

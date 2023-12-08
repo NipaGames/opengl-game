@@ -131,8 +131,8 @@ void Resources::ShaderManager::LoadAll(const std::vector<ShaderImport>& imports)
     LoadStandardShader(ShaderID::LIT, "lit", ShaderType::VERT_FRAG);
     LoadStandardShader(ShaderID::FRAMEBUFFER, "framebuffer", ShaderType::VERT_FRAG);
     LoadStandardShader(ShaderID::HIGHLIGHT_NORMALS, "normals", ShaderType::VERT_FRAG_GEOM);
-    LoadStandardShader(ShaderID::UI_TEXT, "text", ShaderType::VERT_FRAG);
-    LoadStandardShader(ShaderID::UI_SHAPE, "uishape", ShaderType::VERT_FRAG);
+    LoadStandardShader(ShaderID::UI_TEXT, "ui" + EXT_VERT, "text" + EXT_FRAG);
+    LoadStandardShader(ShaderID::UI_SHAPE, "ui" + EXT_VERT, "uishape" + EXT_FRAG);
     LoadStandardShader(ShaderID::LINE, "line", ShaderType::VERT_FRAG_GEOM);
     LoadStandardShader(ShaderID::STROBE_UNLIT, "unlit" + EXT_VERT, "strobe_unlit" + EXT_FRAG);
     LoadStandardShader(ShaderID::SKYBOX, "skybox", ShaderType::VERT_FRAG);
