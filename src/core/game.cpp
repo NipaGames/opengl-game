@@ -43,14 +43,17 @@ void Game::GameThreadInit() {
         Input::UPDATE_FULLSCREEN = true;
 }
 
-void Game::GameThreadStart() {
-    window_.LockMouse(true);
-    Physics::Init();
-    Start();
+void Game::StartEntities() {
     for (const auto& entity : entityManager_.entities_) {
         entity->Start();
     }
     renderer_.Start();
+}
+
+void Game::GameThreadStart() {
+    Physics::Init();
+    Start();
+    StartEntities();
     prevUpdate_ = glfwGetTime();
     prevFixedUpdate_ = prevUpdate_;
 }
@@ -136,4 +139,8 @@ void Game::GameThread() {
         GameThreadUpdate();
     }
     GameThreadCleanUp();
+}
+
+void Game::Quit() {
+    running_ = false;
 }

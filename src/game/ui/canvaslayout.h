@@ -18,6 +18,7 @@ public:
     virtual void AssignToRenderer(Renderer&) = 0;
     virtual void Start();
     virtual void Update();
+    virtual void Destroy();
     template <typename T>
     T* AddUIComponent() {
         T* component = new T();

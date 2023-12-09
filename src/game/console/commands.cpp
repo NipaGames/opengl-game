@@ -15,8 +15,7 @@ namespace Commands {
 void RegisterCommands(Console& console) {
     console.RegisterCommand("quit", [](const std::string&) {
         spdlog::info("byee!! :3");
-        // yeah could clean up or something before quitting
-        exit(0);
+        GAME->Quit();
     });
     console.RegisterCommand("event", [](const std::string& args) {
         EVENT_PARSER.SetKeyword("this", MonkeyGame::GetGame()->GetPlayer().id);
@@ -40,7 +39,7 @@ void RegisterCommands(Console& console) {
     });
     console.RegisterCommand("github", [](const std::string&) {
         #ifdef _WIN32
-        ShellExecuteW(0, 0, L"https://github.com/NipaGames/opengl-game", 0, 0 , SW_SHOW);
+        ShellExecuteA(0, "open", "https://github.com/NipaGames/opengl-game", 0, 0, SW_SHOW);
         #endif
     });
     console.RegisterCommand("hi", [](const std::string&) {

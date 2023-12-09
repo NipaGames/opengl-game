@@ -26,6 +26,8 @@ private:
     GLFWwindow* window_ = nullptr;
     std::string title_;
     glm::vec2 prevCursorPos_ = glm::vec2(0.0f);
+    glm::vec2 currentMousePos_ = glm::vec2(0.0f);
+    glm::vec2 relativeMousePos_ = glm::vec2(0.0f);
     bool isFullscreen_ = false;
     bool lockMouse_ = true;
     glm::ivec2 prevWndPos_;
@@ -45,5 +47,8 @@ public:
     bool IsUsingVsync() { return useVsync_; }
     void UseVsync(bool);
     void LockMouse(bool);
+    const glm::vec2& GetMousePosition();
+    // returns mouse position in window bounds in range (0, 0), (720, 1280)
+    const glm::vec2& GetRelativeMousePosition();
     GLFWwindow* const GetWindow() { return window_; }
 };

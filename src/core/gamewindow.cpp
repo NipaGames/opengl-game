@@ -103,6 +103,7 @@ void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 
 void MouseCallback(GLFWwindow* window, double xPos, double yPos) {
     Input::MOUSE_MOVE_PENDING = true;
+    
 }
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -155,7 +156,6 @@ bool GameWindow::Create(Renderer& renderer) {
 
     glfwMakeContextCurrent(window_);
     glfwSetWindowSizeLimits(window_, 400, 225, GLFW_DONT_CARE, GLFW_DONT_CARE);
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetInputMode(window_, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
     glewExperimental = true;
@@ -192,6 +192,12 @@ void GameWindow::Update() {
         if (Input::IS_MOUSE_LOCKED) {
             double xPos, yPos;
             glfwGetCursorPos(window_, &xPos, &yPos);
+
+            currentMousePos_ = { xPos, yPos };
+            glm::ivec2 wndSize;
+            glfwGetWindowSize(window_, &wndSize.x, &wndSize.y);
+            relativeMousePos_ = currentMousePos_ / (glm::vec2) wndSize * glm::vec2(1280, 720);
+            relativeMousePos_.y = 720.0f - relativeMousePos_.y;
 
             if (Input::FIRST_MOUSE) {
                 prevCursorPos_ = { xPos, yPos };
@@ -254,6 +260,13 @@ void GameWindow::LockMouse(bool lock) {
     if (lock) {
         Input::WINDOW_FOCUS_PENDING = true;
     }
+}
+
+const glm::vec2& GameWindow::GetMousePosition() {
+    return currentMousePos_;
+}
+const glm::vec2& GameWindow::GetRelativeMousePosition() {
+    return relativeMousePos_;
 }
 
 void GameWindow::UpdateInputSystem() {

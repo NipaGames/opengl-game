@@ -22,14 +22,15 @@ namespace UI {
         std::string text_ = "";
         GLuint fbo_ = NULL;
         GLuint texture_ = NULL;
-        glm::ivec2 textSize_ = glm::vec2(0.0f);
-        glm::ivec2 actualTextSize_ = glm::vec2(0.0f);
-        glm::ivec2 padding_ = glm::vec2(0.0f);
+        glm::vec2 textSize_ = glm::vec2(0.0f);
+        glm::vec2 actualTextSize_ = glm::vec2(0.0f);
+        glm::vec2 padding_ = glm::vec2(0.0f);
         int additionalRows_ = 0;
         float additionalRowsHeight_ = 0;
         TextRenderingMethod renderingMethod_;
         bool hasStarted_ = false;
         Shape shape_;
+        UI::Rect bounds_;
         void RenderTexture();
     public:
         std::string font;
@@ -50,7 +51,8 @@ namespace UI {
         void SetText(const std::string&);
         void SetShader(const Shader&);
         const std::string& GetText() const;
-        const glm::ivec2& GetTextSize() const;
+        const glm::vec2& GetTextSize() const;
+        const UI::Rect& GetBounds() const;
     };
     REGISTER_COMPONENT(TextComponent);
 };

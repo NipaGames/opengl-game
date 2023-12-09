@@ -1,10 +1,15 @@
 #include "canvaslayout.h"
 #include <game/game.h>
 
-CanvasLayout::~CanvasLayout() {
+void CanvasLayout::Destroy() {
     for (UI::UIComponent* component : ownedComponents_) {
         delete component;
     }
+    ownedComponents_.clear();
+}
+
+CanvasLayout::~CanvasLayout() {
+    Destroy();
 }
 
 void CanvasLayout::Start() {

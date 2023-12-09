@@ -41,6 +41,8 @@ public:
     void GameThreadStart();
     void GameThreadUpdate();
     void GameThreadCleanUp();
+    void StartEntities();
+    void Quit();
     // Called before the window is shown
     virtual void PreLoad() { }
     // Called before the first update

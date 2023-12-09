@@ -24,6 +24,7 @@
 #include "event/event.h"
 #include "event/eventparser.h"
 #include "console/commands.h"
+#include "ui/mainmenu.h"
 
 #include <magic_enum/magic_enum.hpp>
 
@@ -114,11 +115,15 @@ void MonkeyGame::PreLoad() {
     Commands::RegisterCommands(console);
 }
 
-void MonkeyGame::Start() {
-    LOG_FN();
+void MonkeyGame::ShowMainMenu() {
+    mainMenu = MainMenu();
+    mainMenu.CreateHUDElements();
+    mainMenu.Start();
+    activeUI = &mainMenu;
+}
 
-    Resources::LoadConfig(Config::CONTROLS_PATH, controlsConfig);
-    Resources::LoadConfig(Config::GENERAL_PATH, generalConfig);
+void MonkeyGame::SetupGame() {
+    window_.LockMouse(true);
 
     postProcessing = PostProcessing();
     if (generalConfig.blurEdges) {
@@ -265,16 +270,26 @@ void MonkeyGame::Start() {
     hud = HUD();
     hud.CreateHUDElements();
     hud.Start();
+    activeUI = &hud;
 
-    /*
-    mainMenu = MainMenu();
-    mainMenu.CreateHUDElements();
-    mainMenu.Start();
-    */
-
-    GAME->resources.stageManager.LoadStage("teststage");
-    GAME->resources.stageManager.LoadStage("sanctuary-entrance");
+    GAME->resources.stageManager.LoadStage(nextStage_);
     SpawnPlayer();
+}
+
+void MonkeyGame::Start() {
+    LOG_FN();
+
+    Resources::LoadConfig(Config::CONTROLS_PATH, controlsConfig);
+    Resources::LoadConfig(Config::GENERAL_PATH, generalConfig);
+
+    ShowMainMenu();
+}
+
+void MonkeyGame::StartGame() {
+    GameThreadCleanUp();
+    Physics::Init();
+    SetupGame();
+    StartEntities();
 }
 
 Entity& MonkeyGame::GetPlayer() {
@@ -299,6 +314,11 @@ bool MonkeyGame::TryHitEntity(const btVector3& from, const btVector3& to, std::f
     return false;
 }
 
+void MonkeyGame::UpdateUI() {
+    if (activeUI != nullptr)
+        activeUI->Update();
+}
+
 void MonkeyGame::Update() {
     while (!eventsNextUpdate_.empty()) {
         eventsNextUpdate_.front()();
@@ -306,7 +326,7 @@ void MonkeyGame::Update() {
     }
     if (playerLight != nullptr)
         playerLight->ApplyForAllShaders();
-    hud.Update();
+    UpdateUI();
     if (Input::IsKeyPressedDown(GLFW_KEY_F6))
         GetRenderer().highlightNormals = !GetRenderer().highlightNormals;
 
@@ -356,6 +376,10 @@ void MonkeyGame::Update() {
         Input::CURSOR_MODE_CHANGE_PENDING = true;
         Input::WINDOW_FOCUS_PENDING = true;
     }
+}
+
+void MonkeyGame::SetNextStage(const std::string& s) {
+    nextStage_ = s;
 }
 
 void MonkeyGame::RequestEventNextUpdate(const std::function<void()>& e) {

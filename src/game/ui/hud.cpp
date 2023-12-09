@@ -1,5 +1,6 @@
 #include "hud.h"
 #include <game/game.h>
+#include <core/physics/physics.h>
 #include <core/input.h>
 
 #include <sstream>
@@ -189,8 +190,7 @@ void HUD::Update() {
         }
     }
     if (gameOverContinueEffectFinished_) {
-        MonkeyGame::GetGame()->GameThreadCleanUp();
-        MonkeyGame::GetGame()->GameThreadStart();
+        MonkeyGame::GetGame()->StartGame();
     }
     if (isAreaTextShown_ && glfwGetTime() >= fadeAreaTextAway_) {
         isAreaTextShown_ = false;

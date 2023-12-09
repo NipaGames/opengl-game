@@ -4,11 +4,15 @@
 
 #include "../canvas.h"
 #include <core/entity/component.h>
+#include <core/eventhandler.h>
 
 namespace UI {
     struct UITransform {
         glm::vec2 pos;
         float size;
+    };
+    struct Rect {
+        float left, right, top, bottom;
     };
     enum class UITransformFrom {
         ENTITY_TRANSFORM_2D,
@@ -23,6 +27,7 @@ namespace UI {
     public:
         UITransform transform { glm::vec2(0.0f), 1.0f };
         UITransformFrom transformFrom = UITransformFrom::ENTITY_TRANSFORM_2D;
+        EventHandler<std::string> eventHandler;
         UIComponent(Canvas*, int = 0);
         UIComponent() = default;
         virtual ~UIComponent();

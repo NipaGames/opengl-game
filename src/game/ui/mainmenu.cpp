@@ -1,16 +1,29 @@
 #include "mainmenu.h"
-#include <core/ui/component/textcomponent.h>
-#include <core/game.h>
+#include <game/game.h>
 
-UI::TextComponent* MainMenu::AddMainButton(const std::string& header) {
-    UI::TextComponent* buttonText = AddUIComponent<UI::TextComponent>();
-    buttonText->SetTransform({ glm::vec2(640, mainButtonY_), .8f });
-    buttonText->font = "FONT_MORRIS";
-    buttonText->color = glm::vec4(glm::vec3(.75f), 1.0f);
-    buttonText->alignment = UI::Text::TextAlignment::CENTER;
-    buttonText->SetText(header);
+#ifdef _WIN32
+#undef APIENTRY
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
+UI::ButtonComponent* MainMenu::AddMainButton(const std::string& header) {
+    UI::ButtonComponent* button = AddUIComponent<UI::ButtonComponent>();
+    button->SetTransform({ glm::vec2(1280 / 2, mainButtonY_), .8f });
+    button->font = "FONT_MORRIS";
+    glm::vec3 baseColor = glm::vec3(.75f);
+    glm::vec3 hoverColor = glm::vec3(1.0f);
+    button->color = glm::vec4(baseColor, 1.0f);
+    button->eventHandler.Subscribe("mouseEnter", [=]() {
+        button->color = glm::vec4(hoverColor, button->color.a);
+    });
+    button->eventHandler.Subscribe("mouseLeave", [=]() {
+        button->color = glm::vec4(baseColor, button->color.a);
+    });
+    button->alignment = UI::Text::TextAlignment::CENTER;
+    button->SetText(header);
     mainButtonY_ -= 50;
-    return buttonText;
+    return button;
 }
 
 void MainMenu::CreateHUDElements() {
@@ -40,15 +53,47 @@ void MainMenu::CreateHUDElements() {
     logoMaterial_->SetShaderUniform("color", glm::vec4(1.0f));
     logoMaterial_->SetTexture(GAME->resources.textureManager.Get("LATREUS_LOGO"));
 
-    AddMainButton("continue")->color.a = .65f;
-    AddMainButton("load game");
-    AddMainButton("new game");
-    AddMainButton("settings");
-    AddMainButton("quit");
+    UI::TextComponent* openglGameText = AddUIComponent<UI::TextComponent>();
+    openglGameText->SetTransform({ glm::vec2(1280 / 2, 450), .35f });
+    openglGameText->font = "FONT_MORRIS";
+    openglGameText->alignment = UI::Text::TextAlignment::CENTER;
+    openglGameText->color = glm::vec4(glm::vec3(.75f), .5f);
+    openglGameText->SetText("formerly known as the great opengl-game");
+
+    const auto startGame = [&]() {
+        MonkeyGame::GetGame()->RequestEventNextUpdate([&]() {
+            this->Destroy();
+            MonkeyGame::GetGame()->StartGame();
+        });
+    };
+    UI::ButtonComponent* continueBtn = AddMainButton("continue");
+    continueBtn->color.a = .65f;
+    continueBtn->isActive = false;
+    UI::ButtonComponent* loadGameBtn = AddMainButton("load game");
+    loadGameBtn->eventHandler.Subscribe("click", [=]() {
+        MonkeyGame::GetGame()->SetNextStage("sanctuary-entrance");
+        startGame();
+    });
+    UI::ButtonComponent* newGameBtn = AddMainButton("new game");
+    newGameBtn->eventHandler.Subscribe("click", [=]() {
+        MonkeyGame::GetGame()->SetNextStage("teststage");
+        startGame();
+    });
+    UI::ButtonComponent* settingsBtn = AddMainButton("settings");
+    settingsBtn->eventHandler.Subscribe("click", [&]() {
+        #ifdef _WIN32
+        std::string settingsPath = std::fs::absolute(Paths::USER_SETTINGS_DIR).string();
+        ShellExecuteA(0, "open", (LPCSTR) settingsPath.c_str(), 0, 0, SW_SHOW);
+        #endif
+    });
+    UI::ButtonComponent* quitBtn = AddMainButton("quit");
+    quitBtn->eventHandler.Subscribe("click", [&]() {
+        GAME->Quit();
+    });
 
     #ifdef VERSION_SPECIFIED
     UI::TextComponent* versionText = AddUIComponent<UI::TextComponent>();
-    versionText->SetTransform({ glm::vec2(1277, 7), .35f });
+    versionText->SetTransform({ glm::vec2(1280 - 3, 7), .35f });
     versionText->font = "FONT_FIRACODE";
     versionText->alignment = UI::Text::TextAlignment::RIGHT;
     versionText->color = glm::vec4(glm::vec3(.75f), 1.0f);

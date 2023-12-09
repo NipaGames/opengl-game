@@ -1,6 +1,29 @@
 
 #  opengl-game
 
+# IMPORTANT NOTICE (Dec 9 2023)
+
+As it's probably evident from the first screenshots, my goal was never to make an actual "game", just mess around a figure how a game engine works (or more likely, how it shouldn't).
+I never thought I'd get this far with this dumb project when I started cooking this spaghetti at 15, a bit over a year ago now.
+However, now with over 300 commits and 10k lines of my horrifying C++, I'd say I've come up with a pretty good foundation for a game.
+Therefore I've decided to work more on the creative game side and only shape the engine whenever needed for the game part.
+There are already a few unfinished levels and some primitive game mechanics, but I have many more ideas left.
+(Also there's all the Unity stuff but I can't see how I'd ever make that much money from any of this to start worrying about fees, licencing and all that bs.
+At least I don't have to see that splash screen and shit still runs pretty well on my garbage laptop.)
+I, for once, have a direction I want to take this, yippee!!!
+please root for your local awkward transfem programmer :3  
+  
+**Since I'll be focusing on an actual game, this will probably be one of the last commits before I shut the repo private.**  
+I might keep the engine core public or even structure it into a library (that would be a tremendous effort but who knows, maybe one day I don't have anything other to do, whenever that is).
+
+Obviously, I'm still in high school and won't be getting anywhere soon since I'm kinda exhausted with my studies and my motivation is generally really low.
+So, working gamedev full time (or even studying it, well, formally - in an actual school) is out of the question for now but I'll try to keep this as a passion project.
+We'll see whatever abomination this turns into!
+
+![main menu](/images/screenshot19.png)
+
+*Latreus first time in the daylight!*
+
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/361a94a8bb7b4340b490dbdcbeb28b03)](https://app.codacy.com/gh/NipaGames/opengl-game/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 ##  Repository status
@@ -20,6 +43,8 @@ At the moment this is just a rendering test with WASD-controls and first-person 
 ##  Progress
 
 ###  Version history:
+
+-  **v0.8:** main menu, more game
 
 -  **v0.7:** event system, console
 
