@@ -3,7 +3,7 @@
 
 # IMPORTANT NOTICE (Dec 9 2023)
 
-As it's probably evident from the first screenshots, my goal was never to make an actual "game", just mess around a figure how a game engine works (or more likely, how it shouldn't).
+As it's probably evident from the first screenshots, my goal was never to make an actual "game", just mess around and figure how a game engine works (or more likely, how it shouldn't).
 I never thought I'd get this far with this dumb project when I started cooking this spaghetti at 15, a bit over a year ago now.
 However, now with over 300 commits and 10k lines of my horrifying C++, I'd say I've come up with a pretty good foundation for a game.
 Therefore I've decided to work more on the creative game side and only shape the engine whenever needed for the game part.
