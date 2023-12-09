@@ -52,7 +52,11 @@ void MainMenu::CreateHUDElements() {
     versionText->font = "FONT_FIRACODE";
     versionText->alignment = UI::Text::TextAlignment::RIGHT;
     versionText->color = glm::vec4(glm::vec3(.75f), 1.0f);
-    versionText->SetText(fmt::format("v{}.{} {}", VERSION_MAJ, VERSION_MIN, DEBUG_BUILD ? "Debug" : "Release"));
+    bool debug = false;
+    #ifdef DEBUG_BUILD
+    debug = true;
+    #endif
+    versionText->SetText(fmt::format("v{}.{} {}", VERSION_MAJ, VERSION_MIN, debug ? "Debug" : "Release"));
     #endif
 }
 
