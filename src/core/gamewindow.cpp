@@ -168,7 +168,7 @@ bool GameWindow::Create(Renderer& renderer) {
 
     spdlog::info("OpenGL version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
-    renderer.skyboxColor = glm::vec3(.5, .75, 1.0);
+    renderer.skyboxColor = glm::vec3(0.0f);
     renderer.SetWindow(window_);
     if(!renderer.Init())
         return false;

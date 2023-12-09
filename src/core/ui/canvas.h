@@ -8,6 +8,10 @@
 #include <core/graphics/material.h>
 
 namespace UI {
+    enum class CanvasBackgroundVerticalAnchor {
+        OVER,
+        UNDER
+    };
     class UIComponent;
     class Canvas {
     private:
@@ -20,6 +24,7 @@ namespace UI {
         glm::ivec2 offset = glm::ivec2(0, 0);
         std::shared_ptr<Material> bgMaterial = nullptr;
         glm::vec2 bgSize = glm::vec2(1280.0f, 720.0f);
+        CanvasBackgroundVerticalAnchor bgVerticalAnchor = CanvasBackgroundVerticalAnchor::UNDER;
         Canvas();
         Canvas(const Canvas&) = delete;
         Canvas(Canvas&&);
@@ -27,7 +32,7 @@ namespace UI {
         Canvas& operator=(Canvas&&) = default;
         virtual ~Canvas();
         void GenerateBackgroundShape();
-        void Draw();
+        virtual void Draw();
         void AddUIComponent(UI::UIComponent*, int = 0);
         void RemoveUIComponent(const UI::UIComponent*);
         void UpdateWindowSize();

@@ -23,7 +23,7 @@ private:
     std::vector<DebugTextElement> texts_;
     TextComponent* textComponent_;
 public:
-    std::string canvasId = "debugOverlay";
+    std::string canvasId = "DEBUG_OVERLAY";
     std::string fontId;
     void Start();
     void FixedUpdate();

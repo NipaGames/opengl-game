@@ -264,7 +264,13 @@ void MonkeyGame::Start() {
     }
     hud = HUD();
     hud.CreateHUDElements();
-    renderer_.AssignCanvas(hud.canvasId, hud.GetCanvas());
+    hud.Start();
+
+    /*
+    mainMenu = MainMenu();
+    mainMenu.CreateHUDElements();
+    mainMenu.Start();
+    */
 
     GAME->resources.stageManager.LoadStage("teststage");
     GAME->resources.stageManager.LoadStage("sanctuary-entrance");

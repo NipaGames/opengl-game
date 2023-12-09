@@ -7,7 +7,17 @@
 #pragma once
 
 #include <core/ui/canvas.h>
+#include "canvaslayout.h"
 
-class MainMenu : UI::Canvas {
-    
+class MainMenu : public CanvasLayout {
+private:
+    Shape logoShape_;
+    std::shared_ptr<Material> logoMaterial_;
+    int mainButtonY_ = 250;
+public:
+    UI::TextComponent* AddMainButton(const std::string&);
+    void Draw() override;
+    void CreateHUDElements();
+    void AssignToRenderer(Renderer&);
+    void Update() { }
 };

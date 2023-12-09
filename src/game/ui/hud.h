@@ -1,10 +1,11 @@
 #pragma once
 
+#include "canvaslayout.h"
 #include <core/ui/canvas.h>
 #include <core/ui/component/textcomponent.h>
 #include <game/components/animationcomponent.h>
 
-class HUD : public UI::Canvas {
+class HUD : public CanvasLayout {
 private:
     float fadeAreaTextAway_;
     bool isAreaTextShown_ = false;
@@ -27,7 +28,6 @@ private:
     float showXpTime_ = 2.0f;
     int xpReceived_ = 0;
 public:
-    std::string canvasId = "hud";
     UI::TextComponent* interactText = nullptr;
     UI::TextComponent* areaText = nullptr;
     UI::TextComponent* hpText = nullptr;
@@ -38,6 +38,8 @@ public:
     UI::TextComponent* gameOverInstructionsText = nullptr;
     UI::TextComponent* xpText = nullptr;
     void CreateHUDElements();
+    void AssignToRenderer(Renderer&);
+    void Update();
     void ShowInteractText(const std::string&, int = -1);
     void HideInteractMessage();
     void ShowAreaMessage(const std::string&);
@@ -48,5 +50,4 @@ public:
     void UpdateStatusText();
     void AddStatus(const std::string&);
     void RemoveStatus(const std::string&);
-    void Update();
 };

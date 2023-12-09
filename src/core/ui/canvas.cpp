@@ -2,9 +2,9 @@
 #include "component/uicomponent.h"
 #include <core/game.h>
 
-UI::Canvas::Canvas() : bgShader_(Shaders::ShaderID::UI_SHAPE) {
-
-}
+UI::Canvas::Canvas() :
+    bgShader_(Shaders::ShaderID::UI_SHAPE)
+{ }
 
 UI::Canvas::Canvas(Canvas&& c) : 
     bgShader_(c.bgShader_),
@@ -29,7 +29,7 @@ UI::Canvas::~Canvas() {
 }
 
 UI::Canvas* UI::Canvas::GetCanvas() {
-    return dynamic_cast<Canvas*>(this);
+    return static_cast<Canvas*>(this);
 }
 
 void UI::Canvas::GenerateBackgroundShape() {
@@ -49,14 +49,16 @@ void UI::Canvas::Draw() {
         bgMaterial->BindTexture();
         float w = bgSize.x;
         float h = bgSize.y;
+        float top = bgVerticalAnchor == CanvasBackgroundVerticalAnchor::OVER ? h : 0;
+        float bottom = bgVerticalAnchor == CanvasBackgroundVerticalAnchor::OVER ? 0 : -h;
         float vertices[] = {
             // pos      // texCoords
-            0,  0,      0.0f, 0.0f,
-            0, -h,      0.0f, 1.0f,
-            w, -h,      1.0f, 1.0f,
-            0,  0,      0.0f, 0.0f,
-            w, -h,      1.0f, 1.0f,
-            w,  0,      1.0f, 0.0f
+            0, top,     0.0f, 0.0f,
+            0, bottom,  0.0f, 1.0f,
+            w, bottom,  1.0f, 1.0f,
+            0, top,     0.0f, 0.0f,
+            w, bottom,  1.0f, 1.0f,
+            w, top,     1.0f, 0.0f
         };
         bgShape_.SetVertexData(vertices);
         bgShape_.Bind();

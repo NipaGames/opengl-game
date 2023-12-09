@@ -43,9 +43,9 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     shader_.SetUniform("textColor", color);
     shader_.SetUniform("projection", projection);
     shader_.SetUniform("time", (float) glfwGetTime());
-    glm::vec2 pos(parent->transform->position.x, parent->transform->position.y);
-    // janky ass way to determine the size
-    float size = parent->transform->size.z;
+    UITransform trans = GetTransform();
+    glm::vec2 pos = trans.pos;
+    float size = trans.size;
 
     auto& f = GAME->resources.fontManager.Get(font);
     glm::ivec2 windowSize;
@@ -104,7 +104,7 @@ void UI::TextComponent::RenderTexture() {
     glm::ivec2 windowSize;
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     float fontModifier = ((float) BASE_FONT_SIZE / f.size.y);
-    float size = parent->transform->size.z;
+    float size = GetTransform().size;
     glm::vec2 wndRatio = (glm::vec2) windowSize / glm::vec2(1280.0f, 720.0f);
     textSize_ = glm::vec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_, (int) lineSpacing) + padding_[0] * fontModifier) * size;
     glm::ivec2 texSize = (glm::ivec2) (wndRatio * (glm::vec2) textSize_);

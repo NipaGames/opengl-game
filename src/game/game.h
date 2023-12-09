@@ -6,6 +6,7 @@
 #include "components/livingentity.h"
 #include "console/console.h"
 #include "ui/hud.h"
+#include "ui/mainmenu.h"
 
 #include <queue>
 #include <functional>
@@ -18,6 +19,7 @@ private:
 public:
     Console console;
     HUD hud;
+    MainMenu mainMenu;
     PostProcessing postProcessing;
     Config::Controls controlsConfig;
     Config::General generalConfig;

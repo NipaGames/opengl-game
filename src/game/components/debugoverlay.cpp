@@ -99,7 +99,7 @@ void DebugOverlay::FixedUpdate() {
     SetValue("ram", (float) pmc.WorkingSetSize / 0x100000);
     #endif
     UpdateText();
-    auto size = textComponent_->GetTextSize();
+    glm::ivec2 size = textComponent_->GetTextSize();
     c.bgSize = glm::vec2(size.x + parent->transform->position.x * 2, size.y - parent->transform->position.y);
 }
 

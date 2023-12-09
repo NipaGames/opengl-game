@@ -14,101 +14,73 @@ const std::unordered_map<std::string, std::string> INTERACT_MESSAGES = {
 };
 
 void HUD::CreateHUDElements() {
-    Entity& interactTextEntity = GAME->GetEntityManager().CreateEntity();
-    interactTextEntity.transform->position.x = 10;
-    interactTextEntity.transform->position.y = 15;
-    interactTextEntity.transform->size.z = .75f;
-    interactText = interactTextEntity.AddComponent<TextComponent>(GetCanvas());
+    interactText = AddUIComponent<TextComponent>();
+    interactText->SetTransform({ glm::vec2(10, 15), .75f });
     interactText->font = "FONT_MORRIS";
     interactText->isVisible = false;
-    interactText->AddToCanvas();
-    interactTextEntity.Start();
 
-    Entity& hpTextEntity = GAME->GetEntityManager().CreateEntity();
-    hpTextEntity.transform->position.x = 10;
-    hpTextEntity.transform->position.y = 680;
-    hpTextEntity.transform->size.z = .75f;
-    hpText = hpTextEntity.AddComponent<TextComponent>(GetCanvas());
+    hpText = AddUIComponent<TextComponent>();
+    hpText->SetTransform({ glm::vec2(10, 680), .75f });
     hpText->font = "FONT_CELTIC";
-    hpText->AddToCanvas();
-    hpTextEntity.Start();
     
-    Entity& maxHpTextEntity = GAME->GetEntityManager().CreateEntity();
-    maxHpTextEntity.transform->position.y = hpTextEntity.transform->position.y;
-    maxHpTextEntity.transform->size.z = .5f;
-    maxHpText = maxHpTextEntity.AddComponent<TextComponent>(GetCanvas());
+    maxHpText = AddUIComponent<TextComponent>();
+    maxHpText->SetTransform({ glm::vec2(0, hpText->GetTransform().pos.y), .5f });
     maxHpText->color = glm::vec4(glm::vec3(1.0f), .75f);
     maxHpText->font = "FONT_CELTIC";
-    maxHpText->AddToCanvas();
-    maxHpTextEntity.Start();
 
-    Entity& statusTextEntity = GAME->GetEntityManager().CreateEntity();
-    statusTextEntity.transform->position.x = hpTextEntity.transform->position.x;
-    statusTextEntity.transform->position.y = hpTextEntity.transform->position.y - 30;
-    statusTextEntity.transform->size.z = .6f;
-    statusText = statusTextEntity.AddComponent<TextComponent>(GetCanvas());
+    statusText = AddUIComponent<TextComponent>();
+    statusText->SetTransform({ glm::vec2(hpText->GetTransform().pos.x, hpText->GetTransform().pos.y - 30), .6f });
     statusText->font = "FONT_MORRIS";
     statusText->lineSpacing = 20;
     statusText->SetShader("STATUS_TEXT");
-    statusText->AddToCanvas();
-    statusTextEntity.Start();
 
     Entity& areaTextEntity = GAME->GetEntityManager().CreateEntity();
     areaTextEntity.transform->position.x = 1270;
     areaTextEntity.transform->position.y = 25;
     areaTextEntity.transform->size.z = 2.0f;
-    areaText = areaTextEntity.AddComponent<TextComponent>(GetCanvas());
+    areaText = areaTextEntity.AddComponent<UI::TextComponent>();
     areaText->font = "FONT_ENCHANTED";
     areaText->SetShader("AREA_TEXT");
     areaText->alignment = Text::TextAlignment::RIGHT;
     areaText->color = glm::vec4(glm::vec3(0.75f), 0.0f);
-    areaText->AddToCanvas();
-
+    areaText->AddToCanvas(GetCanvas());
     areaAnimation = areaTextEntity.AddComponent<FloatAnimation>();
     areaAnimation->ptr = &areaText->color.w;
     areaAnimation->allowInterruptions = true;
     areaTextEntity.Start();
 
-    Entity& gameOverTextEntity = GAME->GetEntityManager().CreateEntity();
-    gameOverTextEntity.transform->position.x = 1280 / 2;
-    gameOverTextEntity.transform->position.y = 720 / 2;
-    gameOverTextEntity.transform->size.z = 3.0f;
-    gameOverText = gameOverTextEntity.AddComponent<TextComponent>(GetCanvas());
+    gameOverText = AddUIComponent<TextComponent>();
+    gameOverText->SetTransform({ glm::vec2(1280 / 2, 720 / 2), 3.0f });
     gameOverText->font = "FONT_ENCHANTED";
     gameOverText->alignment = Text::TextAlignment::CENTER;
     gameOverText->color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
     gameOverText->isVisible = false;
     gameOverText->SetText("game over");
-    gameOverText->AddToCanvas();
 
-    Entity& gameOverInstructionsTextEntity = GAME->GetEntityManager().CreateEntity();
-    gameOverInstructionsTextEntity.transform->position.x = 1280 / 2;
-    gameOverInstructionsTextEntity.transform->position.y = 720 / 2 - 100;
-    gameOverInstructionsTextEntity.transform->size.z = 1.0f;
-    gameOverInstructionsText = gameOverInstructionsTextEntity.AddComponent<TextComponent>(GetCanvas());
+    gameOverInstructionsText = AddUIComponent<TextComponent>();
+    gameOverInstructionsText->SetTransform({ glm::vec2(1280 / 2, 720 / 2 - 100), 1.0f });
     gameOverInstructionsText->font = "FONT_MORRIS";
     gameOverInstructionsText->alignment = Text::TextAlignment::CENTER;
     gameOverInstructionsText->isVisible = false;
     gameOverInstructionsText->SetText("[E] to retry");
-    gameOverInstructionsText->AddToCanvas();
 
-    Entity& xpTextEntity = GAME->GetEntityManager().CreateEntity();
-    xpTextEntity.transform->position.x = 1280 / 2;
-    xpTextEntity.transform->position.y = 30;
-    xpTextEntity.transform->size.z = 1.0f;
-    xpText = xpTextEntity.AddComponent<TextComponent>(GetCanvas());
+    xpText = AddUIComponent<TextComponent>();
+    xpText->SetTransform({ glm::vec2(1280 / 2, 30), 1.0f });
     xpText->font = "FONT_MORRIS";
     xpText->alignment = Text::TextAlignment::CENTER;
     xpText->isVisible = false;
-    xpText->AddToCanvas();
 
     GAME->GetGameWindow().eventHandler.Subscribe(WindowEvent::WINDOW_RESIZE, [this]() { 
         this->UpdateElementPositions();
     });
 }
 
+void HUD::AssignToRenderer(Renderer& renderer) {
+    renderer.AssignCanvas("HUD", GetCanvas());
+}
+
 void HUD::UpdateElementPositions() {
-    maxHpText->parent->transform->position.x = hpText->parent->transform->position.x + hpText->GetTextSize().x;
+    maxHpText->transform.pos.x = hpText->transform.pos.x + hpText->GetTextSize().x;
 }
 
 void HUD::UpdateHP(int hp, int maxHp) {
@@ -151,8 +123,8 @@ void HUD::GameOver() {
     gameOverEffectFinished_ = false;
     gameOver_ = true;    
     gameOverContinue_ = false;
-    gameOverTextY_ = gameOverText->parent->transform->position.y;
-    gameOverText->parent->transform->position.y = 720.0f;
+    gameOverTextY_ = gameOverText->transform.pos.y;
+    gameOverText->transform.pos.y = 720.0f;
     gameOverText->color.a = 0.0f;
     gameOverText->isVisible = true;
 
@@ -164,6 +136,7 @@ void HUD::GameOver() {
 }
 
 void HUD::Update() {
+    CanvasLayout::Update();
     // yippee hardcoded animation interpolation
     // too lazy to write this more elegantly
     if (gameOver_ && !gameOverEffectFinished_) {
@@ -177,7 +150,7 @@ void HUD::Update() {
         postProcessing.vignette.size = baseVignetteSize_ - (baseVignetteSize_ - 0.65f) * gameOverEffect_;
         MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
 
-        gameOverText->parent->transform->position.y = 720.0f - gameOverTextY_ * gameOverEffect_;
+        gameOverText->transform.pos.y = 720.0f - gameOverTextY_ * gameOverEffect_;
         gameOverText->color.a = gameOverEffect_;
 
         if (gameOverEffect_ >= 1.0f) {
@@ -195,7 +168,7 @@ void HUD::Update() {
         postProcessing.kernel.offset = (1.0f + gameOverContinueEffect_) / 1000.0f;
         MonkeyGame::GetGame()->GetRenderer().ApplyPostProcessing(postProcessing);
 
-        gameOverText->parent->transform->position.y = gameOverTextY_ * (1.0f - gameOverContinueEffect_);
+        gameOverText->transform.pos.y = gameOverTextY_ * (1.0f - gameOverContinueEffect_);
         gameOverText->color.a = 1.0f - gameOverContinueEffect_;
 
         if (gameOverContinueEffect_ >= 1.0f) {
