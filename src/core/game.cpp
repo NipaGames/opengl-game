@@ -99,8 +99,10 @@ void Game::GameThreadUpdate() {
         window_.eventHandler.Dispatch(WindowEvent::WINDOW_RESIZE);
         Input::WINDOW_SIZE_CHANGE_PENDING = false;
     }
-
-    Physics::Update(deltaTime_);
+    
+    if (Physics::dynamicsWorld != nullptr)
+        Physics::Update(deltaTime_);
+    
     isFixedUpdate_ = currentTime - prevFixedUpdate_ > 1.0 / fixedUpdateRate_;
     if (isFixedUpdate_) {
         Input::PollKeysPressedDown();

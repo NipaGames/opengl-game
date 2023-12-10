@@ -187,30 +187,28 @@ void GameWindow::Update() {
         Input::VSYNC_POLL_RATE_CHANGE_PENDING = false;
     }
 
-    if(Input::MOUSE_MOVE_PENDING) {
+    if (Input::MOUSE_MOVE_PENDING) {
         Input::MOUSE_MOVE_PENDING = false;
-        if (Input::IS_MOUSE_LOCKED) {
-            double xPos, yPos;
-            glfwGetCursorPos(window_, &xPos, &yPos);
+        double xPos, yPos;
+        glfwGetCursorPos(window_, &xPos, &yPos);
 
-            currentMousePos_ = { xPos, yPos };
-            glm::ivec2 wndSize;
-            glfwGetWindowSize(window_, &wndSize.x, &wndSize.y);
-            relativeMousePos_ = currentMousePos_ / (glm::vec2) wndSize * glm::vec2(1280, 720);
-            relativeMousePos_.y = 720.0f - relativeMousePos_.y;
+        currentMousePos_ = { xPos, yPos };
+        glm::ivec2 wndSize;
+        glfwGetWindowSize(window_, &wndSize.x, &wndSize.y);
+        relativeMousePos_ = currentMousePos_ / (glm::vec2) wndSize * glm::vec2(1280, 720);
+        relativeMousePos_.y = 720.0f - relativeMousePos_.y;
 
-            if (Input::FIRST_MOUSE) {
-                prevCursorPos_ = { xPos, yPos };
-                Input::FIRST_MOUSE = false;
-            }
-
-            Input::MOUSE_MOVE_X = xPos - prevCursorPos_.x;
-            Input::MOUSE_MOVE_Y = prevCursorPos_.y - yPos;
-
+        if (Input::FIRST_MOUSE) {
             prevCursorPos_ = { xPos, yPos };
-
-            eventHandler.Dispatch(WindowEvent::MOUSE_MOVE);
+            Input::FIRST_MOUSE = false;
         }
+
+        Input::MOUSE_MOVE_X = xPos - prevCursorPos_.x;
+        Input::MOUSE_MOVE_Y = prevCursorPos_.y - yPos;
+
+        prevCursorPos_ = { xPos, yPos };
+
+        eventHandler.Dispatch(WindowEvent::MOUSE_MOVE);
     }
 
     if (Input::WINDOW_FOCUS_PENDING) {

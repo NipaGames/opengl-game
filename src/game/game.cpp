@@ -40,7 +40,7 @@ MonkeyGame* MonkeyGame::GetGame() {
 
 bool MonkeyGame::InitWindow() {
     LOG_FN();
-    window_ = GameWindow("apina peli !!!!!!", 1280, 720, false);
+    window_ = GameWindow("LATREUS", 1280, 720, false);
     if(!window_.Create(renderer_)) {
         return false;
     }
@@ -116,6 +116,8 @@ void MonkeyGame::PreLoad() {
 }
 
 void MonkeyGame::ShowMainMenu() {
+    window_.LockMouse(false);
+    
     mainMenu = MainMenu();
     mainMenu.CreateHUDElements();
     mainMenu.Start();
@@ -142,18 +144,6 @@ void MonkeyGame::SetupGame() {
     /*playerLight = player.AddComponent<Lights::PointLight>();
     playerLight->intensity = .5f;
     playerLight->range = 5.0f;*/
-
-    renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE_WITHOUT_TEXCOORDS);
-    renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
-    const char* faces[6] = {
-        "graycloud_rt.jpg",
-        "graycloud_lf.jpg",
-        "graycloud_up.jpg",
-        "graycloud_dn.jpg",
-        "graycloud_ft.jpg",
-        "graycloud_bk.jpg"
-    };
-    renderer_.skyboxTexture = Cubemap::LoadTextureFromFaces("cloud-skybox", faces, true);
     
     renderer_.GetCamera().yaw = 90.0f;
     renderer_.GetCamera().pitch = 0.0f;
@@ -215,6 +205,7 @@ void MonkeyGame::SetupGame() {
         monkeyRigidbody->disableCollisions = true;
         monkey.AddComponent<LivingEntity>()->health = 1;
     }
+    
     Entity& mogus = entityManager_.CreateEntity();
     mogus.id = "amongus";
     auto mogusRenderer = mogus.AddComponent<MeshRenderer>();
@@ -245,7 +236,7 @@ void MonkeyGame::SetupGame() {
     auto terrainRb = terrain.AddComponent<Physics::RigidBody>();
     terrainRb->mass = 0.0f;
     terrainRb->collider = plane->CreateBtCollider();
-    
+
     if (resources.fontManager.HasLoaded("FONT_FIRACODE")) {
         auto debugOverlay = entityManager_.CreateEntity().AddComponent<DebugOverlay>();
         debugOverlay->parent->transform->size.z = .35f;
@@ -267,6 +258,7 @@ void MonkeyGame::SetupGame() {
         }
         */
     }
+    
     hud = HUD();
     hud.CreateHUDElements();
     hud.Start();
@@ -282,11 +274,24 @@ void MonkeyGame::Start() {
     Resources::LoadConfig(Config::CONTROLS_PATH, controlsConfig);
     Resources::LoadConfig(Config::GENERAL_PATH, generalConfig);
 
+    renderer_.skybox = Meshes::CreateMeshInstance(Meshes::CUBE_WITHOUT_TEXCOORDS);
+    renderer_.skybox->material = std::make_shared<Material>(Shaders::ShaderID::SKYBOX);
+    const char* faces[6] = {
+        "graycloud_rt.jpg",
+        "graycloud_lf.jpg",
+        "graycloud_up.jpg",
+        "graycloud_dn.jpg",
+        "graycloud_ft.jpg",
+        "graycloud_bk.jpg"
+    };
+    renderer_.skyboxTexture = Cubemap::LoadTextureFromFaces("cloud-skybox", faces, true);
+    
     ShowMainMenu();
 }
 
 void MonkeyGame::StartGame() {
     GameThreadCleanUp();
+    hud.Destroy();
     Physics::Init();
     SetupGame();
     StartEntities();
@@ -339,6 +344,11 @@ void MonkeyGame::Update() {
     if (Input::IsKeyPressedDown(GLFW_KEY_L)) {
         GAME->resources.stageManager.UnloadStage("passage");
         GAME->resources.stageManager.LoadStage("passage");
+    }
+    
+    if (Input::IsKeyPressedDown(GLFW_KEY_TAB) && activeUI != &mainMenu) {
+        GameThreadCleanUp();
+        ShowMainMenu();
     }
 
     if (Input::IsKeyPressedDown(GLFW_KEY_U)) {

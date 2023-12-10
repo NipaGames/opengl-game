@@ -10,10 +10,11 @@ namespace Physics {
     private:
         int debugMode_ = btIDebugDraw::DBG_DrawWireframe;
         Shader shader_;
-        GLuint vao_;
-        GLuint vbo_;
+        GLuint vao_ = NULL;
+        GLuint vbo_ = NULL;
         std::vector<float> vertices_;
     public:
+        virtual ~DebugDrawer();
         DebugDrawer();
         virtual void drawLine(const btVector3&, const btVector3&, const btVector3&) override;
         virtual void setDebugMode(int debugMode) override { debugMode_ = debugMode; }

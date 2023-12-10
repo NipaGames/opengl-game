@@ -13,6 +13,9 @@ PlayerController::~PlayerController() {
 }
 
 void PlayerController::OnMouseMove() {
+    if (!Input::IS_MOUSE_LOCKED)
+        return;
+    
     auto& cam = GAME->GetRenderer().GetCamera();
     float f = sensitivity * baseSensitivity_ * controlSpeedModifier_;
     mouseMove = glm::vec2(Input::MOUSE_MOVE_X, Input::MOUSE_MOVE_Y) * f;

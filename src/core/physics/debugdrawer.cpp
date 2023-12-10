@@ -6,6 +6,11 @@
 
 using namespace Physics;
 
+DebugDrawer::~DebugDrawer() {
+    glDeleteVertexArrays(1, &vao_);
+    glDeleteBuffers(1, &vbo_);
+}
+
 DebugDrawer::DebugDrawer() : shader_(Shaders::ShaderID::LINE) {
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
