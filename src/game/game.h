@@ -21,7 +21,7 @@ public:
     Console console;
     HUD hud;
     MainMenu mainMenu;
-    CanvasLayout* activeUI = nullptr;
+    std::vector<CanvasLayout*> activeUIs;
     PostProcessing postProcessing;
     Config::Controls controlsConfig;
     Config::General generalConfig;

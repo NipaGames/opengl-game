@@ -2,11 +2,13 @@
 #include "component/uicomponent.h"
 #include <core/game.h>
 
-UI::Canvas::Canvas() :
+using namespace UI;
+
+Canvas::Canvas() :
     bgShader_(Shaders::ShaderID::UI_SHAPE)
 { }
 
-UI::Canvas::Canvas(Canvas&& c) : 
+Canvas::Canvas(Canvas&& c) : 
     bgShader_(c.bgShader_),
     bgShape_(c.bgShape_),
     bgMaterial(c.bgMaterial),
@@ -16,12 +18,14 @@ UI::Canvas::Canvas(Canvas&& c) :
     bgVerticalAnchor(c.bgVerticalAnchor)
 {
     components_ = std::move(c.components_);
-    for (auto it : components_) {
-        it.second->canvas_ = this;
+    for (const auto& [p, components] : components_) {
+        for (UIComponent* c : components) {
+            c->canvas_ = this;
+        }
     }
 }
 
-UI::Canvas& UI::Canvas::operator=(Canvas&& c) {
+Canvas& Canvas::operator=(Canvas&& c) {
     bgShader_ = c.bgShader_;
     bgShape_ = c.bgShape_;
     bgMaterial = c.bgMaterial;
@@ -30,30 +34,35 @@ UI::Canvas& UI::Canvas::operator=(Canvas&& c) {
     bgSize = c.bgSize;
     bgVerticalAnchor = c.bgVerticalAnchor;
     components_ = std::move(c.components_);
-    for (auto it : components_) {
-        it.second->canvas_ = this;
+    for (const auto& [p, components] : components_) {
+        for (UIComponent* c : components) {
+            c->canvas_ = this;
+        }
     }
     return *this;
 }
 
-UI::Canvas::~Canvas() {
-    for (auto it : components_) {
-        if (it.second->canvas_ == this)
-            it.second->canvas_ = nullptr;
+Canvas::~Canvas() {
+    for (const auto& [p, components] : components_) {
+        for (UIComponent* c : components) {
+            if (c->canvas_ == this)
+                c->canvas_ = nullptr;
+        }
     }
+    components_.clear();
 }
 
-UI::Canvas* UI::Canvas::GetCanvas() {
+Canvas* Canvas::GetCanvas() {
     return static_cast<Canvas*>(this);
 }
 
-void UI::Canvas::GenerateBackgroundShape() {
+void Canvas::GenerateBackgroundShape() {
     bgShape_.numVertexAttributes = 4;
     bgShape_.stride = 4;
     bgShape_.GenerateVAO();
 }
 
-void UI::Canvas::Draw() {
+void Canvas::Draw() {
     if (!isVisible)
         return;
     auto proj = GetProjectionMatrix();
@@ -80,12 +89,15 @@ void UI::Canvas::Draw() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    for (auto it : components_) {
-        it.second->Render(proj);
+    for (const auto& [p, components] : components_) {
+        for (UIComponent* c : components) {
+            if (c->isVisible)
+                c->Render(proj);
+        }
     }
 }
 
-glm::mat4 UI::Canvas::GetProjectionMatrix() const {
+glm::mat4 Canvas::GetProjectionMatrix() const {
     glm::mat4 proj = glm::ortho(
         (float) offset.x,
         (float) 1280 + offset.x,
@@ -94,22 +106,25 @@ glm::mat4 UI::Canvas::GetProjectionMatrix() const {
     return proj;
 }
 
-void UI::Canvas::AddUIComponent(UI::UIComponent* c, int priority) {
-    components_.insert({ priority, c });
+void Canvas::AddUIComponent(UIComponent* c, int priority) {
+    components_[priority].push_back(c);
     c->canvas_ = this;
 }
 
-void UI::Canvas::UpdateWindowSize() {
-    for (auto it : components_) {
-        it.second->UpdateWindowSize();
+void Canvas::UpdateWindowSize() {
+    for (const auto& [p, components] : components_) {
+        for (UIComponent* c : components) {
+            c->UpdateWindowSize();
+        }
     }
 }
 
-void UI::Canvas::RemoveUIComponent(const UI::UIComponent* c) {
-    for (auto it = components_.begin(); it != components_.end(); it++) {
-        if (it->second == c) {
-            components_.erase(it);
-            return;
-        }
+void Canvas::RemoveUIComponent(const UI::UIComponent* c) {
+    for (auto& [p, components] : components_) {
+        const auto it = std::find(components.begin(), components.end(), c);
+        if (it == components.end())
+            continue;
+        components.erase(it);
+        return;
     }
 }

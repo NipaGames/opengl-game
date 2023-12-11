@@ -166,7 +166,7 @@ std::vector<int> UI::Text::GetLineWidths(const Font& font, const std::string& te
     if (std::count(text.begin(), text.end(), '\n') > 0) {
         std::stringstream ss(text);
         std::string ln;
-        while(std::getline(ss, ln, '\n')){
+        while (std::getline(ss, ln, '\n')) {
             widths.push_back(GetLineWidth(font, ln));
         }
     }
@@ -182,14 +182,10 @@ int UI::Text::GetTextWidth(const Font& font, const std::string& text) {
     return *std::max_element(widths.begin(), widths.end());
 }
 
-glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& text) {
+glm::ivec2 GetRowVerticalPadding(const Font& font, const std::string& text) {
     int max = 0;
     int min = 0;
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it) {
-        if (*it == '\n') {
-            min = 0;
-            max = 0;
-        }
         Character c = font.charMap.at(*it);
         int cMax = c.bearing.y;
         int cMin = c.bearing.y - c.size.y;
@@ -199,6 +195,17 @@ glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& tex
     return glm::ivec2(-min, max);
 }
 
+glm::ivec2 UI::Text::GetVerticalPadding(const Font& font, const std::string& text) {
+    if (std::count(text.begin(), text.end(), '\n') > 0) {
+        size_t first = text.find_first_of('\n');
+        size_t last = text.find_last_of('\n');
+        glm::ivec2 firstRowPadding = GetRowVerticalPadding(font, text.substr(0, first));
+        glm::ivec2 lastRowPadding = GetRowVerticalPadding(font, text.substr(last + 1));
+        return glm::ivec2(firstRowPadding[0], lastRowPadding[1]);
+    }
+    return GetRowVerticalPadding(font, text);
+}
+
 int UI::Text::GetTextHeight(const Font& font, const std::string& text, int lineSpacing) {
     int h = 0;
     int additionalRows = (int) std::count(text.begin(), text.end(), '\n');
@@ -206,7 +213,7 @@ int UI::Text::GetTextHeight(const Font& font, const std::string& text, int lineS
     if (additionalRows > 0) {
         h += additionalRows * (font.fontHeight + lineSpacing);
         std::string lastRow = text.substr(text.find_last_of('\n'));
-        padding = GetVerticalPadding(font, lastRow);
+        padding = GetRowVerticalPadding(font, lastRow);
     }
     else {
         padding = GetVerticalPadding(font, text);

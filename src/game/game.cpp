@@ -122,7 +122,7 @@ void MonkeyGame::ShowMainMenu() {
     mainMenu = MainMenu();
     mainMenu.CreateHUDElements();
     mainMenu.Start();
-    activeUI = &mainMenu;
+    activeUIs = { &mainMenu };
 }
 
 void MonkeyGame::SetupGame() {
@@ -263,7 +263,7 @@ void MonkeyGame::SetupGame() {
     hud = HUD();
     hud.CreateHUDElements();
     hud.Start();
-    activeUI = &hud;
+    activeUIs = { &hud };
 
     GAME->resources.stageManager.LoadStage(nextStage_);
     SpawnPlayer();
@@ -320,8 +320,8 @@ bool MonkeyGame::TryHitEntity(const btVector3& from, const btVector3& to, std::f
 }
 
 void MonkeyGame::UpdateUI() {
-    if (activeUI != nullptr)
-        activeUI->Update();
+    for (CanvasLayout* ui : activeUIs)
+        ui->Update();
 }
 
 void MonkeyGame::Update() {
@@ -346,7 +346,7 @@ void MonkeyGame::Update() {
         GAME->resources.stageManager.LoadStage("passage");
     }
     
-    if (Input::IsKeyPressedDown(GLFW_KEY_TAB) && activeUI != &mainMenu) {
+    if (Input::IsKeyPressedDown(GLFW_KEY_TAB) && (activeUIs.empty() || activeUIs.front() != &mainMenu)) {
         GameThreadCleanUp();
         ShowMainMenu();
     }

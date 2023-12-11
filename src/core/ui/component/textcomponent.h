@@ -39,7 +39,6 @@ namespace UI {
         TextRenderingMethod renderingMethod = TextRenderingMethod::RENDER_TO_TEXTURE; // Must be declared before start, no effect otherwise
         Text::TextAlignment alignment = Text::TextAlignment::LEFT;
         float textureResolutionModifier = 1.0f;
-        bool isVisible = true;
         
         virtual ~TextComponent();
         TextComponent() = default;

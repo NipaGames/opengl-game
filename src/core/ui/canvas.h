@@ -15,7 +15,7 @@ namespace UI {
     class UIComponent;
     class Canvas {
     private:
-        std::multimap<int, UI::UIComponent*> components_;
+        std::map<int, std::vector<UI::UIComponent*>> components_;
         Shader bgShader_;
         Shape bgShape_;
     public:

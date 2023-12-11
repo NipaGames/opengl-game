@@ -28,6 +28,8 @@ namespace UI {
         UITransform transform { glm::vec2(0.0f), 1.0f };
         UITransformFrom transformFrom = UITransformFrom::ENTITY_TRANSFORM_2D;
         EventHandler<std::string> eventHandler;
+        bool isActive = true;
+        bool isVisible = true;
         UIComponent(Canvas*, int = 0);
         UIComponent() = default;
         virtual ~UIComponent();

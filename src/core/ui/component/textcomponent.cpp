@@ -5,7 +5,9 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
 
-UI::TextComponent::~TextComponent() {
+using namespace UI;
+
+TextComponent::~TextComponent() {
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         if (fbo_ != NULL)
             glDeleteFramebuffers(1, &fbo_);
@@ -16,7 +18,7 @@ UI::TextComponent::~TextComponent() {
     texture_ = NULL;
 }
 
-void UI::TextComponent::Start() {
+void TextComponent::Start() {
     renderingMethod_ = renderingMethod;
     shape_.numVertexAttributes = 4;
     shape_.stride = 4;
@@ -30,14 +32,14 @@ void UI::TextComponent::Start() {
     }
 }
 
-void UI::TextComponent::SetShader(const Shader& s) {
+void TextComponent::SetShader(const Shader& s) {
     shader_ = s;
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE && hasStarted_)
         RenderTexture();
 }
 
-void UI::TextComponent::Render(const glm::mat4& projection) {
-    if (!isVisible || color.w == 0.0f)
+void TextComponent::Render(const glm::mat4& projection) {
+    if (color.w == 0.0f)
         return;
     shader_.Use();
     shader_.SetUniform("textColor", color);
@@ -63,7 +65,7 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
                 break;
         }
         bounds_ = { pos.x, pos.x + w, pos.y, pos.y + h };
-        UI::Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size * ((float) BASE_FONT_SIZE / f.size.y), modifier, alignment, lineSpacing * size);
+        Text::RenderText(GAME->resources.fontManager.Get(font), text_, pos, size * ((float) BASE_FONT_SIZE / f.size.y), modifier, alignment, lineSpacing * size);
     }
     else if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE) {
         glm::vec2 wndRatio = (glm::vec2) windowSize / glm::vec2(1280.0f, 720.0f);
@@ -101,16 +103,15 @@ void UI::TextComponent::Render(const glm::mat4& projection) {
     }
 }
 
-void UI::TextComponent::RenderTexture() {
+void TextComponent::RenderTexture() {
     auto& f = GAME->resources.fontManager.Get(font);
-    padding_ = UI::Text::GetVerticalPadding(f, text_);
 
     glm::ivec2 windowSize;
     glfwGetWindowSize(GAME->GetGameWindow().GetWindow(), &windowSize.x, &windowSize.y);
     float fontModifier = ((float) BASE_FONT_SIZE / f.size.y);
     float size = GetTransform().size;
     glm::vec2 wndRatio = (glm::vec2) windowSize / glm::vec2(1280.0f, 720.0f);
-    textSize_ = glm::vec2(UI::Text::GetTextWidth(f, text_), UI::Text::GetTextHeight(f, text_, (int) lineSpacing) + padding_[0] * fontModifier) * size;
+    textSize_ = glm::vec2(Text::GetTextWidth(f, text_), Text::GetTextHeight(f, text_, (int) lineSpacing) + padding_[0] * fontModifier) * size;
     glm::ivec2 texSize = (glm::ivec2) (wndRatio * (glm::vec2) textSize_);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
@@ -132,36 +133,43 @@ void UI::TextComponent::RenderTexture() {
     textureShader_.SetUniform("textColor", glm::vec4(1.0f));
     textureShader_.SetUniform("projection", glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f));
 
-    UI::Text::RenderText(f, text_, glm::vec2(0, additionalRowsHeight_ * size + padding_[0] * size * fontModifier), size * fontModifier, 1.0f, alignment, lineSpacing * size);
+    Text::RenderText(f, text_, glm::vec2(0, (additionalRowsHeight_ + padding_[0]) * size * fontModifier), size * fontModifier, 1.0f, alignment, lineSpacing * size);
     
     float modifier = (16.0f * windowSize.y) / (9.0f * windowSize.x);
     actualTextSize_ = { textSize_.x * modifier, textSize_.y };
 }
 
-void UI::TextComponent::SetText(const std::string& t) {
+void TextComponent::SetText(const std::string& t) {
     if (text_ == t)
         return;
     text_ = t;
     additionalRows_ = (int) std::count(text_.begin(), text_.end(), '\n');
-    additionalRowsHeight_ = additionalRows_ * (GAME->resources.fontManager.Get(font).fontHeight + lineSpacing);
+
+    auto& f = GAME->resources.fontManager.Get(font);
+    padding_ = Text::GetVerticalPadding(f, text_);
+
+    additionalRowsHeight_ = additionalRows_ * (f.fontHeight + lineSpacing);
+    if (additionalRowsHeight_ > 0) {
+        additionalRowsHeight_ += padding_[0];
+    }
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE && hasStarted_) {
         RenderTexture();
     }
 }
 
-const std::string& UI::TextComponent::GetText() const {
+const std::string& TextComponent::GetText() const {
     return text_;
 }
 
-const glm::vec2& UI::TextComponent::GetTextSize() const {
+const glm::vec2& TextComponent::GetTextSize() const {
     return actualTextSize_;
 }
 
-const UI::Rect& UI::TextComponent::GetBounds() const {
+const UI::Rect& TextComponent::GetBounds() const {
     return bounds_;
 }
 
-void UI::TextComponent::UpdateWindowSize() {
+void TextComponent::UpdateWindowSize() {
     if (renderingMethod_ == TextRenderingMethod::RENDER_TO_TEXTURE && hasStarted_) {
         RenderTexture();
     }

@@ -7,9 +7,9 @@
 #include <shellapi.h>
 #endif
 
-UI::ButtonComponent* MainMenu::AddMainButton(const std::string& header) {
-    UI::ButtonComponent* button = AddUIComponent<UI::ButtonComponent>();
-    button->SetTransform({ glm::vec2(1280 / 2, mainButtonY_), .8f });
+UI::ButtonComponent* MainMenu::AddMainButton(const std::string& header, const std::string& page, int y) {
+    UI::ButtonComponent* button = AddUIComponent<UI::ButtonComponent>(page);
+    button->SetTransform({ glm::vec2(1280 / 2, y), .8f });
     button->font = "FONT_MORRIS";
     glm::vec3 baseColor = glm::vec3(.75f);
     glm::vec3 hoverColor = glm::vec3(1.0f);
@@ -22,8 +22,22 @@ UI::ButtonComponent* MainMenu::AddMainButton(const std::string& header) {
     });
     button->alignment = UI::Text::TextAlignment::CENTER;
     button->SetText(header);
-    mainButtonY_ -= 50;
     return button;
+}
+
+UI::ButtonComponent* MainMenu::AddMainButton(const std::string& header, const std::string& page) {
+    return AddMainButton(header, page, mainButtonY_);
+}
+
+
+void MainMenu::CreateButtonSubmenu(const std::string& page, const std::vector<MainMenuButton>& buttons) {
+    int gap = 50;
+    int y = mainButtonY_ + (int) (buttons.size() - 1) * gap;
+    for (const MainMenuButton& btn : buttons) {
+        UI::ButtonComponent* instantiated = AddMainButton(btn.name, page, y);
+        instantiated->eventHandler.Subscribe("click", btn.onClick);
+        y -= gap;
+    }
 }
 
 void MainMenu::CreateHUDElements() {
@@ -66,29 +80,74 @@ void MainMenu::CreateHUDElements() {
             MonkeyGame::GetGame()->StartGame();
         });
     };
-    UI::ButtonComponent* continueBtn = AddMainButton("continue");
-    continueBtn->color.a = .65f;
-    continueBtn->isActive = false;
-    UI::ButtonComponent* loadGameBtn = AddMainButton("load game");
-    loadGameBtn->eventHandler.Subscribe("click", [=]() {
-        MonkeyGame::GetGame()->SetNextStage("sanctuary-entrance");
-        startGame();
+
+    CreateButtonSubmenu("main", {
+        {
+            "continue",
+            [=]() {
+                MonkeyGame::GetGame()->SetNextStage("sanctuary-entrance");
+                startGame();
+            }
+        },
+        {
+            "load game",
+            [&]() {
+                SetCurrentPage("load");
+            }
+        },
+        {
+            "new game",
+            [=]() {
+                MonkeyGame::GetGame()->SetNextStage("teststage");
+                startGame();
+            }
+        },
+        { 
+            "settings",
+            [&]() {
+                SetCurrentPage("settings");
+            }
+        },
+        {
+            "quit",
+            [&]() {
+                GAME->Quit();
+            }
+        }
     });
-    UI::ButtonComponent* newGameBtn = AddMainButton("new game");
-    newGameBtn->eventHandler.Subscribe("click", [=]() {
-        MonkeyGame::GetGame()->SetNextStage("teststage");
-        startGame();
+
+    UI::TextComponent* loadText = AddUIComponent<UI::TextComponent>("load");
+    loadText->SetTransform({ glm::vec2(1280 / 2, 175), .5f });
+    loadText->font = "FONT_FIRACODE";
+    loadText->alignment = UI::Text::TextAlignment::CENTER;
+    loadText->SetText("you'll have to just imagine\nthe file select thingy here");
+    loadText->lineSpacing = 15;
+
+    CreateButtonSubmenu("load", {
+        {
+            "back",
+            [&]() {
+                SetCurrentPage("main");
+            }
+        }
     });
-    UI::ButtonComponent* settingsBtn = AddMainButton("settings");
-    settingsBtn->eventHandler.Subscribe("click", [&]() {
-        #ifdef _WIN32
-        std::string settingsPath = std::fs::absolute(Paths::USER_SETTINGS_DIR).string();
-        ShellExecuteA(0, "open", (LPCSTR) settingsPath.c_str(), 0, 0, SW_SHOW);
-        #endif
-    });
-    UI::ButtonComponent* quitBtn = AddMainButton("quit");
-    quitBtn->eventHandler.Subscribe("click", [&]() {
-        GAME->Quit();
+
+    CreateButtonSubmenu("settings", {
+        {
+            "open directory",
+            [&]() {
+                #ifdef _WIN32
+                std::string settingsPath = std::fs::absolute(Paths::USER_SETTINGS_DIR).string();
+                ShellExecuteA(0, "open", (LPCSTR) settingsPath.c_str(), 0, 0, SW_SHOW);
+                #endif
+            }
+        },
+        { 
+            "back",
+            [&]() {
+                SetCurrentPage("main");
+            }
+        }
     });
 
     #ifdef VERSION_SPECIFIED
@@ -103,6 +162,8 @@ void MainMenu::CreateHUDElements() {
     #endif
     versionText->SetText(fmt::format("v{}.{} {}", VERSION_MAJ, VERSION_MIN, debug ? "Debug" : "Release"));
     #endif
+
+    SetCurrentPage("main");
 }
 
 void MainMenu::Draw() {
