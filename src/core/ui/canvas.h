@@ -29,7 +29,7 @@ namespace UI {
         Canvas(const Canvas&) = delete;
         Canvas(Canvas&&);
         Canvas& operator=(const Canvas&) = delete;
-        Canvas& operator=(Canvas&&) = default;
+        Canvas& operator=(Canvas&&);
         virtual ~Canvas();
         void GenerateBackgroundShape();
         virtual void Draw();

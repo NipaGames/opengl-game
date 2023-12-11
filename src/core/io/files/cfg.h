@@ -333,7 +333,7 @@ namespace CFG {
         }
     };
 
-    #define CFG_TYPE_PAIR(T, CFGT) { &typeid(T), { CFGT }}
+    #define CFG_TYPE_PAIR(T, CFGT) { &typeid(T), { CFGT } }
     inline const std::unordered_map<const type_info*, const std::vector<CFG::CFGFieldType>> CFG_TYPES = {
         CFG_TYPE_PAIR(std::string, CFGFieldType::STRING),
         CFG_TYPE_PAIR(int, CFGFieldType::INTEGER),

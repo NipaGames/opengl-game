@@ -12,6 +12,13 @@ CanvasLayout::~CanvasLayout() {
     Destroy();
 }
 
+CanvasLayout& CanvasLayout::operator=(CanvasLayout&& moveFrom) {
+    Destroy();
+    UI::Canvas::operator=(std::move(moveFrom));
+    ownedComponents_ = std::move(moveFrom.ownedComponents_);
+    return *this;
+}
+
 void CanvasLayout::Start() {
     AssignToRenderer(GAME->GetRenderer());
     for (UI::UIComponent* component : ownedComponents_) {

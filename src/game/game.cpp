@@ -116,6 +116,7 @@ void MonkeyGame::PreLoad() {
 }
 
 void MonkeyGame::ShowMainMenu() {
+    hud.Destroy();
     window_.LockMouse(false);
     
     mainMenu = MainMenu();
@@ -291,7 +292,6 @@ void MonkeyGame::Start() {
 
 void MonkeyGame::StartGame() {
     GameThreadCleanUp();
-    hud.Destroy();
     Physics::Init();
     SetupGame();
     StartEntities();

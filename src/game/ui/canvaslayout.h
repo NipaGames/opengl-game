@@ -13,7 +13,7 @@ public:
     CanvasLayout(const CanvasLayout&) = delete;
     CanvasLayout(CanvasLayout&&) = default;
     CanvasLayout& operator=(const CanvasLayout&) = delete;
-    CanvasLayout& operator=(CanvasLayout&&) = default;
+    CanvasLayout& operator=(CanvasLayout&&);
     virtual void CreateHUDElements() = 0;
     virtual void AssignToRenderer(Renderer&) = 0;
     virtual void Start();

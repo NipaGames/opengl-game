@@ -9,16 +9,31 @@ UI::Canvas::Canvas() :
 UI::Canvas::Canvas(Canvas&& c) : 
     bgShader_(c.bgShader_),
     bgShape_(c.bgShape_),
+    bgMaterial(c.bgMaterial),
     isVisible(c.isVisible),
     offset(c.offset),
-    bgMaterial(c.bgMaterial),
     bgSize(c.bgSize),
-    components_(c.components_)
+    bgVerticalAnchor(c.bgVerticalAnchor)
 {
+    components_ = std::move(c.components_);
     for (auto it : components_) {
         it.second->canvas_ = this;
     }
-    c.components_.clear();
+}
+
+UI::Canvas& UI::Canvas::operator=(Canvas&& c) {
+    bgShader_ = c.bgShader_;
+    bgShape_ = c.bgShape_;
+    bgMaterial = c.bgMaterial;
+    isVisible = c.isVisible;
+    offset = c.offset;
+    bgSize = c.bgSize;
+    bgVerticalAnchor = c.bgVerticalAnchor;
+    components_ = std::move(c.components_);
+    for (auto it : components_) {
+        it.second->canvas_ = this;
+    }
+    return *this;
 }
 
 UI::Canvas::~Canvas() {
